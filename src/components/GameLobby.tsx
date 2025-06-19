@@ -28,8 +28,8 @@ const GameLobby = () => {
     if (sessionCode) {
       navigator.clipboard.writeText(sessionCode);
       toast({
-        title: "Session code copied!",
-        description: "Share this code with other players to join the game.",
+        title: "Sitzungscode kopiert!",
+        description: "Teile diesen Code mit anderen, damit sie dem Spiel beitreten können.",
       });
     }
   };
@@ -44,8 +44,8 @@ const GameLobby = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading...</h2>
-          <p className="text-gray-600">Preparing your game session</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Lade...</h2>
+          <p className="text-gray-600">Bereite deine Spielsitzung vor</p>
         </div>
       </div>
     );
@@ -71,8 +71,8 @@ const GameLobby = () => {
                 <Flag className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Game Lobby</h1>
-                <p className="text-sm text-blue-600">Waiting for players</p>
+                <h1 className="text-xl font-bold text-gray-900">Warteraum</h1>
+                <p className="text-sm text-blue-600">Warte auf Spieler</p>
               </div>
             </div>
             <Badge variant="outline" className="font-mono text-lg px-4 py-2">
@@ -89,15 +89,15 @@ const GameLobby = () => {
             {/* Session Details */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
+                  <CardTitle className="flex items-center space-x-2">
                   <Users className="w-5 h-5 text-blue-600" />
-                  <span>Session Details</span>
-                </CardTitle>
+                  <span>Sitzungsdetails</span>
+                  </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <div>
-                    <p className="font-medium text-gray-900">Session Code</p>
+                    <p className="font-medium text-gray-900">Sitzungscode</p>
                     <p className="text-2xl font-mono font-bold text-blue-600">{sessionCode}</p>
                   </div>
                   <Button
@@ -106,7 +106,7 @@ const GameLobby = () => {
                     className="flex items-center space-x-2"
                   >
                     <Copy className="w-4 h-4" />
-                    <span>Copy</span>
+                    <span>Kopieren</span>
                   </Button>
                 </div>
 
@@ -120,10 +120,10 @@ const GameLobby = () => {
                     </div>
                     <p className="text-sm text-gray-600 mb-3">{gameSession.currentQuiz.description}</p>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>{gameSession.currentQuiz.questions.length} questions</span>
+                        <span>{gameSession.currentQuiz.questions.length} Fragen</span>
                       <span className="flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
-                        {gameSession.currentQuiz.duration} minutes
+                          {gameSession.currentQuiz.duration} Minuten
                       </span>
                     </div>
                   </div>
@@ -134,12 +134,12 @@ const GameLobby = () => {
             {/* Game Controls */}
             <Card>
               <CardHeader>
-                <CardTitle>Game Controls</CardTitle>
-                <CardDescription>
-                  {currentPlayer.isHost 
-                    ? "As the host, you can start the quiz when all players are ready."
-                    : "Waiting for the host to start the quiz..."
-                  }
+              <CardTitle>Spielsteuerung</CardTitle>
+              <CardDescription>
+                {currentPlayer.isHost
+                  ? "Als Gastgeber kannst du das Quiz starten, wenn alle bereit sind."
+                  : "Warte darauf, dass der Gastgeber das Quiz startet..."
+                }
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -150,13 +150,13 @@ const GameLobby = () => {
                     size="lg"
                     disabled={gameSession.players.length < 1}
                   >
-                    Start Quiz
+                    Quiz starten
                   </Button>
                 ) : (
                   <div className="text-center py-8">
                     <div className="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
                       <Clock className="w-4 h-4 mr-2" />
-                      Waiting for host to start the quiz
+                      Warte auf den Gastgeber, um das Quiz zu starten
                     </div>
                   </div>
                 )}
@@ -171,12 +171,12 @@ const GameLobby = () => {
                 <CardTitle className="flex items-center justify-between">
                   <span className="flex items-center space-x-2">
                     <Users className="w-5 h-5 text-blue-600" />
-                    <span>Players</span>
+                    <span>Spieler</span>
                   </span>
                   <Badge variant="secondary">{gameSession.players.length}</Badge>
                 </CardTitle>
                 <CardDescription>
-                  Players currently in this session
+                  Spieler in dieser Sitzung
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -203,13 +203,13 @@ const GameLobby = () => {
                               <span className="text-blue-600 text-sm ml-2">(You)</span>
                             )}
                           </p>
-                          <p className="text-xs text-gray-500">Ready to play</p>
+                          <p className="text-xs text-gray-500">Bereit zum Spielen</p>
                         </div>
                       </div>
                       {player.isHost && (
                         <Badge variant="secondary" className="flex items-center space-x-1">
                           <Crown className="w-3 h-3" />
-                          <span>Host</span>
+                          <span>Gastgeber</span>
                         </Badge>
                       )}
                     </div>
@@ -221,14 +221,14 @@ const GameLobby = () => {
             {/* Instructions */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">How to Play</CardTitle>
+                <CardTitle className="text-lg">Spielanleitung</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-gray-600 space-y-2">
-                <p>• Answer questions about German democracy</p>
-                <p>• Earn points for correct answers</p>
-                <p>• Compete with other players in real-time</p>
-                <p>• View explanations after each question</p>
-                <p>• Check the leaderboard to see your ranking</p>
+                <p>• Beantworte Fragen zur deutschen Demokratie</p>
+                <p>• Sammle Punkte für richtige Antworten</p>
+                <p>• Tritt in Echtzeit gegen andere Spieler an</p>
+                <p>• Sieh dir nach jeder Frage Erklärungen an</p>
+                <p>• Sieh im Ranking nach deiner Platzierung</p>
               </CardContent>
             </Card>
           </div>

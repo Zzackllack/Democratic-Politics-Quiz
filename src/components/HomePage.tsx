@@ -28,7 +28,7 @@ const HomePage = () => {
     if (success) {
       navigate(`/lobby/${sessionCode.toUpperCase()}`);
     } else {
-      alert('Session not found. Please check the code and try again.');
+      alert('Sitzung nicht gefunden. Bitte Code prüfen und erneut versuchen.');
     }
     setIsJoining(false);
   };
@@ -44,8 +44,8 @@ const HomePage = () => {
                 <Vote className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Democracy Quiz</h1>
-                <p className="text-sm text-blue-600">Learn German Democracy</p>
+                <h1 className="text-2xl font-bold text-gray-900">Demokratie-Quiz</h1>
+                <p className="text-sm text-blue-600">Lerne deutsche Demokratie</p>
               </div>
             </div>
             <Badge variant="outline" className="hidden sm:flex">
@@ -61,13 +61,13 @@ const HomePage = () => {
         <div className="w-full max-w-4xl">
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-              Test Your Knowledge of
-              <span className="text-blue-600 block">German Democracy</span>
+              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+              Teste dein Wissen über
+              <span className="text-blue-600 block">deutsche Demokratie</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-              Join friends in an interactive quiz about Germany's democratic system, 
-              constitution, and civic principles. Learn while you compete!
+              Nimm mit Freunden an einem interaktiven Quiz über das demokratische System Deutschlands,
+              die Verfassung und bürgerliche Prinzipien teil. Lerne, während du spielst!
             </p>
           </div>
 
@@ -79,9 +79,9 @@ const HomePage = () => {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-blue-600" />
                 </div>
-                <CardTitle className="text-2xl text-gray-900">Create New Game</CardTitle>
+                <CardTitle className="text-2xl text-gray-900">Neues Spiel erstellen</CardTitle>
                 <CardDescription className="text-gray-600">
-                  Start a new quiz session and invite others to join
+                  Starte eine neue Quizrunde und lade andere ein
                 </CardDescription>
               </CardHeader>
               <CardContent className="text-center">
@@ -90,7 +90,7 @@ const HomePage = () => {
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-medium"
                   size="lg"
                 >
-                  Create Game
+                  Spiel erstellen
                 </Button>
               </CardContent>
             </Card>
@@ -101,22 +101,22 @@ const HomePage = () => {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Vote className="w-8 h-8 text-green-600" />
                 </div>
-                <CardTitle className="text-2xl text-gray-900">Join Existing Game</CardTitle>
-                <CardDescription className="text-gray-600">
-                  Enter a session code to join a quiz in progress
-                </CardDescription>
+                  <CardTitle className="text-2xl text-gray-900">Bestehendem Spiel beitreten</CardTitle>
+                  <CardDescription className="text-gray-600">
+                    Gib einen Sitzungscode ein, um einem laufenden Quiz beizutreten
+                  </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <Input
-                    placeholder="Enter session code"
+                    placeholder="Sitzungscode eingeben"
                     value={sessionCode}
                     onChange={(e) => setSessionCode(e.target.value.toUpperCase())}
                     className="text-center text-lg font-mono"
                     maxLength={6}
                   />
                   <Input
-                    placeholder="Your display name"
+                    placeholder="Dein Anzeigename"
                     value={joinPseudonym}
                     onChange={(e) => setJoinPseudonym(e.target.value)}
                     className="text-center"
@@ -128,7 +128,7 @@ const HomePage = () => {
                   className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg font-medium"
                   size="lg"
                 >
-                  {isJoining ? 'Joining...' : 'Join Game'}
+                  {isJoining ? 'Beitreten...' : 'Spiel beitreten'}
                 </Button>
               </CardContent>
             </Card>
@@ -140,27 +140,27 @@ const HomePage = () => {
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Multiplayer</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Mehrspieler</h3>
               <p className="text-gray-600 text-sm">
-                Compete with friends in real-time quiz sessions
+                Tritt in Echtzeit gegen Freunde an
               </p>
             </div>
             <div className="p-6">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <Vote className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Democratic Topics</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Demokratische Themen</h3>
               <p className="text-gray-600 text-sm">
-                Learn about German government, rights, and civic duties
+                Lerne über deutsche Regierung, Rechte und Pflichten
               </p>
             </div>
             <div className="p-6">
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <Flag className="w-6 h-6 text-yellow-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Multiple Levels</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Mehrere Schwierigkeitsstufen</h3>
               <p className="text-gray-600 text-sm">
-                From basics to constitutional law - choose your difficulty
+                Von Grundlagen bis Verfassungsrecht – wähle deinen Schwierigkeitsgrad
               </p>
             </div>
           </div>
@@ -171,7 +171,7 @@ const HomePage = () => {
       <footer className="bg-gray-50 border-t border-gray-200 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-gray-600">
-            Built to promote civic education and democratic participation
+            Erstellt zur Förderung politischer Bildung und demokratischer Teilhabe
           </p>
         </div>
       </footer>

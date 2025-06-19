@@ -23,7 +23,7 @@ const QuizSelection = () => {
       const sessionCode = createSession(selectedQuiz, pseudonym);
       navigate(`/lobby/${sessionCode}`);
     } catch (error) {
-      alert('Failed to create session. Please try again.');
+        alert('Sitzung konnte nicht erstellt werden. Bitte versuche es erneut.');
     }
     setIsCreating(false);
   };
@@ -59,15 +59,15 @@ const QuizSelection = () => {
                 className="flex items-center space-x-2"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
+                  <span>Zurück</span>
               </Button>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                   <Flag className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">Select Quiz</h1>
-                  <p className="text-sm text-blue-600">Choose your challenge level</p>
+                    <h1 className="text-xl font-bold text-gray-900">Quiz auswählen</h1>
+                    <p className="text-sm text-blue-600">Wähle deinen Schwierigkeitsgrad</p>
                 </div>
               </div>
             </div>
@@ -78,9 +78,9 @@ const QuizSelection = () => {
       <main className="max-w-4xl mx-auto px-4 py-8">
         {/* Quiz Selection */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Choose Your Quiz</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Wähle dein Quiz</h2>
           <p className="text-gray-600 mb-6">
-            Select a quiz difficulty that matches your knowledge level of German democracy
+            Wähle eine Schwierigkeitsstufe, die deinem Kenntnisstand der deutschen Demokratie entspricht
           </p>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -111,11 +111,11 @@ const QuizSelection = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>{quiz.questions.length} questions</span>
-                    <div className="flex items-center">
-                      <Users className="w-4 h-4 mr-1" />
-                      Multiplayer
-                    </div>
+                      <span>{quiz.questions.length} Fragen</span>
+                      <div className="flex items-center">
+                        <Users className="w-4 h-4 mr-1" />
+                        Mehrspieler
+                      </div>
                   </div>
                 </CardContent>
               </Card>
@@ -127,22 +127,22 @@ const QuizSelection = () => {
         {selectedQuiz && (
           <Card className="border-2 border-blue-200">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+                <CardTitle className="flex items-center space-x-2">
                 <Users className="w-5 h-5 text-blue-600" />
-                <span>Game Setup</span>
+                <span>Spielvorbereitung</span>
               </CardTitle>
               <CardDescription>
-                Enter your display name to create the game session
+                Gib deinen Anzeigenamen ein, um die Spielsitzung zu erstellen
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <label htmlFor="pseudonym" className="block text-sm font-medium text-gray-700 mb-2">
-                  Your Display Name
+                  Dein Anzeigename
                 </label>
                 <Input
                   id="pseudonym"
-                  placeholder="Enter your name (visible to other players)"
+                  placeholder="Gib deinen Namen ein (für andere sichtbar)"
                   value={pseudonym}
                   onChange={(e) => setPseudonym(e.target.value)}
                   className="text-center"
@@ -153,7 +153,7 @@ const QuizSelection = () => {
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="font-medium text-gray-900">Selected Quiz:</p>
+                    <p className="font-medium text-gray-900">Gewähltes Quiz:</p>
                     <p className="text-sm text-gray-600">
                       {mockQuizzes.find(q => q.id === selectedQuiz)?.title}
                     </p>
@@ -171,7 +171,7 @@ const QuizSelection = () => {
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-medium"
                   size="lg"
                 >
-                  {isCreating ? 'Creating Session...' : 'Create Game Session'}
+                  {isCreating ? 'Sitzung wird erstellt...' : 'Spielsitzung erstellen'}
                 </Button>
               </div>
             </CardContent>

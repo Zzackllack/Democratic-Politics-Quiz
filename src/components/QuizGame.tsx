@@ -83,8 +83,8 @@ const QuizGame = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading...</h2>
-          <p className="text-gray-600">Loading quiz question</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Lade...</h2>
+          <p className="text-gray-600">Quizfrage wird geladen</p>
         </div>
       </div>
     );
@@ -110,9 +110,9 @@ const QuizGame = () => {
                 <Flag className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Democracy Quiz</h1>
+                <h1 className="text-xl font-bold text-gray-900">Demokratie-Quiz</h1>
                 <p className="text-sm text-blue-600">
-                  Question {gameSession.currentQuestionIndex + 1} of {gameSession.currentQuiz!.questions.length}
+                  Frage {gameSession.currentQuestionIndex + 1} von {gameSession.currentQuiz!.questions.length}
                 </p>
               </div>
             </div>
@@ -136,8 +136,8 @@ const QuizGame = () => {
             {/* Progress */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
-                <span>Progress</span>
-                <span>{Math.round(progress)}% complete</span>
+                <span>Fortschritt</span>
+                <span>{Math.round(progress)}% abgeschlossen</span>
               </div>
               <Progress value={progress} className="w-full" />
             </div>
@@ -196,7 +196,7 @@ const QuizGame = () => {
                           onClick={() => setSelectedAnswer(true)}
                           disabled={hasAnswered}
                         >
-                          ✓ True
+                          ✓ Wahr
                         </Button>
                         <Button
                           variant={selectedAnswer === false ? "default" : "outline"}
@@ -208,7 +208,7 @@ const QuizGame = () => {
                           onClick={() => setSelectedAnswer(false)}
                           disabled={hasAnswered}
                         >
-                          ✗ False
+                          ✗ Falsch
                         </Button>
                       </div>
                     )}
@@ -216,7 +216,7 @@ const QuizGame = () => {
                     {currentQuestion.type === 'short-answer' && (
                       <div className="space-y-4">
                         <Input
-                          placeholder="Type your answer here..."
+                          placeholder="Antwort hier eingeben..."
                           value={shortAnswer}
                           onChange={(e) => setShortAnswer(e.target.value)}
                           disabled={hasAnswered}
@@ -236,7 +236,7 @@ const QuizGame = () => {
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-medium"
                         size="lg"
                       >
-                        {hasAnswered ? 'Answer Submitted' : 'Submit Answer'}
+                        {hasAnswered ? 'Antwort abgegeben' : 'Antwort senden'}
                       </Button>
                     </div>
                   </div>
@@ -258,18 +258,18 @@ const QuizGame = () => {
                           return isCorrect ? (
                             <>
                               <CheckCircle className="w-6 h-6 text-green-600" />
-                              <span className="font-semibold text-green-800">Correct!</span>
+                              <span className="font-semibold text-green-800">Richtig!</span>
                             </>
                           ) : (
                             <>
                               <XCircle className="w-6 h-6 text-red-600" />
-                              <span className="font-semibold text-red-800">Incorrect</span>
+                              <span className="font-semibold text-red-800">Falsch</span>
                             </>
                           );
                         })()}
                       </div>
                       <p className="text-gray-800 mb-3">
-                        <strong>Correct answer:</strong> {currentQuestion.correctAnswer.toString()}
+                        <strong>Richtige Antwort:</strong> {currentQuestion.correctAnswer.toString()}
                       </p>
                       <p className="text-gray-700">{currentQuestion.explanation}</p>
                     </div>
@@ -280,9 +280,9 @@ const QuizGame = () => {
                         className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg font-medium"
                         size="lg"
                       >
-                        {gameSession.currentQuestionIndex + 1 < gameSession.currentQuiz!.questions.length 
-                          ? 'Next Question' 
-                          : 'Finish Quiz'
+                          {gameSession.currentQuestionIndex + 1 < gameSession.currentQuiz!.questions.length
+                          ? 'Nächste Frage'
+                          : 'Quiz beenden'
                         }
                       </Button>
                     )}
@@ -291,7 +291,7 @@ const QuizGame = () => {
                       <div className="text-center py-4">
                         <div className="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
                           <Clock className="w-4 h-4 mr-2" />
-                          Waiting for host to continue...
+                          Warte auf den Gastgeber, um fortzufahren...
                         </div>
                       </div>
                     )}
@@ -308,9 +308,9 @@ const QuizGame = () => {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Users className="w-5 h-5 text-blue-600" />
-                  <span>Live Scores</span>
+                  <span>Live-Punkte</span>
                 </CardTitle>
-                <CardDescription>Current standings</CardDescription>
+                  <CardDescription>Aktueller Stand</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -336,7 +336,7 @@ const QuizGame = () => {
                           <p className="font-medium text-sm">
                             {player.pseudonym}
                             {player.id === currentPlayer.id && (
-                              <span className="text-blue-600 text-xs ml-1">(You)</span>
+                              <span className="text-blue-600 text-xs ml-1">(Du)</span>
                             )}
                           </p>
                         </div>
@@ -353,13 +353,13 @@ const QuizGame = () => {
             {/* Quiz Info */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Quiz Info</CardTitle>
+                <CardTitle className="text-lg">Quiz-Info</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-gray-600 space-y-2">
-                <p><strong>Topic:</strong> {gameSession.currentQuiz!.title}</p>
-                <p><strong>Difficulty:</strong> {gameSession.currentQuiz!.difficulty}</p>
-                <p><strong>Questions:</strong> {gameSession.currentQuiz!.questions.length}</p>
-                <p><strong>Players:</strong> {gameSession.players.length}</p>
+                  <p><strong>Thema:</strong> {gameSession.currentQuiz!.title}</p>
+                  <p><strong>Schwierigkeit:</strong> {gameSession.currentQuiz!.difficulty}</p>
+                  <p><strong>Fragen:</strong> {gameSession.currentQuiz!.questions.length}</p>
+                  <p><strong>Spieler:</strong> {gameSession.players.length}</p>
               </CardContent>
             </Card>
           </div>

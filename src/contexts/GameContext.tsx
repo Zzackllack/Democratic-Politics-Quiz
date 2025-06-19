@@ -53,78 +53,78 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 const mockQuizzes: Quiz[] = [
   {
     id: 'beginner-democracy',
-    title: 'German Democracy Basics',
-    description: 'Learn the fundamentals of the German democratic system',
+    title: 'Grundlagen der deutschen Demokratie',
+    description: 'Lerne die Grundlagen des deutschen demokratischen Systems',
     difficulty: 'beginner',
     duration: 15,
     questions: [
       {
         id: 'q1',
         type: 'multiple-choice',
-        question: 'What is the German parliament called?',
+        question: 'Wie heißt das deutsche Parlament?',
         options: ['Bundestag', 'Bundesrat', 'Landtag', 'Reichstag'],
         correctAnswer: 'Bundestag',
-        explanation: 'The Bundestag is the German federal parliament where laws are made.',
+        explanation: 'Der Bundestag ist das deutsche Bundesparlament, in dem Gesetze beschlossen werden.',
         difficulty: 'beginner'
       },
       {
         id: 'q2',
         type: 'true-false',
-        question: 'Germany is a federal republic.',
+        question: 'Deutschland ist eine Bundesrepublik.',
         correctAnswer: true,
-        explanation: 'Germany is indeed a federal republic, consisting of 16 federal states (Länder).',
+        explanation: 'Deutschland ist tatsächlich eine Bundesrepublik, die aus 16 Bundesländern besteht.',
         difficulty: 'beginner'
       },
       {
         id: 'q3',
         type: 'short-answer',
-        question: 'How many federal states (Länder) does Germany have?',
+        question: 'Wie viele Bundesländer hat Deutschland?',
         correctAnswer: '16',
-        explanation: 'Germany consists of 16 federal states, each with their own government.',
+        explanation: 'Deutschland besteht aus 16 Bundesländern, die jeweils eine eigene Regierung haben.',
         difficulty: 'beginner'
       }
     ]
   },
   {
     id: 'intermediate-democracy',
-    title: 'German Political System',
-    description: 'Explore the structure and functions of German government',
+    title: 'Deutsches Regierungssystem',
+    description: 'Erkunde Aufbau und Aufgaben der deutschen Regierung',
     difficulty: 'intermediate',
     duration: 20,
     questions: [
       {
         id: 'q4',
         type: 'multiple-choice',
-        question: 'Who is the head of the German government?',
-        options: ['Federal President', 'Chancellor', 'Minister President', 'Speaker of Bundestag'],
+        question: 'Wer steht an der Spitze der deutschen Regierung?',
+        options: ['Bundespräsident', 'Bundeskanzler', 'Ministerpräsident', 'Bundestagspräsident'],
         correctAnswer: 'Chancellor',
-        explanation: 'The Chancellor is the head of government and leads the federal cabinet.',
+        explanation: 'Der Bundeskanzler ist Regierungschef und leitet das Bundeskabinett.',
         difficulty: 'intermediate'
       },
       {
         id: 'q5',
         type: 'true-false',
-        question: 'The Bundesrat represents the federal states in the legislative process.',
+        question: 'Der Bundesrat vertritt die Länder im Gesetzgebungsprozess.',
         correctAnswer: true,
-        explanation: 'The Bundesrat is the federal council representing the 16 German states.',
+        explanation: 'Der Bundesrat ist der Bundesrat, der die 16 deutschen Länder repräsentiert.',
         difficulty: 'intermediate'
       }
     ]
   },
   {
     id: 'advanced-democracy',
-    title: 'Constitutional Law & Rights',
-    description: 'Deep dive into German constitutional principles and civil rights',
+    title: 'Verfassungsrecht & Grundrechte',
+    description: 'Tiefer Einblick in das Grundgesetz und die Bürgerrechte',
     difficulty: 'advanced',
     duration: 25,
     questions: [
       {
         id: 'q6',
         type: 'multiple-choice',
-        question: 'Which principle is NOT explicitly mentioned in Article 20 of the Basic Law?',
-        options: ['Federal state', 'Rule of law', 'Social state', 'Secular state'],
-        correctAnswer: 'Secular state',
-        explanation: 'Article 20 mentions federal state, democracy, social state, and rule of law principles.',
+        question: 'Welches Prinzip wird in Artikel 20 des Grundgesetzes NICHT ausdrücklich genannt?',
+        options: ['Bundesstaat', 'Rechtsstaat', 'Sozialstaat', 'Säkularer Staat'],
+        correctAnswer: 'Säkularer Staat',
+        explanation: 'Artikel 20 nennt Bundesstaat, Demokratie, Sozialstaat und Rechtsstaat, aber nicht die Säkularität.',
         difficulty: 'advanced'
       }
     ]

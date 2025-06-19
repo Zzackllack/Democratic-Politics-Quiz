@@ -50,11 +50,11 @@ const Leaderboard = () => {
 
   const getPerformanceMessage = (rank: number, totalPlayers: number) => {
     const percentage = (rank / totalPlayers) * 100;
-    if (rank === 1) return "🎉 Congratulations! You're the democracy expert!";
-    if (percentage <= 25) return "🏆 Excellent performance! You really know your stuff!";
-    if (percentage <= 50) return "👏 Good job! You have solid knowledge of German democracy!";
-    if (percentage <= 75) return "📚 Not bad! Keep learning about democratic principles!";
-    return "💪 Great effort! Every citizen's journey starts somewhere!";
+    if (rank === 1) return "🎉 Glückwunsch! Du bist der Demokratie-Experte!";
+    if (percentage <= 25) return "🏆 Hervorragende Leistung! Du kennst dich richtig gut aus!";
+    if (percentage <= 50) return "👏 Gut gemacht! Du hast solides Wissen über die deutsche Demokratie!";
+    if (percentage <= 75) return "📚 Nicht schlecht! Lerne weiter über demokratische Prinzipien!";
+    return "💪 Gute Leistung! Jede Bürgerreise beginnt irgendwo!";
   };
 
   return (
@@ -68,8 +68,8 @@ const Leaderboard = () => {
                 <Flag className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Quiz Complete!</h1>
-                <p className="text-sm text-blue-600">Final results</p>
+                <h1 className="text-xl font-bold text-gray-900">Quiz beendet!</h1>
+                <p className="text-sm text-blue-600">Endergebnis</p>
               </div>
             </div>
             <Badge variant="outline" className="font-mono">
@@ -90,7 +90,7 @@ const Leaderboard = () => {
             )}
           </div>
           <h2 className="text-4xl font-bold text-gray-900 mb-2">
-            {currentPlayerRank === 1 ? 'Victory!' : 'Quiz Complete!'}
+            {currentPlayerRank === 1 ? 'Sieg!' : 'Quiz beendet!'}
           </h2>
           <p className="text-xl text-gray-600 mb-4">
             {getPerformanceMessage(currentPlayerRank, leaderboard.length)}
@@ -98,15 +98,15 @@ const Leaderboard = () => {
           <div className="flex items-center justify-center space-x-6 text-gray-600">
             <div className="text-center">
               <p className="text-2xl font-bold text-blue-600">{currentPlayer.score}</p>
-              <p className="text-sm">Your Score</p>
+              <p className="text-sm">Dein Ergebnis</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">#{currentPlayerRank}</p>
-              <p className="text-sm">Your Rank</p>
+              <p className="text-sm">Dein Rang</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-purple-600">{Math.round((currentPlayer.score / maxPossibleScore) * 100)}%</p>
-              <p className="text-sm">Accuracy</p>
+              <p className="text-sm">Genauigkeit</p>
             </div>
           </div>
         </div>
@@ -116,11 +116,11 @@ const Leaderboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Trophy className="w-6 h-6 text-yellow-500" />
-              <span>Final Leaderboard</span>
+              <span>Endrangliste</span>
             </CardTitle>
-            <CardDescription>
-              How all players performed in this quiz session
-            </CardDescription>
+              <CardDescription>
+                So haben alle Spieler in dieser Runde abgeschnitten
+              </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -143,10 +143,10 @@ const Leaderboard = () => {
                         <p className="font-semibold text-gray-900 text-lg">
                           {player.pseudonym}
                           {isCurrentPlayer && (
-                            <span className="text-blue-600 text-sm font-normal ml-2">(You)</span>
+                            <span className="text-blue-600 text-sm font-normal ml-2">(Du)</span>
                           )}
                           {player.isHost && (
-                            <Badge variant="secondary" className="ml-2 text-xs">Host</Badge>
+                            <Badge variant="secondary" className="ml-2 text-xs">Gastgeber</Badge>
                           )}
                         </p>
                         <p className="text-sm text-gray-600">
@@ -156,7 +156,7 @@ const Leaderboard = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold text-gray-900">{player.score}</p>
-                      <p className="text-sm text-gray-500">points</p>
+                      <p className="text-sm text-gray-500">Punkte</p>
                     </div>
                   </div>
                 );
@@ -168,26 +168,26 @@ const Leaderboard = () => {
         {/* Quiz Summary */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Quiz Summary</CardTitle>
+            <CardTitle>Quiz-Zusammenfassung</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-semibold text-gray-900 mb-3">Quiz Details</h4>
+                <h4 className="font-semibold text-gray-900 mb-3">Quizdetails</h4>
                 <div className="space-y-2 text-sm text-gray-600">
-                  <p><strong>Title:</strong> {gameSession.currentQuiz?.title}</p>
-                  <p><strong>Difficulty:</strong> {gameSession.currentQuiz?.difficulty}</p>
-                  <p><strong>Questions:</strong> {totalQuestions}</p>
-                  <p><strong>Duration:</strong> {gameSession.currentQuiz?.duration} minutes</p>
+                    <p><strong>Titel:</strong> {gameSession.currentQuiz?.title}</p>
+                    <p><strong>Schwierigkeit:</strong> {gameSession.currentQuiz?.difficulty}</p>
+                    <p><strong>Fragen:</strong> {totalQuestions}</p>
+                    <p><strong>Dauer:</strong> {gameSession.currentQuiz?.duration} Minuten</p>
                 </div>
               </div>
               <div>
-                <h4 className="font-semibold text-gray-900 mb-3">Session Stats</h4>
+                <h4 className="font-semibold text-gray-900 mb-3">Session-Statistiken</h4>
                 <div className="space-y-2 text-sm text-gray-600">
-                  <p><strong>Total Players:</strong> {leaderboard.length}</p>
-                  <p><strong>Session Code:</strong> {sessionCode}</p>
-                  <p><strong>Average Score:</strong> {Math.round(leaderboard.reduce((sum, p) => sum + p.score, 0) / leaderboard.length)}</p>
-                  <p><strong>Highest Score:</strong> {leaderboard[0]?.score || 0}</p>
+                    <p><strong>Spieler insgesamt:</strong> {leaderboard.length}</p>
+                    <p><strong>Sitzungscode:</strong> {sessionCode}</p>
+                    <p><strong>Durchschnittliche Punktzahl:</strong> {Math.round(leaderboard.reduce((sum, p) => sum + p.score, 0) / leaderboard.length)}</p>
+                    <p><strong>Höchste Punktzahl:</strong> {leaderboard[0]?.score || 0}</p>
                 </div>
               </div>
             </div>
@@ -201,8 +201,8 @@ const Leaderboard = () => {
             className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-medium"
             size="lg"
           >
-            <RotateCcw className="w-5 h-5 mr-2" />
-            Play Again
+              <RotateCcw className="w-5 h-5 mr-2" />
+              Noch einmal spielen
           </Button>
           <Button
             onClick={handleGoHome}
@@ -210,8 +210,8 @@ const Leaderboard = () => {
             className="px-8 py-3 text-lg font-medium"
             size="lg"
           >
-            <Home className="w-5 h-5 mr-2" />
-            Back to Home
+              <Home className="w-5 h-5 mr-2" />
+              Zur Startseite
           </Button>
         </div>
 
@@ -220,10 +220,10 @@ const Leaderboard = () => {
           <CardContent className="pt-6">
             <div className="text-center">
               <Flag className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-              <h4 className="font-semibold text-blue-900 mb-2">Keep Learning!</h4>
+              <h4 className="font-semibold text-blue-900 mb-2">Bleib am Ball!</h4>
               <p className="text-blue-800 text-sm">
-                Democracy thrives when citizens are informed and engaged. 
-                Continue learning about German democratic institutions, your rights, and civic responsibilities.
+                Demokratie lebt von informierten und engagierten Bürgern. Informiere dich weiter über deutsche Institutionen,
+                deine Rechte und deine Pflichten.
               </p>
             </div>
           </CardContent>
