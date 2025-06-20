@@ -17,11 +17,17 @@
 html {
   font-family: var(--font-family-sans);
   scroll-behavior: smooth;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 body {
   background-color: #f9fafb;
   color: #111827;
+}
+
+.dark body {
+  background-color: #111827;
+  color: #f9fafb;
 }
 
 code {
@@ -81,6 +87,11 @@ code {
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
+}
+
+.dark .spinner {
+  border-color: #444;
+  border-top-color: var(--color-german-gold);
 }
 
 @keyframes spin {

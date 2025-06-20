@@ -107,24 +107,24 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 flex items-center justify-center px-4 transition-colors">
         <div className="max-w-2xl w-full">
-          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center transition-colors">
             <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-german-red to-german-gold flex items-center justify-center">
               <span className="text-3xl text-white">🌟</span>
             </div>
 
-            <h2 className="text-3xl font-bold text-german-black mb-4">
+            <h2 className="text-3xl font-bold text-german-black dark:text-white mb-4">
               Vielen Dank für deine Reflexion!
             </h2>
 
-            <p className="text-xl text-gray-600 mb-6">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
               Deine Gedanken zur Demokratie sind wertvoll und tragen zu einem
               besseren Verständnis bei.
             </p>
 
-            <div className="bg-gray-50 rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-bold text-german-black mb-4">
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-6 transition-colors">
+              <h3 className="text-lg font-bold text-german-black dark:text-white mb-4">
                 Deine Beiträge:
               </h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -132,13 +132,13 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
                   <div className="text-2xl font-bold text-german-red">
                     {getCompletedResponsesCount()}
                   </div>
-                  <div className="text-gray-600">Beantwortete Fragen</div>
+                  <div className="text-gray-600 dark:text-gray-300">Beantwortete Fragen</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-german-gold">
                     {Object.values(responses).join(" ").split(" ").length}
                   </div>
-                  <div className="text-gray-600">Geschriebene Wörter</div>
+                  <div className="text-gray-600 dark:text-gray-300">Geschriebene Wörter</div>
                 </div>
               </div>
             </div>
@@ -152,7 +152,7 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
               </button>
               <button
                 onClick={() => (window.location.href = "/leaderboard")}
-                className="w-full py-3 px-6 bg-white border-2 border-german-gold text-german-gold font-bold rounded-lg hover:bg-german-gold hover:text-white transition-colors"
+                className="w-full py-3 px-6 bg-white dark:bg-gray-800 border-2 border-german-gold text-german-gold font-bold rounded-lg hover:bg-german-gold hover:text-white transition-colors"
               >
                 Bestenliste ansehen
               </button>
@@ -164,16 +164,16 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 py-8 px-4 transition-colors">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
 
-          <h1 className="text-4xl md:text-6xl font-bold text-german-black mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold text-german-black dark:text-white mb-4">
             Reflexion
           </h1>
 
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Nimm dir einen Moment Zeit, um über deine Lernerfahrung
             nachzudenken. Deine Gedanken helfen dabei, ein tieferes Verständnis
             für demokratische Werte zu entwickeln.
@@ -182,24 +182,24 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
 
         {/* Quiz Results Summary */}
         {quizResults && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <h2 className="text-xl font-bold text-german-black mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 transition-colors">
+            <h2 className="text-xl font-bold text-german-black dark:text-white mb-4">
               Dein Quiz-Ergebnis
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="text-2xl font-bold text-german-red">
                   {quizResults.score}
                 </div>
-                <div className="text-sm text-gray-600">Richtige Antworten</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">Richtige Antworten</div>
               </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="text-2xl font-bold text-german-gold">
                   {quizResults.totalQuestions}
                 </div>
-                <div className="text-sm text-gray-600">Gesamte Fragen</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">Gesamte Fragen</div>
               </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="text-2xl font-bold text-german-black">
                   {(
                     (quizResults.score / quizResults.totalQuestions) *
@@ -207,44 +207,44 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
                   ).toFixed(0)}
                   %
                 </div>
-                <div className="text-sm text-gray-600">Erfolgsquote</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">Erfolgsquote</div>
               </div>
             </div>
           </div>
         )}
 
         {/* Progress Bar */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 transition-colors">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-german-black">
+            <h2 className="text-xl font-bold text-german-black dark:text-white">
               Reflexions-Fortschritt
             </h2>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-gray-300">
               {currentQuestionIndex + 1} von {reflectionQuestions.length}
             </span>
           </div>
 
-          <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
             <div
               className="bg-gradient-to-r from-german-red to-german-gold h-3 rounded-full transition-all duration-500"
               style={{ width: `${getProgressPercentage()}%` }}
             ></div>
           </div>
 
-          <div className="flex justify-between text-sm text-gray-600">
+          <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
             <span>{getCompletedResponsesCount()} Antworten</span>
             <span>{getProgressPercentage().toFixed(0)}% abgeschlossen</span>
           </div>
         </div>
 
         {/* Current Question */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8 transition-colors">
           <div className="mb-6">
             <span className="px-3 py-1 bg-german-gold/20 text-german-gold-dark rounded-full text-sm font-medium">
               {currentQuestion.category}
             </span>
 
-            <h2 className="text-2xl font-bold text-german-black mt-4 mb-6 leading-relaxed">
+            <h2 className="text-2xl font-bold text-german-black dark:text-white mt-4 mb-6 leading-relaxed">
               {currentQuestion.question}
             </h2>
           </div>
@@ -255,10 +255,10 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
               handleResponseChange(currentQuestion.id, e.target.value)
             }
             placeholder={currentQuestion.placeholder}
-            className="w-full h-48 p-4 border-2 border-gray-200 rounded-lg resize-none focus:border-german-red focus:outline-none transition-colors"
+            className="w-full h-48 p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 resize-none focus:border-german-red focus:outline-none transition-colors"
           />
 
-          <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
+          <div className="flex justify-between items-center mt-4 text-sm text-gray-500 dark:text-gray-400">
             <span>{responses[currentQuestion.id]?.length || 0} Zeichen</span>
             <span>Nimm dir die Zeit, die du brauchst</span>
           </div>
@@ -271,8 +271,8 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
             disabled={currentQuestionIndex === 0}
             className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
               currentQuestionIndex === 0
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-white border border-gray-300 text-gray-700 hover:border-german-red/50"
+                ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
+                : "bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-german-red/50"
             }`}
           >
             ← Zurück
@@ -288,7 +288,7 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
                     ? "bg-german-red scale-150"
                     : responses[reflectionQuestions[index].id]
                     ? "bg-german-gold"
-                    : "bg-gray-300"
+                    : "bg-gray-300 dark:bg-gray-600"
                 }`}
               />
             ))}

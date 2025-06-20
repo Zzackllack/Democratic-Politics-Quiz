@@ -32,7 +32,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
   };
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 overflow-hidden">
+    <section className="relative min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 overflow-hidden transition-colors">
       <style jsx>{`
         @keyframes wave-1 {
           0%,
@@ -135,7 +135,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
         {/* Header with proper German flag */}
         <div className="text-center mb-16">
           <h1
-            className={`text-5xl md:text-7xl font-bold text-black mb-6 tracking-tight fade-in-up delay-100 ${
+            className={`text-5xl md:text-7xl font-bold text-black dark:text-white mb-6 tracking-tight fade-in-up delay-100 ${
               isLoaded ? "" : "opacity-0"
             }`}
           >
@@ -147,7 +147,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
           </h1>
 
           <p
-            className={`text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed fade-in-up delay-200 ${
+            className={`text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed fade-in-up delay-200 ${
               isLoaded ? "" : "opacity-0"
             }`}
           >
@@ -163,7 +163,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
             isLoaded ? "" : "opacity-0"
           }`}
         >
-          <h2 className="text-3xl font-bold text-center mb-8 text-black">
+          <h2 className="text-3xl font-bold text-center mb-8 text-black dark:text-white">
             Spielmodus wählen
           </h2>
 
@@ -172,8 +172,8 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
               onClick={() => setSelectedGameType("singleplayer")}
               className={`p-8 cursor-pointer transition-all duration-300 rounded-xl shadow-lg transform hover:scale-105 hover:-translate-y-1 ${
                 selectedGameType === "singleplayer"
-                  ? "border-2 border-red-600 bg-red-50 shadow-xl scale-105"
-                  : "border-2 border-gray-200 bg-white hover:border-red-300 hover:shadow-xl"
+                  ? "border-2 border-red-600 bg-red-50 dark:bg-red-900/30 shadow-xl scale-105"
+                  : "border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-red-300 dark:hover:border-red-400 hover:shadow-xl"
               }`}
             >
               <div className="flex flex-col items-center">
@@ -192,10 +192,10 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-black mb-2">
+                <h3 className="text-xl font-bold text-black dark:text-white mb-2">
                   Einzelspieler
                 </h3>
-                <p className="text-gray-600 text-center">
+                <p className="text-gray-600 dark:text-gray-300 text-center">
                   Teste dein Wissen alleine und verbessere deine Kenntnisse in
                   deinem eigenen Tempo.
                 </p>
@@ -206,8 +206,8 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
               onClick={() => setSelectedGameType("multiplayer")}
               className={`p-8 cursor-pointer transition-all duration-300 rounded-xl shadow-lg transform hover:scale-105 hover:-translate-y-1 ${
                 selectedGameType === "multiplayer"
-                  ? "border-2 border-yellow-500 bg-yellow-50 shadow-xl scale-105"
-                  : "border-2 border-gray-200 bg-white hover:border-yellow-300 hover:shadow-xl"
+                  ? "border-2 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30 shadow-xl scale-105"
+                  : "border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-yellow-300 dark:hover:border-yellow-400 hover:shadow-xl"
               }`}
             >
               <div className="flex flex-col items-center">
@@ -226,10 +226,10 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-black mb-2">
+                <h3 className="text-xl font-bold text-black dark:text-white mb-2">
                   Mehrspieler
                 </h3>
-                <p className="text-gray-600 text-center">
+                <p className="text-gray-600 dark:text-gray-300 text-center">
                   Erstelle eine Lobby oder tritt einer bei und spiele mit
                   Freunden oder anderen Teilnehmern.
                 </p>
@@ -241,7 +241,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
         {/* Difficulty Selection */}
         {selectedGameType && (
           <div className="w-full max-w-6xl mb-12 animate-fade-in">
-            <h2 className="text-3xl font-bold text-center mb-8 text-black">
+            <h2 className="text-3xl font-bold text-center mb-8 text-black dark:text-white">
               Schwierigkeitsgrad wählen
             </h2>
 
@@ -252,8 +252,8 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                   onClick={() => setSelectedGameMode(key)}
                   className={`p-6 cursor-pointer transition-all duration-300 rounded-xl shadow-lg transform hover:scale-105 hover:-translate-y-1 ${
                     selectedGameMode === key
-                      ? "border-2 border-blue-500 bg-blue-50 shadow-xl scale-105"
-                      : "border-2 border-gray-200 bg-white hover:border-blue-300 hover:shadow-xl"
+                      ? "border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/30 shadow-xl scale-105"
+                      : "border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-xl"
                   }`}
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
@@ -263,10 +263,10 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                     >
                       <span className="text-xl text-white">{mode.icon}</span>
                     </div>
-                    <h3 className="text-lg font-bold text-black mb-2">
+                    <h3 className="text-lg font-bold text-black dark:text-white mb-2">
                       {mode.label}
                     </h3>
-                    <p className="text-sm text-gray-600 leading-tight">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-tight">
                       {mode.description}
                     </p>
                   </div>
@@ -300,12 +300,12 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
             </button>
 
             <div className="mt-6 flex items-center justify-center gap-4">
-              <span className="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+              <span className="px-4 py-2 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-full text-sm font-medium">
                 {selectedGameType === "singleplayer"
                   ? "Einzelspieler"
                   : "Mehrspieler"}
               </span>
-              <span className="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+              <span className="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 rounded-full text-sm font-medium">
                 {gameModes[selectedGameMode as keyof typeof gameModes].label}
               </span>
             </div>
@@ -315,8 +315,8 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
         {/* Call to Action for Multiplayer */}
         {selectedGameType === "multiplayer" && (
           <div className="mt-12 animate-fade-in">
-            <div className="p-6 bg-white/80 backdrop-blur-sm border-2 border-gray-200 rounded-xl shadow-lg max-w-md mx-auto">
-              <h3 className="text-lg font-bold text-black mb-3 text-center">
+            <div className="p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-gray-200 dark:border-gray-700 rounded-xl shadow-lg max-w-md mx-auto transition-colors">
+              <h3 className="text-lg font-bold text-black dark:text-white mb-3 text-center">
                 Mehrspieler-Optionen
               </h3>
               <div className="h-px bg-gray-200 my-3"></div>

@@ -8,6 +8,7 @@ const { title, description = "Demokratie Quiz - Stärke dein Verständnis für d
 
 // Import global styles
 import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle';
 ---
 
 <!doctype html>
@@ -23,10 +24,10 @@ import '../styles/global.css';
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
-	<body>
+        <body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors">
 		<div class="min-h-screen flex flex-col">
 			<!-- Navigation Header -->
-			<header class="bg-white shadow-sm border-b-2 border-german-gold sticky top-0 z-50">
+                        <header class="bg-white dark:bg-gray-800 shadow-sm border-b-2 border-german-gold sticky top-0 z-50 transition-colors">
 				<nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div class="flex justify-between items-center h-16">
 						<div class="flex items-center space-x-4">
@@ -35,20 +36,22 @@ import '../styles/global.css';
 								<span>Demokratie Quiz</span>
 							</a>
 						</div>
-						<div class="hidden md:flex items-center space-x-6">
-							<a href="/" class="text-gray-700 hover:text-german-red font-medium transition-colors">Startseite</a>
-							<a href="/quiz" class="text-gray-700 hover:text-german-red font-medium transition-colors">Quiz</a>
-							<a href="/leaderboard" class="text-gray-700 hover:text-german-red font-medium transition-colors">Bestenliste</a>
-							<a href="/reflection" class="text-gray-700 hover:text-german-red font-medium transition-colors">Reflexion</a>
-						</div>
+                                                <div class="hidden md:flex items-center space-x-6">
+                                                        <a href="/" class="text-gray-700 dark:text-gray-300 hover:text-german-red font-medium transition-colors">Startseite</a>
+                                                        <a href="/quiz" class="text-gray-700 dark:text-gray-300 hover:text-german-red font-medium transition-colors">Quiz</a>
+                                                        <a href="/leaderboard" class="text-gray-700 dark:text-gray-300 hover:text-german-red font-medium transition-colors">Bestenliste</a>
+                                                        <a href="/reflection" class="text-gray-700 dark:text-gray-300 hover:text-german-red font-medium transition-colors">Reflexion</a>
+                                                        <ThemeToggle client:load />
+                                                </div>
 						<!-- Mobile menu button -->
-						<div class="md:hidden">
-							<button class="text-gray-700 hover:text-german-red">
-								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-								</svg>
-							</button>
-						</div>
+                                                <div class="md:hidden flex items-center space-x-2">
+                                                        <ThemeToggle client:load />
+                                                        <button class="text-gray-700 dark:text-gray-300 hover:text-german-red">
+                                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                                                </svg>
+                                                        </button>
+                                                </div>
 					</div>
 				</nav>
 			</header>
