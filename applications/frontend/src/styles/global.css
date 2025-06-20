@@ -1,1 +1,172 @@
 @import "tailwindcss";
+
+@theme {
+  /* German flag colors */
+  --color-german-black: #000000;
+  --color-german-red: #dd0000;
+  --color-german-gold: #ffce00;
+  --color-german-red-dark: #b30000;
+  --color-german-red-light: #ff3333;
+  --color-german-gold-dark: #e6b800;
+  --color-german-gold-light: #ffd633;
+
+  /* Custom font family */
+  --font-family-sans: Inter, system-ui, sans-serif;
+}
+
+html {
+  font-family: var(--font-family-sans);
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+code {
+  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+    Bitstream Vera Sans Mono, Courier New, monospace;
+}
+
+/* Custom German flag inspired gradient */
+.german-gradient {
+  background: linear-gradient(
+    45deg,
+    var(--color-german-black) 0%,
+    var(--color-german-red) 50%,
+    var(--color-german-gold) 100%
+  );
+}
+
+/* Flag stripe pattern */
+.german-stripes {
+  background: linear-gradient(
+    to bottom,
+    var(--color-german-black) 0%,
+    var(--color-german-black) 33.33%,
+    var(--color-german-red) 33.33%,
+    var(--color-german-red) 66.66%,
+    var(--color-german-gold) 66.66%,
+    var(--color-german-gold) 100%
+  );
+}
+
+/* Custom button animations */
+.btn-hover-lift {
+  transition: all 0.3s ease;
+}
+
+.btn-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Quiz card animations */
+.quiz-card {
+  transition: all 0.3s ease;
+}
+
+.quiz-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Loading spinner */
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--color-german-red);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation keyframes for Hero component */
+@keyframes wave-1 {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  25% {
+    transform: translateY(2px);
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  75% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes wave-2 {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  25% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  75% {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes wave-3 {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  25% {
+    transform: translateY(2px);
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  75% {
+    transform: translateY(-2px);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.scale-in {
+  animation: scaleIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
