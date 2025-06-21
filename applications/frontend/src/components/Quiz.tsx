@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { Question } from "../data/mockData";
+import AnimatedNumber from "./AnimatedNumber";
 
 interface QuizProps {
   gameMode?: string;
@@ -21,15 +22,24 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
   const [playerName, setPlayerName] = useState("");
   const [hasSubmittedScore, setHasSubmittedScore] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const res = await fetch(`/api/quiz?difficulty=${gameMode}`);
+        if (!res.ok) {
+          const error = await res.json();
+          setFetchError(error.error || "Fehler beim Laden der Fragen");
+          setQuestions([]);
+          return;
+        }
         const data: Question[] = await res.json();
+        setFetchError(null);
         setQuestions(data);
       } catch (err) {
         console.error(err);
+        setFetchError("Fehler beim Laden der Fragen");
       }
     };
     fetchQuestions();
@@ -130,6 +140,22 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
     return "text-red-600";
   };
 
+  if (fetchError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-red-600 font-bold">{fetchError}</p>
+          <button
+            onClick={() => (window.location.href = "/play")}
+            className="px-6 py-3 bg-gradient-to-r from-german-red to-german-gold text-white rounded-lg"
+          >
+            Zurück
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -164,7 +190,9 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
               <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-german-black">{score}</div>
+                <div className="text-2xl font-bold text-german-black">
+                  <AnimatedNumber value={score} />
+                </div>
                 <div className="text-sm text-gray-600">Punkte</div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
@@ -238,7 +266,10 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
             </div>
             <div className="flex items-center space-x-6">
               <div className="text-center">
-                <div className={`text-2xl font-bold ${getScoreColor()}`}>{score}</div>
+                <div className={`text-2xl font-bold ${getScoreColor()}`}>
+                  <AnimatedNumber value={score} />
+                  {streak > 1 && <span className="ml-1 text-sm text-german-red">x{streak}</span>}
+                </div>
                 <div className="text-sm text-gray-600">Punkte</div>
               </div>
               <div className="text-center">
