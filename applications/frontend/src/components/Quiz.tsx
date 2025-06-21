@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import type { Question } from "../data/mockData";
-import { mockQuestions } from "../data/mockData";
 
 interface QuizProps {
   gameMode?: string;
@@ -17,11 +16,22 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const [hasSubmittedScore, setHasSubmittedScore] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Filter questions by game mode
-    const filteredQuestions = mockQuestions.filter((q) => q.difficulty === gameMode);
-    setQuestions(filteredQuestions.slice(0, 10)); // Limit to 10 questions
+    const fetchQuestions = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/questions");
+        const data: Question[] = await res.json();
+        const filtered = data.filter((q) => q.difficulty === gameMode);
+        setQuestions(filtered.slice(0, 10));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchQuestions();
   }, [gameMode]);
 
   useEffect(() => {
@@ -84,6 +94,23 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
     }
   };
 
+  const handleSubmitScore = async () => {
+    if (!playerName) return;
+    setIsSubmitting(true);
+    try {
+      await fetch("http://localhost:3001/api/players", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: playerName, score }),
+      });
+      setHasSubmittedScore(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const getProgressPercentage = () => {
     return ((currentQuestionIndex + 1) / questions.length) * 100;
   };
@@ -137,6 +164,27 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
               </div>
             </div>
 
+            {!hasSubmittedScore && (
+              <div className="space-y-4 mb-6">
+                <input
+                  type="text"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  placeholder="Dein Name"
+                  className="w-full border border-gray-300 rounded-lg p-3"
+                />
+                <button
+                  onClick={handleSubmitScore}
+                  disabled={!playerName || isSubmitting}
+                  className="w-full py-3 px-6 bg-gradient-to-r from-german-red to-german-gold text-white font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  Zur Bestenliste hinzufügen
+                </button>
+              </div>
+            )}
+            {hasSubmittedScore && (
+              <p className="mb-6 text-green-600 font-bold">Score gespeichert!</p>
+            )}
             <div className="space-y-3">
               <button
                 onClick={() => window.location.reload()}
