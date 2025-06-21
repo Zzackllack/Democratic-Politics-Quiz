@@ -1,6 +1,6 @@
 # Demokratie Quiz 🏛️
 
-Ein interaktives Quiz zur Stärkung des Verständnisses für demokratische Werte und Prozesse. Entwickelt mit **Astro**, **React** und **Tailwind CSS v4**.
+Ein interaktives Quiz zur Stärkung des Verständnisses für demokratische Werte und Prozesse. Entwickelt mit **Next.js**, **React** und **Tailwind CSS v4**.
 
 ## 🚀 Installation & Start
 
@@ -12,8 +12,8 @@ Ein interaktives Quiz zur Stärkung des Verständnisses für demokratische Werte
 ### Projekt starten
 
 ```bash
-# In das Frontend-Verzeichnis wechseln
-cd applications/frontend
+# In das Next.js Frontend-Verzeichnis wechseln
+cd applications/nextfrontend
 
 # Dependencies installieren
 npm install
@@ -23,15 +23,12 @@ npm run dev
 
 # Für Produktion bauen
 npm run build
-
-# Produktions-Vorschau
-npm run preview
 ```
 
 ## 📁 Projektstruktur
 
 ```plaintext
-applications/frontend/
+applications/nextfrontend/
 ├── src/
 │   ├── components/          # React Komponenten
 │   │   ├── Hero.tsx         # Startseite mit Spielmodus-Auswahl
@@ -41,17 +38,14 @@ applications/frontend/
 │   │   └── Lobby.tsx        # Mehrspieler-Lobbies
 │   ├── data/
 │   │   └── mockData.ts      # Mock-Daten für Quiz-Fragen
-│   ├── layouts/
-│   │   └── Layout.astro     # Basis-Layout
-│   ├── pages/               # Astro-Seiten
-│   │   ├── index.astro      # Startseite
-│   │   ├── quiz.astro       # Quiz-Seite
-│   │   ├── leaderboard.astro # Bestenliste
-│   │   ├── reflection.astro  # Reflexion
-│   │   └── lobby.astro      # Mehrspieler-Lobbies
+│   ├── pages/               # Next.js Pages
+│   │   ├── index.tsx        # Startseite
+│   │   ├── quiz.tsx         # Quiz-Seite
+│   │   ├── leaderboard.tsx  # Bestenliste
+│   │   ├── reflection.tsx   # Reflexion
+│   │   └── lobby.tsx        # Mehrspieler-Lobbies
 │   └── styles/
-│       └── global.css       # Globale Styles
-├── astro.config.mjs         # Astro-Konfiguration
+│       └── globals.css      # Globale Styles
 ├── tailwind.config.js       # Tailwind-Konfiguration
 └── package.json
 ```
