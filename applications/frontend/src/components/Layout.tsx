@@ -48,7 +48,7 @@ export default function Layout({
                   Startseite
                 </Link>
                 <Link
-                  href="/quiz"
+                  href="/play"
                   className="text-gray-700 hover:text-german-red font-medium transition-colors"
                 >
                   Quiz
@@ -95,7 +95,7 @@ export default function Layout({
                   </li>
                   <li>
                     <Link
-                      href="/quiz"
+                      href="/play"
                       className="text-gray-300 hover:text-german-gold transition-colors"
                     >
                       Quiz
