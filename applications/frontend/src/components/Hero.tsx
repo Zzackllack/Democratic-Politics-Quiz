@@ -270,10 +270,16 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
 
         {/* Start Button */}
         {selectedGameType && selectedGameMode && (
-          <div className="text-center animate-fade-in">
-            <button
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.button
               onClick={handleStartQuiz}
-              className="px-12 py-6 bg-gradient-to-r from-red-600 to-yellow-500 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 group"
+              whileHover={{ scale: 1.05, y: -4 }}
+              className="px-12 py-6 bg-gradient-to-r from-red-600 to-yellow-500 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform group"
             >
               Quiz starten
               <svg
@@ -289,22 +295,42 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                   d="M9 5l7 7-7 7"
                 />
               </svg>
-            </button>
+            </motion.button>
 
-            <div className="mt-6 flex items-center justify-center gap-4">
-              <span className="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">
+            <motion.div
+              className="mt-6 flex items-center justify-center gap-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+            >
+              <motion.span
+                className="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
                 {selectedGameType === "singleplayer" ? "Einzelspieler" : "Mehrspieler"}
-              </span>
-              <span className="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+              </motion.span>
+              <motion.span
+                className="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+              >
                 {gameModes[selectedGameMode as keyof typeof gameModes].label}
-              </span>
-            </div>
-          </div>
+              </motion.span>
+            </motion.div>
+          </motion.div>
         )}
 
         {/* Call to Action for Multiplayer */}
         {selectedGameType === "multiplayer" && (
-          <div className="mt-12 animate-fade-in">
+          <motion.div
+            className="mt-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <div className="p-6 bg-white/80 backdrop-blur-sm border-2 border-gray-200 rounded-xl shadow-lg max-w-md mx-auto">
               <h3 className="text-lg font-bold text-black mb-3 text-center">
                 Mehrspieler-Optionen
@@ -331,7 +357,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                 </button>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </section>
