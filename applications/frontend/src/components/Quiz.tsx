@@ -41,6 +41,7 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
     } else if (timeLeft === 0 && !isAnswered) {
       handleNextQuestion();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft, isAnswered, isQuizCompleted]);
 
   const currentQuestion = questions[currentQuestionIndex];

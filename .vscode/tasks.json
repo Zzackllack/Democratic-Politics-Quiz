@@ -1,0 +1,77 @@
+{
+  "tasks": [
+    {
+      "command": "npm run dev",
+      "group": {
+        "isDefault": true,
+        "kind": "build"
+      },
+      "label": "Start Frontend (npm run dev)",
+      "options": {
+        "cwd": "${workspaceFolder}/applications/frontend"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "command": "npm install",
+      "label": "Install Frontend Dependencies (npm install)",
+      "options": {
+        "cwd": "${workspaceFolder}/applications/frontend"
+      },
+      "type": "shell"
+    },
+    {
+      "command": "npm run build",
+      "label": "Build Frontend (npm run build)",
+      "options": {
+        "cwd": "${workspaceFolder}/applications/frontend"
+      },
+      "type": "shell"
+    },
+    {
+      "command": "npm run lint",
+      "label": "Lint (npm run lint)",
+      "type": "shell"
+    },
+    {
+      "command": "npm run format",
+      "label": "Format (npm run format)",
+      "type": "shell"
+    },
+    {
+      "command": "npm run start",
+      "label": "Start Backend (npm run start)",
+      "options": {
+        "cwd": "${workspaceFolder}/applications/backend"
+      },
+      "type": "shell"
+    },
+    {
+      "command": "npx prisma db pull",
+      "label": "Prisma DB Pull",
+      "options": {
+        "cwd": "${workspaceFolder}/applications/backend"
+      },
+      "type": "shell"
+    },
+    {
+      "command": "npx prisma db push",
+      "label": "Prisma DB Push",
+      "options": {
+        "cwd": "${workspaceFolder}/applications/backend"
+      },
+      "type": "shell"
+    },
+    {
+      "command": "npx prisma studio",
+      "label": "Prisma Studio",
+      "options": {
+        "cwd": "${workspaceFolder}/applications/backend"
+      },
+      "type": "shell"
+    }
+  ],
+  // See https://code.visualstudio.com/docs/editor/tasks for more information
+  "version": "2.0.0"
+}

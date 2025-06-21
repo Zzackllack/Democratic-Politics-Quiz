@@ -1,8 +1,7 @@
-/* eslint-disable */
-import express from "express";
-import cors from "cors";
 import { PrismaClient } from "@prisma/client";
-import { questions, players, lobbies, gameModes } from "./mockData";
+import cors from "cors";
+import express from "express";
+import { gameModes, lobbies, players, questions } from "./mockData";
 
 const prisma = new PrismaClient();
 const app = express();
@@ -66,7 +65,7 @@ async function initDb() {
 
 initDb().catch((err) => console.error(err));
 
-app.get("/api/questions", async (req, res) => {
+app.get("/api/questions", async (_req, res) => {
   try {
     const data = await prisma.question.findMany();
     res.json(data);
@@ -75,7 +74,7 @@ app.get("/api/questions", async (req, res) => {
   }
 });
 
-app.get("/api/players", async (req, res) => {
+app.get("/api/players", async (_req, res) => {
   try {
     const data = await prisma.player.findMany();
     res.json(data);
@@ -101,7 +100,7 @@ app.post("/api/players", async (req, res) => {
   }
 });
 
-app.get("/api/lobbies", async (req, res) => {
+app.get("/api/lobbies", async (_req, res) => {
   try {
     const data = await prisma.lobby.findMany();
     res.json(data);
@@ -110,7 +109,7 @@ app.get("/api/lobbies", async (req, res) => {
   }
 });
 
-app.get("/api/game-modes", async (req, res) => {
+app.get("/api/game-modes", async (_req, res) => {
   try {
     const rows = await prisma.gameMode.findMany();
     const data: Record<string, any> = {};

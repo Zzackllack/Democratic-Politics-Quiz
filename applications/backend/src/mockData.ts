@@ -1,4 +1,3 @@
-/* eslint-disable */
 export const questions = [
   // Einfach (Easy)
   {
