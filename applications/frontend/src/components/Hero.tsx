@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "framer-motion";
 import { gameModes } from "../data/mockData";
 
@@ -15,14 +16,15 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
     setTimeout(() => setIsLoaded(true), 100);
   }, []);
 
+  const router = useRouter();
+
   const handleStartQuiz = () => {
     if (selectedGameType && selectedGameMode) {
       onStartQuiz(selectedGameType, selectedGameMode);
-      // For now, redirect to quiz page
       if (selectedGameType === "singleplayer") {
-        window.location.href = "/quiz";
+        router.push(`/quiz?difficulty=${selectedGameMode}`);
       } else {
-        window.location.href = "/lobby";
+        router.push(`/lobby?difficulty=${selectedGameMode}`);
       }
     }
   };
