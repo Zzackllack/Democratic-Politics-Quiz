@@ -1,4 +1,3 @@
-import { data } from "framer-motion/client";
 import React, { useEffect, useState } from "react";
 import type { Question } from "../data/mockData";
 import AnimatedNumber from "./AnimatedNumber";
@@ -246,7 +245,7 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
             )}
             <div className="space-y-3">
               <button
-                onClick={() => window.location.reload()}
+                onClick={() => (window.location.href = "/play")}
                 className="w-full py-3 px-6 bg-gradient-to-r from-german-red to-german-gold text-white font-bold rounded-lg hover:opacity-90 transition-opacity"
               >
                 Neues Quiz starten
