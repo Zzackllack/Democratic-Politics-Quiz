@@ -23,10 +23,9 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/questions`);
+        const res = await fetch(`/api/quiz?difficulty=${gameMode}`);
         const data: Question[] = await res.json();
-        const filtered = data.filter((q) => q.difficulty === gameMode);
-        setQuestions(filtered.slice(0, 10));
+        setQuestions(data);
       } catch (err) {
         console.error(err);
       }
@@ -99,7 +98,7 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
     if (!playerName) return;
     setIsSubmitting(true);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/players`, {
+      await fetch(`/api/players`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: playerName, score }),
