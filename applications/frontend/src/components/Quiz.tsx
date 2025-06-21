@@ -1,3 +1,4 @@
+import { data } from "framer-motion/client";
 import React, { useEffect, useState } from "react";
 import type { Question } from "../data/mockData";
 import AnimatedNumber from "./AnimatedNumber";
@@ -34,9 +35,16 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
           setQuestions([]);
           return;
         }
-        const data: Question[] = await res.json();
+        const rawData: Question[] = await res.json();
+        const normalized = rawData.map((q) => ({
+          ...q,
+          correctAnswer:
+            q.type === "true-false"
+              ? String(q.correctAnswer).toLowerCase() === "true"
+              : q.correctAnswer,
+        }));
         setFetchError(null);
-        setQuestions(data);
+        setQuestions(normalized);
       } catch (err) {
         console.error(err);
         setFetchError("Fehler beim Laden der Fragen");
@@ -63,7 +71,9 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
     setSelectedAnswer(answer);
     setIsAnswered(true);
 
-    const isCorrect = answer === currentQuestion.correctAnswer;
+    const normalize = (val: string | boolean) =>
+      typeof val === "string" ? val.trim().toLowerCase() : val;
+    const isCorrect = normalize(answer) === normalize(currentQuestion.correctAnswer);
     const newAnswer = {
       questionId: currentQuestion.id,
       selectedAnswer: answer,

@@ -65,9 +65,15 @@ async function initDb() {
 
 initDb().catch((err) => console.error(err));
 
-app.get("/api/questions", async (_req, res) => {
+app.get("/api/questions", async (req, res) => {
   try {
-    const data = await prisma.question.findMany();
+    const difficulty = typeof req.query.difficulty === "string" ? req.query.difficulty : undefined;
+
+    const data = await prisma.question.findMany(
+      difficulty
+        ? { where: { difficulty: { equals: difficulty, mode: "insensitive" } } }
+        : undefined
+    );
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
