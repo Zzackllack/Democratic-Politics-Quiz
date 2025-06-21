@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 import express from "express";
+import http from "http";
+import { Server as SocketIOServer } from "socket.io";
 import { gameModes, lobbies, players, questions } from "./mockData";
 
 const prisma = new PrismaClient();
@@ -115,6 +117,64 @@ app.get("/api/lobbies", async (_req, res) => {
   }
 });
 
+app.post("/api/lobbies", async (req, res) => {
+  const { name, maxPlayers, gameMode } = req.body as {
+    name?: string;
+    maxPlayers?: number;
+    gameMode?: string;
+  };
+  if (!name || typeof maxPlayers !== "number" || !gameMode) {
+    return res.status(400).json({ error: "Invalid lobby data" });
+  }
+  try {
+    const lobby = await prisma.lobby.create({
+      data: {
+        id: Date.now().toString(),
+        name,
+        players: [],
+        maxPlayers,
+        gameMode,
+        isActive: true,
+        createdAt: new Date(),
+      },
+    });
+    io.emit("lobbyCreated", lobby);
+    res.status(201).json(lobby);
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post("/api/lobbies/:id/join", async (req, res) => {
+  const lobbyId = req.params.id;
+  const { playerId } = req.body as { playerId?: string };
+  if (!playerId) {
+    return res.status(400).json({ error: "Player ID required" });
+  }
+  try {
+    const lobby = await prisma.lobby.findUnique({ where: { id: lobbyId } });
+    if (!lobby) {
+      return res.status(404).json({ error: "Lobby not found" });
+    }
+    const players = (lobby.players as unknown as string[]) || [];
+    if (players.includes(playerId)) {
+      return res.status(400).json({ error: "Player already joined" });
+    }
+    if (players.length >= lobby.maxPlayers) {
+      return res.status(403).json({ error: "Lobby full" });
+    }
+    players.push(playerId);
+    const updated = await prisma.lobby.update({
+      where: { id: lobbyId },
+      data: { players },
+    });
+    io.emit("playerJoined", { lobbyId, playerId });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 app.get("/api/game-modes", async (_req, res) => {
   try {
     const rows = await prisma.gameMode.findMany();
@@ -134,6 +194,9 @@ app.get("/api/game-modes", async (_req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(Number(PORT), () => {
+const httpServer = http.createServer(app);
+export const io = new SocketIOServer(httpServer, { cors: { origin: "*" } });
+
+httpServer.listen(Number(PORT), () => {
   console.log(`Backend listening on port ${PORT}`);
 });

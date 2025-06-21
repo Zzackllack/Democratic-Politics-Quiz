@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { io, Socket } from "socket.io-client";
 import type { Lobby, Player } from "../data/mockData";
-import { gameModes, mockLobbies } from "../data/mockData";
+import { gameModes } from "../data/mockData";
 
 interface LobbyProps {
   onStartGame?: (lobby: Lobby) => void;
@@ -24,49 +25,74 @@ const LobbyComponent: React.FC<LobbyProps> = ({
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Simulate loading lobbies
-    const loadLobbies = async () => {
-      setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setLobbies(mockLobbies);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+  const socketRef = useRef<Socket | null>(null);
+
+  const loadLobbies = async () => {
+    setIsLoading(true);
+    try {
+      const [lobbiesRes, playersRes] = await Promise.all([
+        fetch(`${apiUrl}/api/lobbies`),
+        fetch(`${apiUrl}/api/players`),
+      ]);
+      const [lobbiesData, playersData] = await Promise.all([lobbiesRes.json(), playersRes.json()]);
+      const playerMap = new Map(playersData.map((p: Player) => [p.id, p]));
+      const parsed = lobbiesData.map((l: any) => ({
+        ...l,
+        players: (l.players as string[]).map((id) => playerMap.get(id)).filter(Boolean),
+        createdAt: new Date(l.createdAt),
+      }));
+      setLobbies(parsed);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setIsLoading(false);
-    };
-
-    loadLobbies();
-  }, []);
-
-  const handleCreateLobby = () => {
-    if (!newLobbyName.trim()) return;
-
-    const newLobby: Lobby = {
-      id: `lobby_${Date.now()}`,
-      name: newLobbyName,
-      players: [currentPlayer],
-      maxPlayers,
-      gameMode: selectedGameMode,
-      isActive: true,
-      createdAt: new Date(),
-    };
-
-    setLobbies([newLobby, ...lobbies]);
-    setShowCreateForm(false);
-    setNewLobbyName("");
+    }
   };
 
-  const handleJoinLobby = (lobbyId: string) => {
-    setLobbies(
-      lobbies.map((lobby) => {
-        if (lobby.id === lobbyId && lobby.players.length < lobby.maxPlayers) {
-          return {
-            ...lobby,
-            players: [...lobby.players, currentPlayer],
-          };
-        }
-        return lobby;
-      })
-    );
-    onJoinLobby(lobbyId);
+  useEffect(() => {
+    loadLobbies();
+    socketRef.current = io(apiUrl);
+    socketRef.current.on("lobbyCreated", loadLobbies);
+    socketRef.current.on("playerJoined", loadLobbies);
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, []);
+
+  const handleCreateLobby = async () => {
+    if (!newLobbyName.trim()) return;
+
+    try {
+      await fetch(`${apiUrl}/api/lobbies`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newLobbyName,
+          maxPlayers,
+          gameMode: selectedGameMode,
+        }),
+      });
+      await loadLobbies();
+      setShowCreateForm(false);
+      setNewLobbyName("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleJoinLobby = async (lobbyId: string) => {
+    try {
+      await fetch(`${apiUrl}/api/lobbies/${lobbyId}/join`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerId: currentPlayer.id }),
+      });
+      await loadLobbies();
+      onJoinLobby(lobbyId);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const getGameModeInfo = (gameMode: string) => {
