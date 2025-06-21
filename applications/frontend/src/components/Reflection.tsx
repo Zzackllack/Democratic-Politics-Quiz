@@ -291,7 +291,7 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
           <ul className="text-blue-700 space-y-2 text-sm">
             <li>• Sei ehrlich und authentisch in deinen Antworten</li>
             <li>• Denke an konkrete Beispiele aus deinem Leben</li>
-            <li>• Es gibt keine "richtigen" oder "falschen" Antworten</li>
+            <li>• Es gibt keine &quot;richtigen&quot; oder &quot;falschen&quot; Antworten</li>
             <li>• Nimm dir die Zeit, die du brauchst</li>
             <li>• Deine Gedanken können anderen beim Lernen helfen</li>
           </ul>

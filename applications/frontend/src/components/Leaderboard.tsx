@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import type { Player } from "../data/mockData";
-import { mockPlayers } from "../data/mockData";
 
 interface LeaderboardProps {
   currentPlayer?: Player;
@@ -12,15 +11,18 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading and fetch leaderboard data
     const fetchLeaderboard = async () => {
       setIsLoading(true);
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Sort players by score in descending order
-      const sortedPlayers = [...mockPlayers].sort((a, b) => b.score - a.score);
-      setPlayers(sortedPlayers);
+      try {
+        const res = await fetch("http://localhost:3001/api/players");
+        const data: Player[] = await res.json();
+        const sortedPlayers = [...data]
+          .sort((a, b) => b.score - a.score)
+          .map((p) => ({ ...p, joinedAt: new Date(p.joinedAt as any) }));
+        setPlayers(sortedPlayers);
+      } catch (err) {
+        console.error(err);
+      }
       setIsLoading(false);
     };
 
