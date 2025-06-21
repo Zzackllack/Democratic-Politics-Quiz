@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Simple startup script for development environment
+# Simple startup script for Next.js development environment
 set -e  # Exit on any error
 
-echo "Starting development environment setup..."
+echo "Starting Next.js development environment setup..."
 
 # Function to check if command exists
 command_exists() {
@@ -57,7 +57,7 @@ check_prerequisites() {
     
     # Check project structure
     if [ -f "applications/frontend/package.json" ]; then
-        echo "Frontend package.json found"
+        echo "Next.js frontend package.json found"
     else
         echo "ERROR: Frontend package.json not found"
         all_good=false
@@ -75,7 +75,7 @@ check_prerequisites() {
 
 # Function to setup the development environment
 setup_environment() {
-    echo "Setting up Development Environment..."
+    echo "Setting up Next.js Development Environment..."
     
     # Navigate to frontend directory
     echo "cd applications/frontend"
@@ -99,33 +99,34 @@ setup_environment() {
 show_available_commands() {
     echo "📋 Available Development Commands:"
     
-    echo "Frontend Development:"
-    echo "  npm run dev          - Start development server (http://localhost:4321)"
+    echo "Frontend Development (Next.js):"
+    echo "  npm run dev          - Start Next.js development server (http://localhost:3000)"
     echo "  npm run build        - Build for production"
-    echo "  npm run preview      - Preview production build"
-    echo "  npm run astro        - Run Astro CLI commands"
+    echo "  npm run start        - Start production server"
+    echo "  npm run lint         - Run ESLint checks"
+    echo "  npm run format       - Run Prettier formatting (if configured)"
     echo ""
     
     echo "Project Structure:"
     echo "  src/components/      - React components (Hero, Quiz, Lobby, etc.)"
-    echo "  src/pages/          - Astro pages (routing)"
-    echo "  src/layouts/        - Layout components"
-    echo "  src/data/           - Mock data and type definitions"
-    echo "  src/styles/         - Global CSS styles"
+    echo "  src/pages/           - Next.js pages (routing)"
+    echo "  src/styles/          - Global and module CSS/SCSS files"
+    echo "  src/data/            - Mock data and type definitions"
+    echo "  public/              - Static assets (images, favicon, etc.)"
     echo ""
 }
 
 # Function to start development server
 start_dev_server() {
-    echo "Starting Development Server..."
+    echo "Starting Next.js Development Server..."
     
     cd applications/frontend
     
-    echo "Launching Astro development server..."
+    echo "Launching Next.js development server..."
     echo "npm run dev"
     
     echo ""
-    echo "Development server will be available at: http://localhost:4321"
+    echo "Development server will be available at: http://localhost:3000"
     echo ""
     
     # Start the server

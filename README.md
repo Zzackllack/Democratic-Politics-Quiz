@@ -13,7 +13,7 @@ Ein interaktives Quiz zur Stärkung des Verständnisses für demokratische Werte
 
 ```bash
 # In das Next.js Frontend-Verzeichnis wechseln
-cd applications/nextfrontend
+cd applications/frontend
 
 # Dependencies installieren
 npm install
