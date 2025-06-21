@@ -8,9 +8,7 @@ interface LeaderboardProps {
 
 const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
   const [players, setPlayers] = useState<Player[]>([]);
-  const [filter, setFilter] = useState<"all" | "today" | "week" | "month">(
-    "all"
-  );
+  const [filter, setFilter] = useState<"all" | "today" | "week" | "month">("all");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -71,8 +69,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
         label: "Politikinteressiert",
         color: "text-blue-600 bg-blue-50",
       };
-    if (score >= 200)
-      return { label: "Einsteiger", color: "text-green-600 bg-green-50" };
+    if (score >= 200) return { label: "Einsteiger", color: "text-green-600 bg-green-50" };
     return { label: "Anfänger", color: "text-gray-600 bg-gray-50" };
   };
 
@@ -102,13 +99,11 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-german-black mb-4">
-            Bestenliste
-          </h1>
+          <h1 className="text-4xl md:text-6xl font-bold text-german-black mb-4">Bestenliste</h1>
 
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Hier siehst du die besten Spieler unseres Demokratie Quiz. Kämpfe um
-            einen Platz unter den Top-Experten!
+            Hier siehst du die besten Spieler unseres Demokratie Quiz. Kämpfe um einen Platz unter
+            den Top-Experten!
           </p>
         </div>
 
@@ -140,9 +135,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
             <div className="w-16 h-16 bg-german-gold rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl text-white">👥</span>
             </div>
-            <h3 className="text-2xl font-bold text-german-black mb-2">
-              {players.length}
-            </h3>
+            <h3 className="text-2xl font-bold text-german-black mb-2">{players.length}</h3>
             <p className="text-gray-600">Aktive Spieler</p>
           </div>
 
@@ -151,9 +144,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
               <span className="text-2xl text-white">📊</span>
             </div>
             <h3 className="text-2xl font-bold text-german-black mb-2">
-              {Math.round(
-                players.reduce((sum, p) => sum + p.score, 0) / players.length
-              )}
+              {Math.round(players.reduce((sum, p) => sum + p.score, 0) / players.length)}
             </h3>
             <p className="text-gray-600">Durchschnittsscore</p>
           </div>
@@ -207,12 +198,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-german-black mb-2">
-                      {player.name}
-                    </h3>
-                    <div className="text-3xl font-bold text-german-red mb-2">
-                      {player.score}
-                    </div>
+                    <h3 className="text-xl font-bold text-german-black mb-2">{player.name}</h3>
+                    <div className="text-3xl font-bold text-german-red mb-2">{player.score}</div>
 
                     <span
                       className={`px-3 py-1 rounded-full text-sm font-medium ${category.color}`}
@@ -234,9 +221,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="bg-gradient-to-r from-german-black to-german-red text-white p-6">
             <h2 className="text-2xl font-bold">Komplette Rangliste</h2>
-            <p className="text-gray-200">
-              Alle Spieler nach Punktzahl sortiert
-            </p>
+            <p className="text-gray-200">Alle Spieler nach Punktzahl sortiert</p>
           </div>
 
           <div className="overflow-x-auto">
@@ -270,9 +255,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
                     <tr
                       key={player.id}
                       className={`hover:bg-gray-50 transition-colors ${
-                        isCurrentPlayer
-                          ? "bg-german-gold/10 border-german-gold border-l-4"
-                          : ""
+                        isCurrentPlayer ? "bg-german-gold/10 border-german-gold border-l-4" : ""
                       }`}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -309,9 +292,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
                       </td>
 
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-lg font-bold text-german-black">
-                          {player.score}
-                        </div>
+                        <div className="text-lg font-bold text-german-black">{player.score}</div>
                       </td>
 
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -336,9 +317,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
         {/* Call to Action */}
         <div className="mt-12 text-center">
           <div className="bg-gradient-to-r from-german-red to-german-gold rounded-xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">
-              Bereit für die Herausforderung?
-            </h3>
+            <h3 className="text-2xl font-bold mb-4">Bereit für die Herausforderung?</h3>
             <p className="text-lg mb-6">
               Steige in der Rangliste auf und werde zum Demokratie-Experten!
             </p>

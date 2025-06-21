@@ -23,8 +23,7 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
   const reflectionQuestions: ReflectionQuestion[] = [
     {
       id: "learning",
-      question:
-        "Was hast du heute über Demokratie gelernt, das du vorher nicht wusstest?",
+      question: "Was hast du heute über Demokratie gelernt, das du vorher nicht wusstest?",
       category: "Lernerfahrung",
       placeholder:
         "Beschreibe neue Erkenntnisse oder überraschende Fakten, die du durch das Quiz entdeckt hast...",
@@ -34,32 +33,27 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
       question:
         "Warum ist es deiner Meinung nach wichtig, dass alle Bürger über demokratische Prozesse Bescheid wissen?",
       category: "Bedeutung der Demokratie",
-      placeholder:
-        "Denke über die Rolle informierter Bürger in einer Demokratie nach...",
+      placeholder: "Denke über die Rolle informierter Bürger in einer Demokratie nach...",
     },
     {
       id: "participation",
       question:
         "Wie könntest du dich aktiver an demokratischen Prozessen in deiner Gemeinde beteiligen?",
       category: "Bürgerbeteiligung",
-      placeholder:
-        "Überlege dir konkrete Schritte und Möglichkeiten zur Partizipation...",
+      placeholder: "Überlege dir konkrete Schritte und Möglichkeiten zur Partizipation...",
     },
     {
       id: "challenges",
-      question:
-        "Welche Herausforderungen siehst du für die Demokratie in der heutigen Zeit?",
+      question: "Welche Herausforderungen siehst du für die Demokratie in der heutigen Zeit?",
       category: "Aktuelle Herausforderungen",
       placeholder:
         "Beschreibe gesellschaftliche, technologische oder politische Herausforderungen...",
     },
     {
       id: "improvement",
-      question:
-        "Was würdest du am demokratischen System in Deutschland verbessern wollen?",
+      question: "Was würdest du am demokratischen System in Deutschland verbessern wollen?",
       category: "Verbesserungsvorschläge",
-      placeholder:
-        "Teile deine Ideen für eine stärkere oder gerechtere Demokratie...",
+      placeholder: "Teile deine Ideen für eine stärkere oder gerechtere Demokratie...",
     },
     {
       id: "future",
@@ -98,9 +92,7 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
   };
 
   const getCompletedResponsesCount = () => {
-    return Object.values(responses).filter(
-      (response) => response.trim().length > 0
-    ).length;
+    return Object.values(responses).filter((response) => response.trim().length > 0).length;
   };
 
   const currentQuestion = reflectionQuestions[currentQuestionIndex];
@@ -119,14 +111,12 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
             </h2>
 
             <p className="text-xl text-gray-600 mb-6">
-              Deine Gedanken zur Demokratie sind wertvoll und tragen zu einem
-              besseren Verständnis bei.
+              Deine Gedanken zur Demokratie sind wertvoll und tragen zu einem besseren Verständnis
+              bei.
             </p>
 
             <div className="bg-gray-50 rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-bold text-german-black mb-4">
-                Deine Beiträge:
-              </h3>
+              <h3 className="text-lg font-bold text-german-black mb-4">Deine Beiträge:</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-german-red">
@@ -168,29 +158,21 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-
-          <h1 className="text-4xl md:text-6xl font-bold text-german-black mb-4">
-            Reflexion
-          </h1>
+          <h1 className="text-4xl md:text-6xl font-bold text-german-black mb-4">Reflexion</h1>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Nimm dir einen Moment Zeit, um über deine Lernerfahrung
-            nachzudenken. Deine Gedanken helfen dabei, ein tieferes Verständnis
-            für demokratische Werte zu entwickeln.
+            Nimm dir einen Moment Zeit, um über deine Lernerfahrung nachzudenken. Deine Gedanken
+            helfen dabei, ein tieferes Verständnis für demokratische Werte zu entwickeln.
           </p>
         </div>
 
         {/* Quiz Results Summary */}
         {quizResults && (
           <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <h2 className="text-xl font-bold text-german-black mb-4">
-              Dein Quiz-Ergebnis
-            </h2>
+            <h2 className="text-xl font-bold text-german-black mb-4">Dein Quiz-Ergebnis</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-german-red">
-                  {quizResults.score}
-                </div>
+                <div className="text-2xl font-bold text-german-red">{quizResults.score}</div>
                 <div className="text-sm text-gray-600">Richtige Antworten</div>
               </div>
               <div className="text-center p-4 bg-gray-50 rounded-lg">
@@ -201,11 +183,7 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
               </div>
               <div className="text-center p-4 bg-gray-50 rounded-lg">
                 <div className="text-2xl font-bold text-german-black">
-                  {(
-                    (quizResults.score / quizResults.totalQuestions) *
-                    100
-                  ).toFixed(0)}
-                  %
+                  {((quizResults.score / quizResults.totalQuestions) * 100).toFixed(0)}%
                 </div>
                 <div className="text-sm text-gray-600">Erfolgsquote</div>
               </div>
@@ -216,9 +194,7 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
         {/* Progress Bar */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-german-black">
-              Reflexions-Fortschritt
-            </h2>
+            <h2 className="text-xl font-bold text-german-black">Reflexions-Fortschritt</h2>
             <span className="text-sm text-gray-600">
               {currentQuestionIndex + 1} von {reflectionQuestions.length}
             </span>
@@ -251,9 +227,7 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
 
           <textarea
             value={responses[currentQuestion.id] || ""}
-            onChange={(e) =>
-              handleResponseChange(currentQuestion.id, e.target.value)
-            }
+            onChange={(e) => handleResponseChange(currentQuestion.id, e.target.value)}
             placeholder={currentQuestion.placeholder}
             className="w-full h-48 p-4 border-2 border-gray-200 rounded-lg resize-none focus:border-german-red focus:outline-none transition-colors"
           />
@@ -287,8 +261,8 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
                   index === currentQuestionIndex
                     ? "bg-german-red scale-150"
                     : responses[reflectionQuestions[index].id]
-                    ? "bg-german-gold"
-                    : "bg-gray-300"
+                      ? "bg-german-gold"
+                      : "bg-gray-300"
                 }`}
               />
             ))}
@@ -313,9 +287,7 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
 
         {/* Tips */}
         <div className="mt-12 bg-blue-50 border border-blue-200 rounded-xl p-6">
-          <h3 className="text-lg font-bold text-blue-800 mb-3">
-            💡 Reflexions-Tipps
-          </h3>
+          <h3 className="text-lg font-bold text-blue-800 mb-3">💡 Reflexions-Tipps</h3>
           <ul className="text-blue-700 space-y-2 text-sm">
             <li>• Sei ehrlich und authentisch in deinen Antworten</li>
             <li>• Denke an konkrete Beispiele aus deinem Leben</li>

@@ -49,8 +49,7 @@ export const mockQuestions: Question[] = [
     question: "Deutschland ist eine parlamentarische Demokratie.",
     correctAnswer: true,
     difficulty: "einfach",
-    explanation:
-      "Deutschland ist eine parlamentarische und föderale Demokratie.",
+    explanation: "Deutschland ist eine parlamentarische und föderale Demokratie.",
   },
 
   // Mittel (Medium)
@@ -61,23 +60,16 @@ export const mockQuestions: Question[] = [
     options: ["Alle 3 Jahre", "Alle 4 Jahre", "Alle 5 Jahre", "Alle 6 Jahre"],
     correctAnswer: "Alle 4 Jahre",
     difficulty: "mittel",
-    explanation:
-      "Der Deutsche Bundestag wird alle vier Jahre vom Volk gewählt.",
+    explanation: "Der Deutsche Bundestag wird alle vier Jahre vom Volk gewählt.",
   },
   {
     id: "4",
     type: "multiple-choice",
     question: "Welches Organ wählt den Bundeskanzler?",
-    options: [
-      "Das Volk direkt",
-      "Der Bundestag",
-      "Der Bundesrat",
-      "Die Bundesversammlung",
-    ],
+    options: ["Das Volk direkt", "Der Bundestag", "Der Bundesrat", "Die Bundesversammlung"],
     correctAnswer: "Der Bundestag",
     difficulty: "mittel",
-    explanation:
-      "Der Bundeskanzler wird vom Bundestag gewählt, nicht direkt vom Volk.",
+    explanation: "Der Bundeskanzler wird vom Bundestag gewählt, nicht direkt vom Volk.",
   },
 
   // Schwer (Hard)
@@ -88,14 +80,12 @@ export const mockQuestions: Question[] = [
     options: ["Artikel 1", "Artikel 2", "Artikel 3", "Artikel 4"],
     correctAnswer: "Artikel 1",
     difficulty: "schwer",
-    explanation:
-      'Artikel 1 des Grundgesetzes besagt: "Die Würde des Menschen ist unantastbar."',
+    explanation: 'Artikel 1 des Grundgesetzes besagt: "Die Würde des Menschen ist unantastbar."',
   },
   {
     id: "6",
     type: "true-false",
-    question:
-      "Der Bundesrat kann Gesetze des Bundestages mit absoluter Mehrheit ablehnen.",
+    question: "Der Bundesrat kann Gesetze des Bundestages mit absoluter Mehrheit ablehnen.",
     correctAnswer: false,
     difficulty: "schwer",
     explanation:
@@ -106,8 +96,7 @@ export const mockQuestions: Question[] = [
   {
     id: "7",
     type: "multiple-choice",
-    question:
-      "Was passiert, wenn der Bundeskanzler beim Vertrauensvotum durchfällt?",
+    question: "Was passiert, wenn der Bundeskanzler beim Vertrauensvotum durchfällt?",
     options: [
       "Er muss Kuchen für alle backen",
       "Er kann die Vertrauensfrage stellen",
@@ -128,8 +117,7 @@ export const mockQuestions: Question[] = [
     options: ["1945", "1949", "1951", "1990"],
     correctAnswer: "1949",
     difficulty: "einbürgerungstest",
-    explanation:
-      "Das Grundgesetz der Bundesrepublik Deutschland trat am 23. Mai 1949 in Kraft.",
+    explanation: "Das Grundgesetz der Bundesrepublik Deutschland trat am 23. Mai 1949 in Kraft.",
   },
   {
     id: "9",

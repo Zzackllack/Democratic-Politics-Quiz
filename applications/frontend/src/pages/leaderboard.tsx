@@ -1,5 +1,5 @@
-import Leaderboard from '@/components/Leaderboard';
-import Layout from '@/components/Layout';
+import Leaderboard from "@/components/Leaderboard";
+import Layout from "@/components/Layout";
 
 export default function LeaderboardPage() {
   return (
