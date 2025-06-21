@@ -111,8 +111,8 @@ const LobbyComponent: React.FC<LobbyProps> = ({
           </h1>
 
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Erstelle eine neue Lobby oder tritt einer bestehenden bei, um mit
-            anderen Spielern dein Demokratie-Wissen zu testen.
+            Erstelle eine neue Lobby oder tritt einer bestehenden bei, um mit anderen Spielern dein
+            Demokratie-Wissen zu testen.
           </p>
         </div>
 
@@ -136,15 +136,11 @@ const LobbyComponent: React.FC<LobbyProps> = ({
         {/* Create Lobby Form */}
         {showCreateForm && (
           <div className="bg-white rounded-xl shadow-lg p-8 mb-8 animate-slide-up">
-            <h2 className="text-2xl font-bold text-german-black mb-6">
-              Neue Lobby erstellen
-            </h2>
+            <h2 className="text-2xl font-bold text-german-black mb-6">Neue Lobby erstellen</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Lobby Name
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Lobby Name</label>
                 <input
                   type="text"
                   value={newLobbyName}
@@ -221,9 +217,7 @@ const LobbyComponent: React.FC<LobbyProps> = ({
             <div className="w-16 h-16 bg-german-gold rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl text-white">🏠</span>
             </div>
-            <h3 className="text-2xl font-bold text-german-black mb-2">
-              {lobbies.length}
-            </h3>
+            <h3 className="text-2xl font-bold text-german-black mb-2">{lobbies.length}</h3>
             <p className="text-gray-600">Aktive Lobbies</p>
           </div>
 
@@ -242,11 +236,7 @@ const LobbyComponent: React.FC<LobbyProps> = ({
               <span className="text-2xl text-white">⚡</span>
             </div>
             <h3 className="text-2xl font-bold text-german-black mb-2">
-              {
-                lobbies.filter(
-                  (lobby) => lobby.players.length < lobby.maxPlayers
-                ).length
-              }
+              {lobbies.filter((lobby) => lobby.players.length < lobby.maxPlayers).length}
             </h3>
             <p className="text-gray-600">Freie Plätze</p>
           </div>
@@ -254,18 +244,14 @@ const LobbyComponent: React.FC<LobbyProps> = ({
 
         {/* Lobbies List */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-german-black">
-            Verfügbare Lobbies
-          </h2>
+          <h2 className="text-2xl font-bold text-german-black">Verfügbare Lobbies</h2>
 
           {lobbies.length === 0 ? (
             <div className="bg-white rounded-xl shadow-lg p-12 text-center">
               <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-4xl text-gray-400">🏠</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-600 mb-4">
-                Keine Lobbies gefunden
-              </h3>
+              <h3 className="text-xl font-bold text-gray-600 mb-4">Keine Lobbies gefunden</h3>
               <p className="text-gray-500 mb-6">
                 Erstelle die erste Lobby und lade andere Spieler ein!
               </p>
@@ -291,9 +277,7 @@ const LobbyComponent: React.FC<LobbyProps> = ({
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold text-german-black mb-2">
-                          {lobby.name}
-                        </h3>
+                        <h3 className="text-xl font-bold text-german-black mb-2">{lobby.name}</h3>
                         <div className="flex items-center space-x-3 mb-3">
                           <span
                             className={`px-3 py-1 rounded-full text-sm font-medium ${gameMode.color
@@ -320,9 +304,7 @@ const LobbyComponent: React.FC<LobbyProps> = ({
 
                     {/* Players */}
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        Spieler:
-                      </h4>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Spieler:</h4>
                       <div className="flex flex-wrap gap-2">
                         {lobby.players.map((player) => (
                           <div
@@ -330,13 +312,9 @@ const LobbyComponent: React.FC<LobbyProps> = ({
                             className="flex items-center space-x-2 bg-gray-50 rounded-full px-3 py-1"
                           >
                             <div className="w-6 h-6 bg-gradient-to-r from-german-red to-german-gold rounded-full flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">
-                                {player.name[0]}
-                              </span>
+                              <span className="text-white text-xs font-bold">{player.name[0]}</span>
                             </div>
-                            <span className="text-sm text-gray-700">
-                              {player.name}
-                            </span>
+                            <span className="text-sm text-gray-700">{player.name}</span>
                           </div>
                         ))}
 
@@ -356,26 +334,21 @@ const LobbyComponent: React.FC<LobbyProps> = ({
 
                     {/* Action Button */}
                     <button
-                      onClick={() =>
-                        canJoin ? handleJoinLobby(lobby.id) : onStartGame(lobby)
-                      }
-                      disabled={
-                        !canJoin &&
-                        !lobby.players.some((p) => p.id === currentPlayer.id)
-                      }
+                      onClick={() => (canJoin ? handleJoinLobby(lobby.id) : onStartGame(lobby))}
+                      disabled={!canJoin && !lobby.players.some((p) => p.id === currentPlayer.id)}
                       className={`w-full py-3 font-bold rounded-lg transition-all duration-300 ${
                         canJoin
                           ? "bg-gradient-to-r from-german-red to-german-gold text-white hover:opacity-90"
                           : lobby.players.some((p) => p.id === currentPlayer.id)
-                          ? "bg-green-500 text-white hover:bg-green-600"
-                          : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                            ? "bg-green-500 text-white hover:bg-green-600"
+                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
                       }`}
                     >
                       {canJoin
                         ? "Beitreten"
                         : lobby.players.some((p) => p.id === currentPlayer.id)
-                        ? "Spiel starten"
-                        : "Lobby voll"}
+                          ? "Spiel starten"
+                          : "Lobby voll"}
                     </button>
                   </div>
                 );

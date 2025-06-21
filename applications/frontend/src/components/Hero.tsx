@@ -2,16 +2,11 @@ import React, { useEffect, useState } from "react";
 import { gameModes } from "../data/mockData";
 
 interface HeroProps {
-  onStartQuiz?: (
-    gameType: "singleplayer" | "multiplayer",
-    gameMode: string
-  ) => void;
+  onStartQuiz?: (gameType: "singleplayer" | "multiplayer", gameMode: string) => void;
 }
 
 const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
-  const [selectedGameType, setSelectedGameType] = useState<
-    "singleplayer" | "multiplayer" | ""
-  >("");
+  const [selectedGameType, setSelectedGameType] = useState<"singleplayer" | "multiplayer" | "">("");
   const [selectedGameMode, setSelectedGameMode] = useState<string>("");
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -151,21 +146,17 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
               isLoaded ? "" : "opacity-0"
             }`}
           >
-            Stärke dein Verständnis für demokratische Werte und Prozesse durch
-            interaktive Quizfragen. Teste dein Wissen über das deutsche
-            politische System und demokratische Grundprinzipien.
+            Stärke dein Verständnis für demokratische Werte und Prozesse durch interaktive
+            Quizfragen. Teste dein Wissen über das deutsche politische System und demokratische
+            Grundprinzipien.
           </p>
         </div>
 
         {/* Game Type Selection */}
         <div
-          className={`w-full max-w-4xl mb-12 fade-in-up delay-300 ${
-            isLoaded ? "" : "opacity-0"
-          }`}
+          className={`w-full max-w-4xl mb-12 fade-in-up delay-300 ${isLoaded ? "" : "opacity-0"}`}
         >
-          <h2 className="text-3xl font-bold text-center mb-8 text-black">
-            Spielmodus wählen
-          </h2>
+          <h2 className="text-3xl font-bold text-center mb-8 text-black">Spielmodus wählen</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div
@@ -192,12 +183,9 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-black mb-2">
-                  Einzelspieler
-                </h3>
+                <h3 className="text-xl font-bold text-black mb-2">Einzelspieler</h3>
                 <p className="text-gray-600 text-center">
-                  Teste dein Wissen alleine und verbessere deine Kenntnisse in
-                  deinem eigenen Tempo.
+                  Teste dein Wissen alleine und verbessere deine Kenntnisse in deinem eigenen Tempo.
                 </p>
               </div>
             </div>
@@ -226,12 +214,10 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-black mb-2">
-                  Mehrspieler
-                </h3>
+                <h3 className="text-xl font-bold text-black mb-2">Mehrspieler</h3>
                 <p className="text-gray-600 text-center">
-                  Erstelle eine Lobby oder tritt einer bei und spiele mit
-                  Freunden oder anderen Teilnehmern.
+                  Erstelle eine Lobby oder tritt einer bei und spiele mit Freunden oder anderen
+                  Teilnehmern.
                 </p>
               </div>
             </div>
@@ -263,12 +249,8 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                     >
                       <span className="text-xl text-white">{mode.icon}</span>
                     </div>
-                    <h3 className="text-lg font-bold text-black mb-2">
-                      {mode.label}
-                    </h3>
-                    <p className="text-sm text-gray-600 leading-tight">
-                      {mode.description}
-                    </p>
+                    <h3 className="text-lg font-bold text-black mb-2">{mode.label}</h3>
+                    <p className="text-sm text-gray-600 leading-tight">{mode.description}</p>
                   </div>
                 </div>
               ))}
@@ -301,9 +283,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
 
             <div className="mt-6 flex items-center justify-center gap-4">
               <span className="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-medium">
-                {selectedGameType === "singleplayer"
-                  ? "Einzelspieler"
-                  : "Mehrspieler"}
+                {selectedGameType === "singleplayer" ? "Einzelspieler" : "Mehrspieler"}
               </span>
               <span className="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
                 {gameModes[selectedGameMode as keyof typeof gameModes].label}

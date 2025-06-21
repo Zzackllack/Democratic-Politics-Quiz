@@ -7,15 +7,10 @@ interface QuizProps {
   onQuizComplete?: (score: number, answers: any[]) => void;
 }
 
-const Quiz: React.FC<QuizProps> = ({
-  gameMode = "einfach",
-  onQuizComplete = () => {},
-}) => {
+const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () => {} }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<string | boolean | null>(
-    null
-  );
+  const [selectedAnswer, setSelectedAnswer] = useState<string | boolean | null>(null);
   const [answers, setAnswers] = useState<any[]>([]);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(30);
@@ -25,9 +20,7 @@ const Quiz: React.FC<QuizProps> = ({
 
   useEffect(() => {
     // Filter questions by game mode
-    const filteredQuestions = mockQuestions.filter(
-      (q) => q.difficulty === gameMode
-    );
+    const filteredQuestions = mockQuestions.filter((q) => q.difficulty === gameMode);
     setQuestions(filteredQuestions.slice(0, 10)); // Limit to 10 questions
   }, [gameMode]);
 
@@ -117,30 +110,23 @@ const Quiz: React.FC<QuizProps> = ({
               <span className="text-3xl text-white">🏆</span>
             </div>
 
-            <h2 className="text-3xl font-bold text-german-black mb-4">
-              Quiz abgeschlossen!
-            </h2>
+            <h2 className="text-3xl font-bold text-german-black mb-4">Quiz abgeschlossen!</h2>
 
             <div className="text-6xl font-bold mb-4 ${getScoreColor()}">
               {score}/{questions.length}
             </div>
 
             <p className="text-xl text-gray-600 mb-6">
-              Du hast {finalPercentage.toFixed(0)}% der Fragen richtig
-              beantwortet!
+              Du hast {finalPercentage.toFixed(0)}% der Fragen richtig beantwortet!
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-german-black">
-                  {score}
-                </div>
+                <div className="text-2xl font-bold text-german-black">{score}</div>
                 <div className="text-sm text-gray-600">Richtige Antworten</div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-german-red">
-                  {questions.length - score}
-                </div>
+                <div className="text-2xl font-bold text-german-red">{questions.length - score}</div>
                 <div className="text-sm text-gray-600">Falsche Antworten</div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
@@ -179,15 +165,11 @@ const Quiz: React.FC<QuizProps> = ({
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center space-x-4">
               <div className="w-3 h-8 german-stripes rounded"></div>
-              <h1 className="text-2xl font-bold text-german-black">
-                Demokratie Quiz
-              </h1>
+              <h1 className="text-2xl font-bold text-german-black">Demokratie Quiz</h1>
             </div>
             <div className="flex items-center space-x-6">
               <div className="text-center">
-                <div className="text-2xl font-bold ${getScoreColor()}">
-                  {score}
-                </div>
+                <div className="text-2xl font-bold ${getScoreColor()}">{score}</div>
                 <div className="text-sm text-gray-600">Punkte</div>
               </div>
               <div className="text-center">
@@ -226,9 +208,7 @@ const Quiz: React.FC<QuizProps> = ({
                 {currentQuestion.difficulty}
               </span>
               <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
-                {currentQuestion.type === "multiple-choice"
-                  ? "Multiple Choice"
-                  : "Wahr/Falsch"}
+                {currentQuestion.type === "multiple-choice" ? "Multiple Choice" : "Wahr/Falsch"}
               </span>
             </div>
 
@@ -250,11 +230,11 @@ const Quiz: React.FC<QuizProps> = ({
                       ? option === currentQuestion.correctAnswer
                         ? "border-green-500 bg-green-50 text-green-800"
                         : option === selectedAnswer
-                        ? "border-red-500 bg-red-50 text-red-800"
-                        : "border-gray-200 bg-gray-50 text-gray-600"
+                          ? "border-red-500 bg-red-50 text-red-800"
+                          : "border-gray-200 bg-gray-50 text-gray-600"
                       : selectedAnswer === option
-                      ? "border-german-red bg-german-red/10"
-                      : "border-gray-200 hover:border-german-red/50 hover:bg-gray-50"
+                        ? "border-german-red bg-german-red/10"
+                        : "border-gray-200 hover:border-german-red/50 hover:bg-gray-50"
                   } ${!isAnswered ? "cursor-pointer" : "cursor-default"}`}
                 >
                   <div className="flex items-center">
@@ -264,16 +244,12 @@ const Quiz: React.FC<QuizProps> = ({
                     <span className="font-medium">{option}</span>
                   </div>
                   {isAnswered && option === currentQuestion.correctAnswer && (
-                    <span className="ml-12 text-green-600 text-sm">
-                      ✓ Richtige Antwort
-                    </span>
+                    <span className="ml-12 text-green-600 text-sm">✓ Richtige Antwort</span>
                   )}
                   {isAnswered &&
                     option === selectedAnswer &&
                     option !== currentQuestion.correctAnswer && (
-                      <span className="ml-12 text-red-600 text-sm">
-                        ✗ Falsche Antwort
-                      </span>
+                      <span className="ml-12 text-red-600 text-sm">✗ Falsche Antwort</span>
                     )}
                 </button>
               ))
@@ -289,11 +265,11 @@ const Quiz: React.FC<QuizProps> = ({
                         ? option === currentQuestion.correctAnswer
                           ? "border-green-500 bg-green-50 text-green-800"
                           : option === selectedAnswer
-                          ? "border-red-500 bg-red-50 text-red-800"
-                          : "border-gray-200 bg-gray-50 text-gray-600"
+                            ? "border-red-500 bg-red-50 text-red-800"
+                            : "border-gray-200 bg-gray-50 text-gray-600"
                         : selectedAnswer === option
-                        ? "border-german-red bg-german-red/10"
-                        : "border-gray-200 hover:border-german-red/50 hover:bg-gray-50"
+                          ? "border-german-red bg-german-red/10"
+                          : "border-gray-200 hover:border-german-red/50 hover:bg-gray-50"
                     } ${!isAnswered ? "cursor-pointer" : "cursor-default"}`}
                   >
                     {option ? "Wahr" : "Falsch"}
@@ -319,9 +295,7 @@ const Quiz: React.FC<QuizProps> = ({
               onClick={handleNextQuestion}
               className="px-8 py-3 bg-gradient-to-r from-german-red to-german-gold text-white font-bold rounded-lg hover:opacity-90 transition-opacity btn-hover-lift"
             >
-              {currentQuestionIndex < questions.length - 1
-                ? "Nächste Frage"
-                : "Quiz beenden"}
+              {currentQuestionIndex < questions.length - 1 ? "Nächste Frage" : "Quiz beenden"}
             </button>
           </div>
         )}

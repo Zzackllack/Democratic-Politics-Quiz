@@ -1,5 +1,5 @@
-import Quiz from '@/components/Quiz';
-import Layout from '@/components/Layout';
+import Quiz from "@/components/Quiz";
+import Layout from "@/components/Layout";
 
 export default function QuizPage() {
   return (
