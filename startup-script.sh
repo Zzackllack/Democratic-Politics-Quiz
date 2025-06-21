@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Simple startup script for Next.js development environment
+# Simple startup script for Next.js + Backend development environment
 set -e  # Exit on any error
 
-echo "Starting Next.js development environment setup..."
+echo "Starting Democratic Politics Quiz development environment setup..."
 
 # Function to check if command exists
 command_exists() {
@@ -55,11 +55,18 @@ check_prerequisites() {
         echo "WARNING: Git is not installed (optional but recommended)"
     fi
     
-    # Check project structure
+    # Check frontend project structure
     if [ -f "applications/frontend/package.json" ]; then
         echo "Next.js frontend package.json found"
     else
         echo "ERROR: Frontend package.json not found"
+        all_good=false
+    fi
+    # Check backend project structure
+    if [ -f "applications/backend/package.json" ]; then
+        echo "Backend package.json found"
+    else
+        echo "ERROR: Backend package.json not found"
         all_good=false
     fi
     
@@ -75,62 +82,92 @@ check_prerequisites() {
 
 # Function to setup the development environment
 setup_environment() {
-    echo "Setting up Next.js Development Environment..."
-    
+    echo "Setting up development environment..."
+    echo "npm install"
+    if npm install; then
+        echo "✅ Global dependencies installed successfully!"
+    else
+        echo "❌ Failed to install global dependencies"
+        exit 1
+    fi
+    echo "Setting up Next.js Frontend..."
     # Navigate to frontend directory
     echo "cd applications/frontend"
     cd applications/frontend
-    
     # Install dependencies
     echo "Installing frontend dependencies..."
     echo "npm install"
-    
     if npm install; then
-        echo "✅ Dependencies installed successfully!"
+        echo "✅ Frontend dependencies installed successfully!"
     else
-        echo "❌ Failed to install dependencies"
+        echo "❌ Failed to install frontend dependencies"
         exit 1
     fi
-    
+    cd ../..
+    echo ""
+    echo "Setting up Backend..."
+    echo "cd applications/backend"
+    cd applications/backend
+    echo "Installing backend dependencies..."
+    echo "npm install"
+    if npm install; then
+        echo "✅ Backend dependencies installed successfully!"
+    else
+        echo "❌ Failed to install backend dependencies"
+        exit 1
+    fi
+    cd ../..
     echo ""
 }
 
 # Function to display available commands
 show_available_commands() {
     echo "📋 Available Development Commands:"
-    
+    echo ""
     echo "Frontend Development (Next.js):"
+    echo "  cd applications/frontend"
     echo "  npm run dev          - Start Next.js development server (http://localhost:3000)"
     echo "  npm run build        - Build for production"
     echo "  npm run start        - Start production server"
     echo "  npm run lint         - Run ESLint checks"
     echo "  npm run format       - Run Prettier formatting (if configured)"
     echo ""
-    
+    echo "Backend Development (Express/Prisma):"
+    echo "  cd applications/backend"
+    echo "  npm run start        - Start backend server (http://localhost:3001)"
+    echo ""
     echo "Project Structure:"
-    echo "  src/components/      - React components (Hero, Quiz, Lobby, etc.)"
-    echo "  src/pages/           - Next.js pages (routing)"
-    echo "  src/styles/          - Global and module CSS/SCSS files"
-    echo "  src/data/            - Mock data and type definitions"
-    echo "  public/              - Static assets (images, favicon, etc.)"
+    echo "  applications/frontend/src/components/   - React components (Hero, Quiz, etc.)"
+    echo "  applications/frontend/src/pages/        - Next.js pages (routing)"
+    echo "  applications/frontend/src/styles/       - Global and module CSS/SCSS files"
+    echo "  applications/frontend/src/data/         - Mock data and type definitions"
+    echo "  applications/frontend/public/           - Static assets (images, favicon, etc.)"
+    echo "  applications/backend/                   - Backend API (Express, Prisma, etc.)"
     echo ""
 }
 
-# Function to start development server
-start_dev_server() {
+# Function to start frontend development server
+start_frontend() {
     echo "Starting Next.js Development Server..."
-    
     cd applications/frontend
-    
     echo "Launching Next.js development server..."
     echo "npm run dev"
-    
     echo ""
-    echo "Development server will be available at: http://localhost:3000"
+    echo "Frontend server will be available at: http://localhost:3000"
     echo ""
-    
-    # Start the server
     npm run dev
+}
+
+# Function to start backend development server
+start_backend() {
+    echo "Starting Backend Server..."
+    cd applications/backend
+    echo "Launching backend server..."
+    echo "npm run start"
+    echo ""
+    echo "Backend server will be available at: http://localhost:3001"
+    echo ""
+    npm run start
 }
 
 # Main execution flow
@@ -141,10 +178,16 @@ main() {
             check_prerequisites
             setup_environment
             show_available_commands
-            echo "Setup complete! Run 'npm run dev' in the frontend directory to start coding."
+            echo "Setup complete! Run 'npm run dev' in the frontend or 'npm run start' in the backend directory to start coding."
+            ;;
+        "frontend")
+            start_frontend
+            ;;
+        "backend")
+            start_backend
             ;;
         "dev"|"start")
-            start_dev_server
+            start_frontend
             ;;
         "check"|"prerequisites")
             check_prerequisites
@@ -153,8 +196,10 @@ main() {
             echo "Usage: $0 [command]"
             echo ""
             echo "Commands:"
-            echo "  setup (default)  - Full environment setup"
-            echo "  dev, start       - Start development server"
+            echo "  setup (default)  - Full environment setup (frontend & backend)"
+            echo "  frontend         - Start frontend development server"
+            echo "  backend          - Start backend server"
+            echo "  dev, start       - Start frontend development server"
             echo "  check            - Check prerequisites only"
             echo "  help             - Show this help message"
             ;;
