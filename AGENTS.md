@@ -33,6 +33,8 @@ This repository is organized as a monorepo for the Democratic Politics Quiz proj
 ## Validation & Testing
 
 - Run `npm run lint` in `applications/frontend` to check code style and catch errors.
+- Run `npm run format` to format code with Prettier.
+- Run `npm run build` to build the application and check for TypeScript errors.
 - Run `npm run dev` to start the development server and manually test UI changes.
 - Add/update tests as needed (test setup may be added in the future).
 - Ensure all changes build and run locally before submitting PRs.
