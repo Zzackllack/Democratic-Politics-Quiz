@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import Link from "next/link";
 
 interface LayoutProps {
   title: string;
@@ -31,39 +32,39 @@ export default function Layout({
           <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-4">
-                <a
+                <Link
                   href="/"
                   className="flex items-center space-x-2 text-xl font-bold text-german-black hover:text-german-red transition-colors"
                 >
                   <div className="w-8 h-6 german-stripes rounded" />
                   <span>Demokratie Quiz</span>
-                </a>
+                </Link>
               </div>
               <div className="hidden md:flex items-center space-x-6">
-                <a
+                <Link
                   href="/"
                   className="text-gray-700 hover:text-german-red font-medium transition-colors"
                 >
                   Startseite
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/quiz"
                   className="text-gray-700 hover:text-german-red font-medium transition-colors"
                 >
                   Quiz
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/leaderboard"
                   className="text-gray-700 hover:text-german-red font-medium transition-colors"
                 >
                   Bestenliste
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/reflection"
                   className="text-gray-700 hover:text-german-red font-medium transition-colors"
                 >
                   Reflexion
-                </a>
+                </Link>
               </div>
             </div>
           </nav>
@@ -85,33 +86,36 @@ export default function Layout({
                 <h3 className="text-lg font-semibold mb-4 text-german-gold">Navigation</h3>
                 <ul className="space-y-2">
                   <li>
-                    <a href="/" className="text-gray-300 hover:text-german-gold transition-colors">
+                    <Link
+                      href="/"
+                      className="text-gray-300 hover:text-german-gold transition-colors"
+                    >
                       Startseite
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/quiz"
                       className="text-gray-300 hover:text-german-gold transition-colors"
                     >
                       Quiz
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/leaderboard"
                       className="text-gray-300 hover:text-german-gold transition-colors"
                     >
                       Bestenliste
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/reflection"
                       className="text-gray-300 hover:text-german-gold transition-colors"
                     >
                       Reflexion
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>

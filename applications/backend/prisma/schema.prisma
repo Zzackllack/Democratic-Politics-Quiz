@@ -1,0 +1,43 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Question {
+  id            String   @id
+  type          String
+  question      String
+  options       Json
+  correctAnswer String
+  difficulty    String
+  explanation   String
+}
+
+model Player {
+  id       String   @id
+  name     String
+  score    Int
+  joinedAt DateTime
+}
+
+model Lobby {
+  id         String   @id
+  name       String
+  players    Json
+  maxPlayers Int
+  gameMode   String
+  isActive   Boolean
+  createdAt  DateTime
+}
+
+model GameMode {
+  id          String @id
+  label       String
+  description String
+  color       String
+  icon        String
+}
