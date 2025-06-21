@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { gameModes } from "../data/mockData";
 
 interface HeroProps {
@@ -225,38 +226,47 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
         </div>
 
         {/* Difficulty Selection */}
-        {selectedGameType && (
-          <div className="w-full max-w-6xl mb-12 animate-fade-in">
-            <h2 className="text-3xl font-bold text-center mb-8 text-black">
-              Schwierigkeitsgrad wählen
-            </h2>
+        <AnimatePresence>
+          {selectedGameType && (
+            <motion.div
+              key="difficulty"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.6 }}
+              className="w-full max-w-6xl mb-12"
+            >
+              <h2 className="text-3xl font-bold text-center mb-8 text-black">
+                Schwierigkeitsgrad wählen
+              </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {Object.entries(gameModes).map(([key, mode], index) => (
-                <div
-                  key={key}
-                  onClick={() => setSelectedGameMode(key)}
-                  className={`p-6 cursor-pointer transition-all duration-300 rounded-xl shadow-lg transform hover:scale-105 hover:-translate-y-1 ${
-                    selectedGameMode === key
-                      ? "border-2 border-blue-500 bg-blue-50 shadow-xl scale-105"
-                      : "border-2 border-gray-200 bg-white hover:border-blue-300 hover:shadow-xl"
-                  }`}
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <div
-                      className={`w-12 h-12 rounded-full ${mode.color} flex items-center justify-center mb-3 shadow-md`}
-                    >
-                      <span className="text-xl text-white">{mode.icon}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {Object.entries(gameModes).map(([key, mode], index) => (
+                  <div
+                    key={key}
+                    onClick={() => setSelectedGameMode(key)}
+                    className={`p-6 cursor-pointer transition-all duration-300 rounded-xl shadow-lg transform hover:scale-105 hover:-translate-y-1 ${
+                      selectedGameMode === key
+                        ? "border-2 border-blue-500 bg-blue-50 shadow-xl scale-105"
+                        : "border-2 border-gray-200 bg-white hover:border-blue-300 hover:shadow-xl"
+                    }`}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div
+                        className={`w-12 h-12 rounded-full ${mode.color} flex items-center justify-center mb-3 shadow-md`}
+                      >
+                        <span className="text-xl text-white">{mode.icon}</span>
+                      </div>
+                      <h3 className="text-lg font-bold text-black mb-2">{mode.label}</h3>
+                      <p className="text-sm text-gray-600 leading-tight">{mode.description}</p>
                     </div>
-                    <h3 className="text-lg font-bold text-black mb-2">{mode.label}</h3>
-                    <p className="text-sm text-gray-600 leading-tight">{mode.description}</p>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Start Button */}
         {selectedGameType && selectedGameMode && (
@@ -303,13 +313,19 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
               <div className="space-y-3">
                 <button
                   onClick={() => (window.location.href = "/lobby")}
-                  className="w-full py-3 px-6 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  disabled={!selectedGameMode}
+                  className={`w-full py-3 px-6 bg-red-600 text-white rounded-lg transition-colors font-medium ${
+                    selectedGameMode ? "hover:bg-red-700" : "opacity-50 cursor-not-allowed"
+                  }`}
                 >
                   Neue Lobby erstellen
                 </button>
                 <button
                   onClick={() => (window.location.href = "/lobby")}
-                  className="w-full py-3 px-6 border-2 border-yellow-500 text-yellow-600 rounded-lg hover:bg-yellow-50 transition-colors font-medium"
+                  disabled={!selectedGameMode}
+                  className={`w-full py-3 px-6 border-2 border-yellow-500 text-yellow-600 rounded-lg transition-colors font-medium ${
+                    selectedGameMode ? "hover:bg-yellow-50" : "opacity-50 cursor-not-allowed"
+                  }`}
                 >
                   Bestehender Lobby beitreten
                 </button>
