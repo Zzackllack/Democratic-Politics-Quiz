@@ -11,7 +11,9 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | boolean | null>(null);
   const [answers, setAnswers] = useState<any[]>([]);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(0); // points
+  const [correctCount, setCorrectCount] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [timeLeft, setTimeLeft] = useState(30);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -63,7 +65,12 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
     setAnswers([...answers, newAnswer]);
 
     if (isCorrect) {
-      setScore(score + 1);
+      const nextStreak = streak + 1;
+      setStreak(nextStreak);
+      setCorrectCount(correctCount + 1);
+      setScore(score + 100 * nextStreak);
+    } else {
+      setStreak(0);
     }
 
     setShowExplanation(true);
@@ -80,6 +87,7 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
         timeSpent: 30,
       };
       setAnswers([...answers, newAnswer]);
+      setStreak(0);
     }
 
     if (currentQuestionIndex < questions.length - 1) {
@@ -115,6 +123,13 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
     return ((currentQuestionIndex + 1) / questions.length) * 100;
   };
 
+  const getScoreColor = () => {
+    const ratio = correctCount / questions.length;
+    if (ratio >= 0.8) return "text-green-600";
+    if (ratio >= 0.5) return "text-yellow-600";
+    return "text-red-600";
+  };
+
   if (questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -127,7 +142,7 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
   }
 
   if (isQuizCompleted) {
-    const finalPercentage = (score / questions.length) * 100;
+    const finalPercentage = (correctCount / questions.length) * 100;
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center px-4">
@@ -139,21 +154,27 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
 
             <h2 className="text-3xl font-bold text-german-black mb-4">Quiz abgeschlossen!</h2>
 
-            <div className="text-6xl font-bold mb-4 ${getScoreColor()}">
-              {score}/{questions.length}
+            <div className={`text-6xl font-bold mb-4 ${getScoreColor()}`}>
+              {correctCount}/{questions.length}
             </div>
 
             <p className="text-xl text-gray-600 mb-6">
               Du hast {finalPercentage.toFixed(0)}% der Fragen richtig beantwortet!
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
               <div className="p-4 bg-gray-50 rounded-lg">
                 <div className="text-2xl font-bold text-german-black">{score}</div>
+                <div className="text-sm text-gray-600">Punkte</div>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-german-black">{correctCount}</div>
                 <div className="text-sm text-gray-600">Richtige Antworten</div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-german-red">{questions.length - score}</div>
+                <div className="text-2xl font-bold text-german-red">
+                  {questions.length - correctCount}
+                </div>
                 <div className="text-sm text-gray-600">Falsche Antworten</div>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
@@ -217,7 +238,7 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
             </div>
             <div className="flex items-center space-x-6">
               <div className="text-center">
-                <div className="text-2xl font-bold ${getScoreColor()}">{score}</div>
+                <div className={`text-2xl font-bold ${getScoreColor()}`}>{score}</div>
                 <div className="text-sm text-gray-600">Punkte</div>
               </div>
               <div className="text-center">
