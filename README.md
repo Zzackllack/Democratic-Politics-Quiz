@@ -12,13 +12,11 @@ Ein interaktives Quiz zur Stärkung des Verständnisses für demokratische Werte
 ### Projekt starten
 
 ```bash
-# In das Next.js Frontend-Verzeichnis wechseln
-cd applications/frontend
-
-# Dependencies installieren
+# Abhängigkeiten im Monorepo installieren
 npm install
 
 # Entwicklungsserver starten
+cd applications/frontend
 npm run dev
 
 # Für Produktion bauen
