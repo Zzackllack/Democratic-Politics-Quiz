@@ -147,11 +147,25 @@ app.post("/api/lobbies", async (req, res) => {
 
 app.post("/api/lobbies/:id/join", async (req, res) => {
   const lobbyId = req.params.id;
-  const { playerId } = req.body as { playerId?: string };
+  const { playerId, playerName } = req.body as {
+    playerId?: string;
+    playerName?: string;
+  };
   if (!playerId) {
     return res.status(400).json({ error: "Player ID required" });
   }
   try {
+    let player = await prisma.player.findUnique({ where: { id: playerId } });
+    if (!player) {
+      player = await prisma.player.create({
+        data: {
+          id: playerId,
+          name: playerName || `Spieler ${playerId}`,
+          score: 0,
+          joinedAt: new Date(),
+        },
+      });
+    }
     const lobby = await prisma.lobby.findUnique({ where: { id: lobbyId } });
     if (!lobby) {
       return res.status(404).json({ error: "Lobby not found" });
@@ -179,14 +193,16 @@ app.get("/api/game-modes", async (_req, res) => {
   try {
     const rows = await prisma.gameMode.findMany();
     const data: Record<string, any> = {};
-    rows.forEach((r) => {
-      data[r.id] = {
-        label: r.label,
-        description: r.description,
-        color: r.color,
-        icon: r.icon,
-      };
-    });
+    rows.forEach(
+      (r: { id: string; label: string; description: string; color: string; icon: string }) => {
+        data[r.id] = {
+          label: r.label,
+          description: r.description,
+          color: r.color,
+          icon: r.icon,
+        };
+      }
+    );
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });

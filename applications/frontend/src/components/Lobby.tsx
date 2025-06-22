@@ -86,7 +86,10 @@ const LobbyComponent: React.FC<LobbyProps> = ({
       await fetch(`${apiUrl}/api/lobbies/${lobbyId}/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerId: currentPlayer.id }),
+        body: JSON.stringify({
+          playerId: currentPlayer.id,
+          playerName: currentPlayer.name,
+        }),
       });
       await loadLobbies();
       onJoinLobby(lobbyId);
