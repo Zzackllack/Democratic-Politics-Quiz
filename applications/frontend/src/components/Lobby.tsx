@@ -27,11 +27,21 @@ const LobbyComponent: React.FC<LobbyProps> = ({
 
   const [socket, setSocket] = useState<Socket | null>(null);
 
+  const parseLobby = (raw: any): Lobby => ({
+    ...raw,
+    createdAt: new Date(raw.createdAt),
+    players: raw.players.map((p: any) => ({
+      ...p,
+      joinedAt: new Date(p.joinedAt),
+    })),
+  });
+
   useEffect(() => {
     const loadLobbies = async () => {
       setIsLoading(true);
       const res = await fetch("http://localhost:3001/api/lobbies");
-      const data = await res.json();
+      const raw = await res.json();
+      const data = raw.map((l: any) => parseLobby(l));
       setLobbies(data);
       setIsLoading(false);
     };
@@ -40,7 +50,8 @@ const LobbyComponent: React.FC<LobbyProps> = ({
     const s = io("http://localhost:3001");
     setSocket(s);
     s.on("lobby:update", (lobby: Lobby) => {
-      setLobbies((prev) => prev.map((l) => (l.id === lobby.id ? lobby : l)));
+      const parsed = parseLobby(lobby);
+      setLobbies((prev) => prev.map((l) => (l.id === parsed.id ? parsed : l)));
     });
     return () => {
       s.disconnect();
@@ -58,7 +69,7 @@ const LobbyComponent: React.FC<LobbyProps> = ({
         browserSessionId: "demo-session",
       }),
     });
-    const lobby: Lobby = await res.json();
+    const lobby: Lobby = parseLobby(await res.json());
     socket?.emit("joinRoom", lobby.id);
     setLobbies([lobby, ...lobbies]);
     setShowCreateForm(false);
@@ -71,7 +82,7 @@ const LobbyComponent: React.FC<LobbyProps> = ({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, name: currentPlayer.name, browserSessionId: "demo-session" }),
     });
-    const lobby: Lobby = await res.json();
+    const lobby: Lobby = parseLobby(await res.json());
     socket?.emit("joinRoom", lobby.id);
     setLobbies((prev) => prev.map((l) => (l.id === lobby.id ? lobby : l)));
     onJoinLobby(lobbyId);
@@ -81,9 +92,10 @@ const LobbyComponent: React.FC<LobbyProps> = ({
     return gameModes[gameMode as keyof typeof gameModes] || gameModes.einfach;
   };
 
-  const formatCreatedTime = (date: Date) => {
+  const formatCreatedTime = (date: Date | string) => {
+    const d = typeof date === "string" ? new Date(date) : date;
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+    const diffMs = now.getTime() - d.getTime();
     const diffMins = Math.floor(diffMs / 60000);
 
     if (diffMins < 1) return "Gerade erstellt";
