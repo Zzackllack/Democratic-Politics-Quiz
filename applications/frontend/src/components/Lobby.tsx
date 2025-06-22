@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { Lobby, Player } from "../data/mockData";
-import { gameModes, mockLobbies } from "../data/mockData";
+import { gameModes } from "../data/mockData";
+import { io, Socket } from "socket.io-client";
 
 interface LobbyProps {
   onStartGame?: (lobby: Lobby) => void;
@@ -24,48 +25,55 @@ const LobbyComponent: React.FC<LobbyProps> = ({
   });
   const [isLoading, setIsLoading] = useState(true);
 
+  const [socket, setSocket] = useState<Socket | null>(null);
+
   useEffect(() => {
-    // Simulate loading lobbies
     const loadLobbies = async () => {
       setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setLobbies(mockLobbies);
+      const res = await fetch("http://localhost:3001/api/lobbies");
+      const data = await res.json();
+      setLobbies(data);
       setIsLoading(false);
     };
 
     loadLobbies();
+    const s = io("http://localhost:3001");
+    setSocket(s);
+    s.on("lobby:update", (lobby: Lobby) => {
+      setLobbies((prev) => prev.map((l) => (l.id === lobby.id ? lobby : l)));
+    });
+    return () => {
+      s.disconnect();
+    };
   }, []);
 
-  const handleCreateLobby = () => {
+  const handleCreateLobby = async () => {
     if (!newLobbyName.trim()) return;
-
-    const newLobby: Lobby = {
-      id: `lobby_${Date.now()}`,
-      name: newLobbyName,
-      players: [currentPlayer],
-      maxPlayers,
-      gameMode: selectedGameMode,
-      isActive: true,
-      createdAt: new Date(),
-    };
-
-    setLobbies([newLobby, ...lobbies]);
+    const res = await fetch("http://localhost:3001/api/lobby/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: newLobbyName,
+        maxPlayers,
+        browserSessionId: "demo-session",
+      }),
+    });
+    const lobby: Lobby = await res.json();
+    socket?.emit("joinRoom", lobby.id);
+    setLobbies([lobby, ...lobbies]);
     setShowCreateForm(false);
     setNewLobbyName("");
   };
 
-  const handleJoinLobby = (lobbyId: string) => {
-    setLobbies(
-      lobbies.map((lobby) => {
-        if (lobby.id === lobbyId && lobby.players.length < lobby.maxPlayers) {
-          return {
-            ...lobby,
-            players: [...lobby.players, currentPlayer],
-          };
-        }
-        return lobby;
-      })
-    );
+  const handleJoinLobby = async (lobbyId: string, code: string) => {
+    const res = await fetch("http://localhost:3001/api/lobby/join", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, name: currentPlayer.name, browserSessionId: "demo-session" }),
+    });
+    const lobby: Lobby = await res.json();
+    socket?.emit("joinRoom", lobby.id);
+    setLobbies((prev) => prev.map((l) => (l.id === lobby.id ? lobby : l)));
     onJoinLobby(lobbyId);
   };
 
@@ -334,7 +342,9 @@ const LobbyComponent: React.FC<LobbyProps> = ({
 
                     {/* Action Button */}
                     <button
-                      onClick={() => (canJoin ? handleJoinLobby(lobby.id) : onStartGame(lobby))}
+                      onClick={() =>
+                        canJoin ? handleJoinLobby(lobby.id, lobby.code!) : onStartGame(lobby)
+                      }
                       disabled={!canJoin && !lobby.players.some((p) => p.id === currentPlayer.id)}
                       className={`w-full py-3 font-bold rounded-lg transition-all duration-300 ${
                         canJoin

@@ -21,8 +21,11 @@ async function main() {
     data: players.map((p) => ({
       id: p.id,
       name: p.name,
+      lobbyId: p.lobbyId,
+      isHost: p.isHost,
       score: p.score,
       joinedAt: new Date(p.joinedAt),
+      browserSessionId: p.browserSessionId,
     })),
     skipDuplicates: true,
   });
@@ -30,12 +33,11 @@ async function main() {
   await prisma.lobby.createMany({
     data: lobbies.map((l) => ({
       id: l.id,
-      name: l.name,
-      players: l.players,
-      maxPlayers: l.maxPlayers,
-      gameMode: l.gameMode,
-      isActive: l.isActive,
+      code: l.code,
       createdAt: new Date(l.createdAt),
+      hostId: l.hostId,
+      maxPlayers: l.maxPlayers,
+      status: l.status as any,
     })),
     skipDuplicates: true,
   });

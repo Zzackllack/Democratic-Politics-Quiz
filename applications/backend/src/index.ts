@@ -1,10 +1,14 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, LobbyStatus } from "@prisma/client";
 import cors from "cors";
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import { gameModes, lobbies, players, questions } from "./mockData";
 
 const prisma = new PrismaClient();
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(express.json());
 app.use(cors());
@@ -30,8 +34,11 @@ async function initDb() {
       data: players.map((p) => ({
         id: p.id,
         name: p.name,
+        lobbyId: p.lobbyId,
+        isHost: p.isHost,
         score: p.score,
         joinedAt: new Date(p.joinedAt),
+        browserSessionId: p.browserSessionId,
       })),
     });
   }
@@ -40,12 +47,11 @@ async function initDb() {
     await prisma.lobby.createMany({
       data: lobbies.map((l) => ({
         id: l.id,
-        name: l.name,
-        players: l.players,
-        maxPlayers: l.maxPlayers,
-        gameMode: l.gameMode,
-        isActive: l.isActive,
+        code: l.code,
         createdAt: new Date(l.createdAt),
+        hostId: l.hostId,
+        maxPlayers: l.maxPlayers,
+        status: l.status as LobbyStatus,
       })),
     });
   }
@@ -64,6 +70,12 @@ async function initDb() {
 }
 
 initDb().catch((err) => console.error(err));
+
+io.on("connection", (socket) => {
+  socket.on("joinRoom", (lobbyId: string) => {
+    socket.join(lobbyId);
+  });
+});
 
 app.get("/api/questions", async (req, res) => {
   try {
@@ -90,15 +102,18 @@ app.get("/api/players", async (_req, res) => {
 });
 
 app.post("/api/players", async (req, res) => {
-  const { name, score } = req.body as { name?: string; score?: number };
-  if (!name || typeof score !== "number") {
-    return res.status(400).json({ error: "Name and score required" });
+  const { name, score, browserSessionId } = req.body as {
+    name?: string;
+    score?: number;
+    browserSessionId?: string;
+  };
+  if (!name || typeof score !== "number" || !browserSessionId) {
+    return res.status(400).json({ error: "Missing fields" });
   }
   try {
-    const id = Date.now().toString();
     const joinedAt = new Date();
     const player = await prisma.player.create({
-      data: { id, name, score, joinedAt },
+      data: { name, score, joinedAt, browserSessionId },
     });
     res.json(player);
   } catch (err) {
@@ -108,8 +123,83 @@ app.post("/api/players", async (req, res) => {
 
 app.get("/api/lobbies", async (_req, res) => {
   try {
-    const data = await prisma.lobby.findMany();
+    const data = await prisma.lobby.findMany({ include: { players: true, host: true } });
     res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post("/api/lobby/create", async (req, res) => {
+  const { name, maxPlayers, browserSessionId } = req.body as {
+    name?: string;
+    maxPlayers?: number;
+    browserSessionId?: string;
+  };
+  if (!name || !maxPlayers || !browserSessionId) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const host = await prisma.player.create({
+      data: {
+        name,
+        isHost: true,
+        browserSessionId,
+      },
+    });
+    const lobby = await prisma.lobby.create({
+      data: {
+        code,
+        hostId: host.id,
+        maxPlayers,
+      },
+      include: { players: true, host: true },
+    });
+    await prisma.player.update({
+      where: { id: host.id },
+      data: { lobbyId: lobby.id },
+    });
+    res.json(lobby);
+    io.to(lobby.id).emit("lobby:update", lobby);
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.post("/api/lobby/join", async (req, res) => {
+  const { code, name, browserSessionId } = req.body as {
+    code?: string;
+    name?: string;
+    browserSessionId?: string;
+  };
+  if (!code || !name || !browserSessionId) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    const lobby = await prisma.lobby.findFirst({ where: { code }, include: { players: true } });
+    if (!lobby || lobby.status !== "waiting" || lobby.players.length >= lobby.maxPlayers) {
+      return res.status(400).json({ error: "Cannot join lobby" });
+    }
+    const existing = await prisma.player.findFirst({
+      where: { browserSessionId, lobbyId: lobby.id },
+    });
+    if (existing) {
+      return res.status(400).json({ error: "Already joined" });
+    }
+    const player = await prisma.player.create({
+      data: {
+        name,
+        lobbyId: lobby.id,
+        browserSessionId,
+      },
+    });
+    const updated = await prisma.lobby.findUnique({
+      where: { id: lobby.id },
+      include: { players: true, host: true },
+    });
+    res.json(updated);
+    io.to(lobby.id).emit("lobby:update", updated);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
@@ -134,6 +224,6 @@ app.get("/api/game-modes", async (_req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(Number(PORT), () => {
+server.listen(Number(PORT), () => {
   console.log(`Backend listening on port ${PORT}`);
 });

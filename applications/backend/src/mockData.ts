@@ -103,54 +103,33 @@ export const questions = [
 ];
 export const players = [
   {
-    id: "1",
+    id: "p1",
     name: "Anna Schmidt",
+    lobbyId: null,
+    isHost: false,
     score: 850,
     joinedAt: "2024-01-15T10:30:00",
+    browserSessionId: "s1",
   },
   {
-    id: "2",
+    id: "p2",
     name: "Max Mueller",
+    lobbyId: null,
+    isHost: false,
     score: 780,
     joinedAt: "2024-01-15T10:32:00",
-  },
-  {
-    id: "3",
-    name: "Lisa Weber",
-    score: 720,
-    joinedAt: "2024-01-15T10:35:00",
-  },
-  {
-    id: "4",
-    name: "Tom Fischer",
-    score: 680,
-    joinedAt: "2024-01-15T10:38:00",
-  },
-  {
-    id: "5",
-    name: "Sarah Klein",
-    score: 650,
-    joinedAt: "2024-01-15T10:40:00",
+    browserSessionId: "s2",
   },
 ];
+
 export const lobbies = [
   {
-    id: "1",
-    name: "Demokratie-Profis",
-    players: ["1", "2", "3"],
-    maxPlayers: 4,
-    gameMode: "schwer",
-    isActive: true,
+    id: "l1",
+    code: "ABC123",
     createdAt: "2024-01-15T10:25:00",
-  },
-  {
-    id: "2",
-    name: "Einsteiger-Runde",
-    players: ["4", "5"],
-    maxPlayers: 6,
-    gameMode: "einfach",
-    isActive: true,
-    createdAt: "2024-01-15T10:30:00",
+    hostId: "p1",
+    maxPlayers: 4,
+    status: "waiting",
   },
 ];
 export const gameModes = {

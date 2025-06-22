@@ -11,17 +11,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ error: "Failed to load players" });
     }
   } else if (req.method === "POST") {
-    const { name, score } = req.body as { name?: string; score?: number };
-    if (!name || typeof score !== "number") {
-      return res.status(400).json({ error: "Name and score required" });
+    const { name, score, browserSessionId } = req.body as {
+      name?: string;
+      score?: number;
+      browserSessionId?: string;
+    };
+    if (!name || typeof score !== "number" || !browserSessionId) {
+      return res.status(400).json({ error: "Missing fields" });
     }
     try {
       const player = await prisma.player.create({
         data: {
-          id: Date.now().toString(),
           name,
           score,
           joinedAt: new Date(),
+          browserSessionId,
         },
       });
       res.status(200).json(player);

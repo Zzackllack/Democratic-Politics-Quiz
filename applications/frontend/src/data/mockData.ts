@@ -17,6 +17,7 @@ export interface Player {
 
 export interface Lobby {
   id: string;
+  code?: string;
   name: string;
   players: Player[];
   maxPlayers: number;
@@ -168,6 +169,7 @@ export const mockPlayers: Player[] = [
 export const mockLobbies: Lobby[] = [
   {
     id: "1",
+    code: "AAAAAA",
     name: "Demokratie-Profis",
     players: mockPlayers.slice(0, 3),
     maxPlayers: 4,
@@ -177,6 +179,7 @@ export const mockLobbies: Lobby[] = [
   },
   {
     id: "2",
+    code: "BBBBBB",
     name: "Einsteiger-Runde",
     players: mockPlayers.slice(3, 5),
     maxPlayers: 6,
