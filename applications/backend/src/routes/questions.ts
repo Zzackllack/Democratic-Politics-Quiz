@@ -1,6 +1,5 @@
-import { Prisma } from "@prisma/client";
-import { Router } from "express";
-import { prisma } from "../index";
+import { Router, Request, Response } from "express";
+import { prisma } from "../lib/prisma";
 import { asyncHandler } from "../middleware/errorHandler";
 import { getQuestionsSchema } from "../validation/schemas";
 
@@ -9,7 +8,7 @@ const router = Router();
 // GET /api/questions - Get questions with optional filtering
 router.get(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     // Validate query parameters
     const { error, value } = getQuestionsSchema.validate(req.query);
     if (error) {
@@ -44,9 +43,12 @@ router.get(
       });
 
       // Transform options from JSON to array for multiple-choice questions
-      const transformedQuestions = questions.map((q) => ({
-        ...q,
-        options: q.type === "multiple-choice" ? (q.options as string[]) : undefined,
+      const transformedQuestions = questions.map((question: any) => ({
+        ...question,
+        options:
+          question.type === "multiple-choice"
+            ? (question.options as string[])
+            : undefined,
       }));
 
       res.json(transformedQuestions);
@@ -60,7 +62,7 @@ router.get(
 // GET /api/questions/:id - Get a specific question
 router.get(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
@@ -98,7 +100,7 @@ router.get(
 // GET /api/questions/random - Get random questions for a quiz
 router.get(
   "/random/:count",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const count = parseInt(req.params.count);
     const { difficulty } = req.query;
 
@@ -113,19 +115,14 @@ router.get(
         where.difficulty = { equals: difficulty as string, mode: "insensitive" };
       }
 
-      // Get random questions using raw query for better performance
-      const questions = await prisma.$queryRaw`
-      SELECT id, type, question, options, "correctAnswer", difficulty, explanation
-      FROM "Question"
-      ${difficulty ? Prisma.sql`WHERE difficulty ILIKE ${`%${difficulty}%`}` : Prisma.empty}
-      ORDER BY RANDOM()
-      LIMIT ${count}
-    `;
-
-      // Transform the results
-      const transformedQuestions = (questions as any[]).map((q) => ({
-        ...q,
-        options: q.type === "multiple-choice" ? q.options : undefined,
+      const allQuestions = await prisma.question.findMany({ where });
+      const shuffled = allQuestions.sort(() => Math.random() - 0.5).slice(0, count);
+      const transformedQuestions = shuffled.map((question: any) => ({
+        ...question,
+        options:
+          question.type === "multiple-choice"
+            ? (question.options as string[])
+            : undefined,
       }));
 
       res.json(transformedQuestions);

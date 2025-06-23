@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { questions, gameModes } from "../src/data/mockData";
+import { questions, gameModes } from "./data/mockData";
 
 const prisma = new PrismaClient();
 
@@ -16,7 +16,6 @@ async function main() {
     })),
     skipDuplicates: true,
   });
-
 
   await prisma.gameMode.createMany({
     data: Object.entries(gameModes).map(([id, gm]) => ({

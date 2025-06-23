@@ -17,14 +17,14 @@ router.get(
 
       // Transform to object format expected by frontend
       const gameModesObject: Record<string, any> = {};
-      gameModes.forEach((mode) => {
+      for (const mode of gameModes) {
         gameModesObject[mode.id] = {
           label: mode.label,
           description: mode.description,
           color: mode.color,
           icon: mode.icon,
         };
-      });
+      }
 
       res.json(gameModesObject);
     } catch (error) {
