@@ -8,43 +8,57 @@ datasource db {
 }
 
 model Question {
-  id            String @id
-  type          String
+  id            String @id @default(cuid())
+  type          String // "multiple-choice" | "true-false"
   question      String
-  options       Json
-  correctAnswer String
-  difficulty    String
+  options       Json? // Array of strings for multiple choice, null for true/false
+  correctAnswer String // String for multiple choice, "true"/"false" for true/false
+  difficulty    String // "einfach" | "mittel" | "schwer" | "lustig" | "einbürgerungstest"
   explanation   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  GameAnswer    GameAnswer[]
 }
 
 model Player {
-  id               String       @id
+  id               String @id @default(cuid())
   name             String
-  score            Int          @default(0)
-  joinedAt         DateTime     @default(now())
-  browserSessionId String
-  isHost           Boolean      @default(false)
+  score            Int @default(0)
+  joinedAt         DateTime @default(now())
+  browserSessionId String? // For session tracking
+  isHost           Boolean @default(false)
   lobbyId          String?
-  GameAnswer       GameAnswer[]
-  Lobby            Lobby?       @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
-
-  @@unique([browserSessionId, lobbyId])
+  isOnline         Boolean @default(true)
+  
+  // Relations
+  lobby            Lobby? @relation(fields: [lobbyId], references: [id], onDelete: SetNull)
+  gameAnswers      GameAnswer[]
+  hostedLobbies    Lobby[] @relation("LobbyHost")
+  
+  @@index([score])
+  @@index([browserSessionId])
 }
 
 model Lobby {
-  id         String      @id
-  code       String      @unique
+  id         String @id @default(cuid())
+  code       String @unique // 6-digit join code
   name       String
-  maxPlayers Int         @default(4)
-  gameMode   String      @default("einfach")
+  maxPlayers Int @default(4)
+  gameMode   String @default("einfach") // difficulty level
   status     LobbyStatus @default(WAITING)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime
-  hostId     String?
-  GameState  GameState?
-  Player     Player[]
-
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  hostId     String
+  
+  // Relations
+  host       Player @relation("LobbyHost", fields: [hostId], references: [id], onDelete: Cascade)
+  players    Player[]
+  gameState  GameState?
+  
   @@index([code])
+  @@index([status])
 }
 
 model GameMode {
@@ -53,38 +67,63 @@ model GameMode {
   description String
   color       String
   icon        String
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
 }
 
 model GameAnswer {
-  id             String    @id
+  id             String @id @default(cuid())
   questionId     String
-  selectedAnswer String?
-  isCorrect      Boolean   @default(false)
-  timeSpent      Int       @default(0)
-  submittedAt    DateTime  @default(now())
+  selectedAnswer String? // The player's answer
+  isCorrect      Boolean @default(false)
+  timeSpent      Int @default(0) // seconds
+  submittedAt    DateTime @default(now())
   playerId       String
   gameStateId    String
-  GameState      GameState @relation(fields: [gameStateId], references: [id], onDelete: Cascade)
-  Player         Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
-
+  
+  // Relations
+  question       Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  player         Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  gameState      GameState @relation(fields: [gameStateId], references: [id], onDelete: Cascade)
+  
   @@unique([playerId, gameStateId, questionId])
+  @@index([gameStateId])
 }
 
 model GameState {
-  id                String       @id
-  currentQuestion   Int          @default(0)
-  totalQuestions    Int          @default(10)
+  id                String @id @default(cuid())
+  currentQuestion   Int @default(0)
+  totalQuestions    Int @default(10)
+  questionIds       Json // Array of question IDs for this game
   questionStartTime DateTime?
-  isActive          Boolean      @default(false)
-  createdAt         DateTime     @default(now())
-  lobbyId           String       @unique
-  GameAnswer        GameAnswer[]
-  Lobby             Lobby        @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  isActive          Boolean @default(false)
+  isCompleted       Boolean @default(false)
+  createdAt         DateTime @default(now())
+  lobbyId           String @unique
+  
+  // Relations
+  lobby             Lobby @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  gameAnswers       GameAnswer[]
+  
+  @@index([isActive])
+}
+
+// Session tracking for real-time features
+model Session {
+  id         String @id @default(cuid())
+  playerId   String
+  socketId   String?
+  isActive   Boolean @default(true)
+  lastSeen   DateTime @default(now())
+  createdAt  DateTime @default(now())
+  
+  @@index([playerId])
+  @@index([socketId])
 }
 
 enum LobbyStatus {
-  WAITING
-  STARTING
-  IN_PROGRESS
-  FINISHED
+  WAITING      // Waiting for players
+  STARTING     // Game about to start
+  IN_PROGRESS  // Game is active
+  FINISHED     // Game completed
 }

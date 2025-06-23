@@ -38,7 +38,6 @@ This repository is organized as a monorepo for the Democratic Politics Quiz proj
 - Color palettes should follow our established theme (black, red, gold/yellow, neutral gray/white), used tastefully with consistent contrast and hierarchy.
 - Ensure accessibility best practices are followed (keyboard navigation, ARIA roles, screen reader compatibility).
 
-
 ## Backend Instructions (Express + Prisma + PostgreSQL)
 
 If you're working on the backend or implementing functionality that connects frontend to backend (e.g. dynamic question loading, leaderboard logic), follow these instructions:
@@ -89,23 +88,23 @@ If you're working on the backend or implementing functionality that connects fro
 
 ### Notes for AI Agents
 
-* If you're generating server logic, use **Express route handlers** and connect them to Prisma client queries.
-* Make sure to filter quiz questions based on parameters like difficulty, mode, and session when implementing API endpoints.
-* Ensure CORS and JSON body-parsing middleware are enabled in Express if frontend is communicating with this backend.
-* When suggesting backend-related commands, include Prisma steps like `npx prisma generate`, `npx prisma migrate dev`, and `.env` creation if needed.
-* API routes should return meaningful status codes and error messages.
-* Use TypeScript types from `@prisma/client` for consistent DB models.
+- If you're generating server logic, use **Express route handlers** and connect them to Prisma client queries.
+- Make sure to filter quiz questions based on parameters like difficulty, mode, and session when implementing API endpoints.
+- Ensure CORS and JSON body-parsing middleware are enabled in Express if frontend is communicating with this backend.
+- When suggesting backend-related commands, include Prisma steps like `npx prisma generate`, `npx prisma migrate dev`, and `.env` creation if needed.
+- API routes should return meaningful status codes and error messages.
+- Use TypeScript types from `@prisma/client` for consistent DB models.
 
 ## Migration Notes
 
-* The codebase is being migrated to Next.js 15 and Tailwind CSS v4. All new pages/components should use the new app structure and conventions.
-* Legacy Astro or other frameworks are not in use; ignore any references to Astro in scripts or configs.
+- The codebase is being migrated to Next.js 15 and Tailwind CSS v4. All new pages/components should use the new app structure and conventions.
+- Legacy Astro or other frameworks are not in use; ignore any references to Astro in scripts or configs.
 
 ## Validation & Testing
 
-* Run `npm run lint` in `applications/frontend` to check code style and catch errors.
-* Run `npm run format` to format code with Prettier.
-* Run `npm run build` to build the application and check for TypeScript errors.
-* Run `npm run dev` to start the development server and manually test UI changes.
-* Add/update tests as needed (test setup may be added in the future).
-* Ensure all changes build and run locally before submitting PRs.
+- Run `npm run lint` in `applications/frontend` to check code style and catch errors.
+- Run `npm run format` to format code with Prettier.
+- Run `npm run build` to build the application and check for TypeScript errors.
+- Run `npm run dev` to start the development server and manually test UI changes.
+- Add/update tests as needed (test setup may be added in the future).
+- Ensure all changes build and run locally before submitting PRs.

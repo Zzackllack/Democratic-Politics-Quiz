@@ -1,7 +1,7 @@
 export const questions = [
   // Einfach (Easy)
   {
-    id: "1",
+    id: "q1",
     type: "multiple-choice",
     question: "Wer ist das Staatsoberhaupt der Bundesrepublik Deutschland?",
     options: [
@@ -16,17 +16,17 @@ export const questions = [
       "Der Bundespräsident ist das Staatsoberhaupt Deutschlands und wird von der Bundesversammlung gewählt.",
   },
   {
-    id: "2",
+    id: "q2",
     type: "true-false",
     question: "Deutschland ist eine parlamentarische Demokratie.",
-    correctAnswer: true,
+    correctAnswer: "true",
     difficulty: "einfach",
     explanation: "Deutschland ist eine parlamentarische und föderale Demokratie.",
   },
 
   // Mittel (Medium)
   {
-    id: "3",
+    id: "q3",
     type: "multiple-choice",
     question: "Wie oft wird der Deutsche Bundestag normalerweise gewählt?",
     options: ["Alle 3 Jahre", "Alle 4 Jahre", "Alle 5 Jahre", "Alle 6 Jahre"],
@@ -35,7 +35,7 @@ export const questions = [
     explanation: "Der Deutsche Bundestag wird alle vier Jahre vom Volk gewählt.",
   },
   {
-    id: "4",
+    id: "q4",
     type: "multiple-choice",
     question: "Welches Organ wählt den Bundeskanzler?",
     options: ["Das Volk direkt", "Der Bundestag", "Der Bundesrat", "Die Bundesversammlung"],
@@ -46,7 +46,7 @@ export const questions = [
 
   // Schwer (Hard)
   {
-    id: "5",
+    id: "q5",
     type: "multiple-choice",
     question: "Welcher Artikel des Grundgesetzes garantiert die Menschenwürde?",
     options: ["Artikel 1", "Artikel 2", "Artikel 3", "Artikel 4"],
@@ -55,10 +55,10 @@ export const questions = [
     explanation: 'Artikel 1 des Grundgesetzes besagt: "Die Würde des Menschen ist unantastbar."',
   },
   {
-    id: "6",
+    id: "q6",
     type: "true-false",
     question: "Der Bundesrat kann Gesetze des Bundestages mit absoluter Mehrheit ablehnen.",
-    correctAnswer: false,
+    correctAnswer: "false",
     difficulty: "schwer",
     explanation:
       "Der Bundesrat kann nur bei zustimmungspflichtigen Gesetzen ein absolutes Veto einlegen.",
@@ -66,7 +66,7 @@ export const questions = [
 
   // Lustig (Fun)
   {
-    id: "7",
+    id: "q7",
     type: "multiple-choice",
     question: "Was passiert, wenn der Bundeskanzler beim Vertrauensvotum durchfällt?",
     options: [
@@ -83,7 +83,7 @@ export const questions = [
 
   // Einbürgerungstest
   {
-    id: "8",
+    id: "q8",
     type: "multiple-choice",
     question: "Das deutsche Grundgesetz besteht seit...",
     options: ["1945", "1949", "1951", "1990"],
@@ -92,7 +92,7 @@ export const questions = [
     explanation: "Das Grundgesetz der Bundesrepublik Deutschland trat am 23. Mai 1949 in Kraft.",
   },
   {
-    id: "9",
+    id: "q9",
     type: "multiple-choice",
     question: "Wie viele Bundesländer hat die Bundesrepublik Deutschland?",
     options: ["14", "15", "16", "17"],
@@ -100,59 +100,17 @@ export const questions = [
     difficulty: "einbürgerungstest",
     explanation: "Deutschland besteht aus 16 Bundesländern.",
   },
-];
-export const players = [
   {
-    id: "1",
-    name: "Anna Schmidt",
-    score: 850,
-    joinedAt: "2024-01-15T10:30:00",
-  },
-  {
-    id: "2",
-    name: "Max Mueller",
-    score: 780,
-    joinedAt: "2024-01-15T10:32:00",
-  },
-  {
-    id: "3",
-    name: "Lisa Weber",
-    score: 720,
-    joinedAt: "2024-01-15T10:35:00",
-  },
-  {
-    id: "4",
-    name: "Tom Fischer",
-    score: 680,
-    joinedAt: "2024-01-15T10:38:00",
-  },
-  {
-    id: "5",
-    name: "Sarah Klein",
-    score: 650,
-    joinedAt: "2024-01-15T10:40:00",
+    id: "q10",
+    type: "true-false",
+    question: "Der Bundestag hat mehr als 600 Abgeordnete.",
+    correctAnswer: "true",
+    difficulty: "mittel",
+    explanation:
+      "Der Bundestag hat normalerweise 598 Sitze, kann aber durch Überhang- und Ausgleichsmandate auf über 700 Sitze anwachsen.",
   },
 ];
-export const lobbies = [
-  {
-    id: "1",
-    name: "Demokratie-Profis",
-    players: ["1", "2", "3"],
-    maxPlayers: 4,
-    gameMode: "schwer",
-    isActive: true,
-    createdAt: "2024-01-15T10:25:00",
-  },
-  {
-    id: "2",
-    name: "Einsteiger-Runde",
-    players: ["4", "5"],
-    maxPlayers: 6,
-    gameMode: "einfach",
-    isActive: true,
-    createdAt: "2024-01-15T10:30:00",
-  },
-];
+
 export const gameModes = {
   einfach: {
     label: "Einfach",
