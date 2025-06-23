@@ -14,7 +14,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
     const fetchLeaderboard = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`http://localhost:3001/api/players`);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        const res = await fetch(`${apiUrl}/api/players`);
         const data: Player[] = await res.json();
         const sortedPlayers = [...data]
           .sort((a, b) => b.score - a.score)
