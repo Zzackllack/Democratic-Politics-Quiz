@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { prisma } from "../lib/prisma";
 import { asyncHandler } from "../middleware/errorHandler";
 import { createGameModeSchema } from "../validation/schemas";
@@ -8,7 +8,7 @@ const router = Router();
 // GET /api/game-modes - Get all game modes
 router.get(
   "/",
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (_req: Request, res: Response) => {
     try {
       const gameModes = await prisma.gameMode.findMany({
         where: { isActive: true },
@@ -37,7 +37,7 @@ router.get(
 // GET /api/game-modes/list - Get game modes as array
 router.get(
   "/list",
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (_req: Request, res: Response) => {
     try {
       const gameModes = await prisma.gameMode.findMany({
         where: { isActive: true },

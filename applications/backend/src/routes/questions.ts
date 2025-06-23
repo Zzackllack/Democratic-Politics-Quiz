@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { Router } from "express";
 import { prisma } from "../index";
 import { asyncHandler } from "../middleware/errorHandler";
