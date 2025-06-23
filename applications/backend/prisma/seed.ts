@@ -17,7 +17,6 @@ async function main() {
     skipDuplicates: true,
   });
 
-
   await prisma.gameMode.createMany({
     data: Object.entries(gameModes).map(([id, gm]) => ({
       id,
