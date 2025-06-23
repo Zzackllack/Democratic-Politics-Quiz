@@ -1,14 +1,14 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model Question {
-  id            String   @id
+  id            String @id
   type          String
   question      String
   options       Json
@@ -18,20 +18,33 @@ model Question {
 }
 
 model Player {
-  id       String   @id
-  name     String
-  score    Int
-  joinedAt DateTime
+  id               String       @id
+  name             String
+  score            Int          @default(0)
+  joinedAt         DateTime     @default(now())
+  browserSessionId String
+  isHost           Boolean      @default(false)
+  lobbyId          String?
+  GameAnswer       GameAnswer[]
+  Lobby            Lobby?       @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+
+  @@unique([browserSessionId, lobbyId])
 }
 
 model Lobby {
-  id         String   @id
+  id         String      @id
+  code       String      @unique
   name       String
-  players    Json
-  maxPlayers Int
-  gameMode   String
-  isActive   Boolean
-  createdAt  DateTime
+  maxPlayers Int         @default(4)
+  gameMode   String      @default("einfach")
+  status     LobbyStatus @default(WAITING)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime
+  hostId     String?
+  GameState  GameState?
+  Player     Player[]
+
+  @@index([code])
 }
 
 model GameMode {
@@ -40,4 +53,38 @@ model GameMode {
   description String
   color       String
   icon        String
+}
+
+model GameAnswer {
+  id             String    @id
+  questionId     String
+  selectedAnswer String?
+  isCorrect      Boolean   @default(false)
+  timeSpent      Int       @default(0)
+  submittedAt    DateTime  @default(now())
+  playerId       String
+  gameStateId    String
+  GameState      GameState @relation(fields: [gameStateId], references: [id], onDelete: Cascade)
+  Player         Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, gameStateId, questionId])
+}
+
+model GameState {
+  id                String       @id
+  currentQuestion   Int          @default(0)
+  totalQuestions    Int          @default(10)
+  questionStartTime DateTime?
+  isActive          Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  lobbyId           String       @unique
+  GameAnswer        GameAnswer[]
+  Lobby             Lobby        @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+}
+
+enum LobbyStatus {
+  WAITING
+  STARTING
+  IN_PROGRESS
+  FINISHED
 }
