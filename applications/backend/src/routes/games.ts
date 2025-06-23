@@ -297,7 +297,7 @@ router.get(
       // Calculate player scores
       const playerScores: Record<string, any> = {};
 
-      gameState.lobby.players.forEach((player) => {
+      for (const player of gameState.lobby.players) {
         playerScores[player.id] = {
           playerId: player.id,
           playerName: player.name,
@@ -306,9 +306,9 @@ router.get(
           score: 0,
           answers: [],
         };
-      });
+      }
 
-      gameState.gameAnswers.forEach((answer) => {
+      for (const answer of gameState.gameAnswers) {
         const playerScore = playerScores[answer.playerId];
         if (playerScore) {
           playerScore.totalAnswers++;
@@ -328,7 +328,7 @@ router.get(
             explanation: answer.question.explanation,
           });
         }
-      });
+      }
 
       // Sort players by score
       const sortedResults = Object.values(playerScores).sort((a: any, b: any) => b.score - a.score);
