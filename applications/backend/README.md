@@ -51,4 +51,3 @@ The server listens on the port defined in `.env` (default `3001`).
 - Additional multiplayer endpoints exist under `/api/lobbies` and `/api/games`.
 
 The WebSocket server is available on the same port and is used for lobby and game events.
-
