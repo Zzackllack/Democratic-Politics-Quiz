@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { prisma } from "../lib/prisma";
 import { asyncHandler } from "../middleware/errorHandler";
+import { createLobbySchema } from "../validation/schemas";
 
 const router = Router();
 
@@ -221,7 +222,13 @@ router.post(
       }
 
       // Check if player is already in lobby
-      const isAlreadyInLobby = lobby.players.some((p) => p.id === playerId);
+      let isAlreadyInLobby = false;
+      for (const player of lobby.players) {
+        if (player.id === playerId) {
+          isAlreadyInLobby = true;
+          break;
+        }
+      }
       if (isAlreadyInLobby) {
         return res.status(400).json({ error: "Player is already in this lobby" });
       }
@@ -297,7 +304,7 @@ router.post(
 
       // If the host left, either assign new host or delete lobby
       if (lobby.hostId === playerId) {
-        const remainingPlayers = lobby.players.filter((p) => p.id !== playerId);
+        const remainingPlayers = lobby.players.filter((player: { id: string }) => player.id !== playerId);
 
         if (remainingPlayers.length > 0) {
           // Assign first remaining player as new host
@@ -391,7 +398,7 @@ router.post(
         data: {
           lobbyId,
           totalQuestions: Math.min(questions.length, 10),
-          questionIds: questions.slice(0, 10).map((q) => q.id),
+          questionIds: questions.slice(0, 10).map((question: { id: string }) => question.id),
           isActive: true,
           questionStartTime: new Date(),
         },
