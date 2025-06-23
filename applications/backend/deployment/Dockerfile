@@ -9,7 +9,6 @@ RUN apk add --no-cache curl
 COPY applications/backend/prisma ./prisma
 COPY applications/backend/src ./src
 COPY applications/backend/tsconfig.json ./tsconfig.json
-COPY applications/backend/.example.env ./.example.env
 
 RUN npx prisma generate
 EXPOSE 3001
