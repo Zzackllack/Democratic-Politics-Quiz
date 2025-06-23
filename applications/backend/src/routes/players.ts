@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { prisma } from "../lib/prisma";
 import { asyncHandler } from "../middleware/errorHandler";
 import { createPlayerSchema } from "../validation/schemas";
@@ -8,7 +8,7 @@ const router = Router();
 // GET /api/players - Get all players (leaderboard)
 router.get(
   "/",
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (_req: Request, res: Response) => {
     try {
       const players = await prisma.player.findMany({
         orderBy: { score: "desc" },

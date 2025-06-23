@@ -1,7 +1,6 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { prisma } from "../lib/prisma";
 import { asyncHandler } from "../middleware/errorHandler";
-import { createLobbySchema, joinLobbySchema } from "../validation/schemas";
 
 const router = Router();
 
