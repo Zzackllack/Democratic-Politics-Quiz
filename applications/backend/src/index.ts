@@ -1,10 +1,10 @@
+import cors from "cors";
 import "dotenv/config";
 import express from "express";
-import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
-import { requestLogger } from "./middleware/requestLogger";
 import { errorHandler } from "./middleware/errorHandler";
+import { requestLogger } from "./middleware/requestLogger";
 import gameModesRouter from "./routes/gameModes";
 import gamesRouter from "./routes/games";
 import lobbiesRouter from "./routes/lobbies";
@@ -17,6 +17,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
+
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
 
 app.use("/api/game-modes", gameModesRouter);
 app.use("/api/games", gamesRouter);
