@@ -27,7 +27,8 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/questions?difficulty=${gameMode}`);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        const res = await fetch(`${apiUrl}/api/questions?difficulty=${gameMode}`);
         if (!res.ok) {
           const error = await res.json();
           setFetchError(error.error || "Fehler beim Laden der Fragen");
@@ -125,7 +126,8 @@ const Quiz: React.FC<QuizProps> = ({ gameMode = "einfach", onQuizComplete = () =
     if (!playerName) return;
     setIsSubmitting(true);
     try {
-      await fetch(`http://localhost:3001/api/players`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      await fetch(`${apiUrl}/api/players`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: playerName, score }),
