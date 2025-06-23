@@ -45,10 +45,7 @@ router.get(
       // Transform options from JSON to array for multiple-choice questions
       const transformedQuestions = questions.map((question: any) => ({
         ...question,
-        options:
-          question.type === "multiple-choice"
-            ? (question.options as string[])
-            : undefined,
+        options: question.type === "multiple-choice" ? (question.options as string[]) : undefined,
       }));
 
       res.json(transformedQuestions);
@@ -119,10 +116,7 @@ router.get(
       const shuffled = allQuestions.sort(() => Math.random() - 0.5).slice(0, count);
       const transformedQuestions = shuffled.map((question: any) => ({
         ...question,
-        options:
-          question.type === "multiple-choice"
-            ? (question.options as string[])
-            : undefined,
+        options: question.type === "multiple-choice" ? (question.options as string[]) : undefined,
       }));
 
       res.json(transformedQuestions);

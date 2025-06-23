@@ -304,7 +304,9 @@ router.post(
 
       // If the host left, either assign new host or delete lobby
       if (lobby.hostId === playerId) {
-        const remainingPlayers = lobby.players.filter((player: { id: string }) => player.id !== playerId);
+        const remainingPlayers = lobby.players.filter(
+          (player: { id: string }) => player.id !== playerId
+        );
 
         if (remainingPlayers.length > 0) {
           // Assign first remaining player as new host
