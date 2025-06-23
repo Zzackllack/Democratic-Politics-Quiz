@@ -45,5 +45,9 @@ pnpm-debug.log*
 # misc
 *.pem
 
+# PWA build files
+applications/frontend/public/sw.js
+applications/frontend/public/workbox-*.js
+
 # jetbrains setting folder
 .idea/
