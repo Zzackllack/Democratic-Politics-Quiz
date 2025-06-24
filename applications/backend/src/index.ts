@@ -1,6 +1,8 @@
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 import { errorHandler } from "./middleware/errorHandler";
 import { requestLogger } from "./middleware/requestLogger";
@@ -9,6 +11,7 @@ import gamesRouter from "./routes/games";
 import lobbiesRouter from "./routes/lobbies";
 import playersRouter from "./routes/players";
 import questionsRouter from "./routes/questions";
+import { setupSocket } from "./socket/socketHandlers";
 
 const app = express();
 
@@ -29,6 +32,15 @@ app.use("/api/questions", questionsRouter);
 app.use(errorHandler);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-app.listen(PORT, () => {
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
+});
+
+setupSocket(io);
+
+httpServer.listen(PORT, () => {
   console.log(`Backend listening on port ${PORT}`);
 });

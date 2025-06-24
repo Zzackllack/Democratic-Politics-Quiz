@@ -140,6 +140,7 @@ router.post("/:lobbyId/start", async (req: Request, res: Response) => {
         questionIds: questions.map((q: { id: string }) => q.id),
         currentQuestion: 0,
         isActive: true,
+        questionStartTime: new Date(),
       },
     });
     await prisma.lobby.update({
