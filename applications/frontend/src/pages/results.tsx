@@ -50,6 +50,15 @@ export default function ResultsPage() {
     window.location.href = "/play";
   };
 
+  useEffect(() => {
+    if (!isLoading) {
+      localStorage.removeItem("lobbyId");
+      localStorage.removeItem("playerId");
+      localStorage.removeItem("code");
+      localStorage.removeItem("isHost");
+    }
+  }, [isLoading]);
+
   const handleViewLeaderboard = () => {
     window.location.href = "/leaderboard";
   };
