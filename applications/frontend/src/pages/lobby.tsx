@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import Link from "next/link";
 import Layout from "@/components/Layout";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 const difficulties = ["einfach", "mittel", "schwer", "lustig", "einbürgerungstest"];
 
@@ -26,7 +26,6 @@ export default function LobbyPage() {
       setLobbyInfo({ lobbyId, code });
     }
   }, []);
-
   useEffect(() => {
     if (!lobbyInfo) return;
     const interval = setInterval(async () => {
@@ -36,7 +35,21 @@ export default function LobbyPage() {
         setPlayers(data.players);
         if (data.status === "IN_PROGRESS") {
           router.push("/play");
+        } else if (data.status === "FINISHED") {
+          // Lobby is finished, clear localStorage
+          localStorage.removeItem("lobbyId");
+          localStorage.removeItem("playerId");
+          localStorage.removeItem("code");
+          localStorage.removeItem("isHost");
+          router.push("/play");
         }
+      } else {
+        // Lobby not found, clear localStorage
+        localStorage.removeItem("lobbyId");
+        localStorage.removeItem("playerId");
+        localStorage.removeItem("code");
+        localStorage.removeItem("isHost");
+        router.push("/play");
       }
     }, 2000);
     return () => clearInterval(interval);
@@ -46,8 +59,13 @@ export default function LobbyPage() {
     localStorage.setItem("playerName", playerName);
     setHasName(true);
   };
-
   const createLobby = async () => {
+    // Clear any existing lobby data
+    localStorage.removeItem("lobbyId");
+    localStorage.removeItem("playerId");
+    localStorage.removeItem("code");
+    localStorage.removeItem("isHost");
+
     const res = await fetch("http://localhost:3001/api/lobbies", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -62,7 +80,6 @@ export default function LobbyPage() {
       setLobbyInfo({ lobbyId: data.lobbyId, code: data.code });
     }
   };
-
   const startGame = async () => {
     if (!lobbyInfo) return;
     const playerId = localStorage.getItem("playerId");
@@ -71,6 +88,14 @@ export default function LobbyPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ playerId }),
     });
+    router.push("/play");
+  };
+
+  const leaveLobby = () => {
+    localStorage.removeItem("lobbyId");
+    localStorage.removeItem("playerId");
+    localStorage.removeItem("code");
+    localStorage.removeItem("isHost");
     router.push("/play");
   };
 
@@ -130,10 +155,18 @@ export default function LobbyPage() {
       </Layout>
     );
   }
-
   return (
     <Layout title="Lobby">
       <div className="p-4 space-y-2">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Lobby: {lobbyInfo.code}</h2>
+          <button
+            onClick={leaveLobby}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Lobby verlassen
+          </button>
+        </div>
         <p>Code: {lobbyInfo.code}</p>
         <ul>
           {players.map((p) => (

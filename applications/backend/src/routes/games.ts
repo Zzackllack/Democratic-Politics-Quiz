@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { prisma } from "../lib/prisma";
 
 const router = Router();
@@ -44,11 +44,19 @@ router.post("/:lobbyId/answer", async (req: Request, res: Response) => {
     selectedAnswer: string;
   };
   try {
-    const question = await prisma.question.findUnique({ where: { id: questionId } });
+    const question = await prisma.question.findUnique({
+      where: { id: questionId },
+      select: {
+        correctAnswer: true,
+        explanation: true,
+      },
+    });
     if (!question) return res.status(404).json({ error: "Question not found" });
+
     const isCorrect = question.correctAnswer === selectedAnswer;
     const gameState = await prisma.gameState.findUnique({ where: { lobbyId } });
     if (!gameState) return res.status(404).json({ error: "Game not found" });
+
     await prisma.gameAnswer.create({
       data: {
         questionId,
@@ -58,7 +66,12 @@ router.post("/:lobbyId/answer", async (req: Request, res: Response) => {
         gameStateId: gameState.id,
       },
     });
-    return res.json({ correct: isCorrect, correctAnswer: question.correctAnswer });
+
+    return res.json({
+      correct: isCorrect,
+      correctAnswer: question.correctAnswer,
+      explanation: question.explanation,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to submit answer" });

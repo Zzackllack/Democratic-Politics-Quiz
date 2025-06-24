@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { prisma } from "../lib/prisma";
 
 const router = Router();
@@ -150,6 +150,73 @@ router.post("/:lobbyId/start", async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to start" });
+  }
+});
+
+// POST /:lobbyId/cleanup - Clean up lobby and move players to leaderboard
+router.post("/:lobbyId/cleanup", async (req: Request, res: Response) => {
+  const { lobbyId } = req.params;
+  try {
+    // Get all players in the lobby with their final scores from game answers
+    const lobby = await prisma.lobby.findUnique({
+      where: { id: lobbyId },
+      include: {
+        players: true,
+        gameState: {
+          include: {
+            gameAnswers: true,
+          },
+        },
+      },
+    });
+
+    if (!lobby) {
+      return res.status(404).json({ error: "Lobby not found" });
+    }
+
+    // Calculate final scores for each player
+    const playerScores: Record<string, number> = {};
+
+    if (lobby.gameState) {
+      // Initialize scores
+      lobby.players.forEach((player) => {
+        playerScores[player.id] = 0;
+      });
+
+      // Calculate scores from correct answers
+      lobby.gameState.gameAnswers.forEach((answer) => {
+        if (answer.isCorrect) {
+          playerScores[answer.playerId] = (playerScores[answer.playerId] || 0) + 100;
+        }
+      });
+    }
+
+    // Update players with final scores and remove lobby association
+    await Promise.all(
+      lobby.players.map(async (player) => {
+        const finalScore = playerScores[player.id] || 0;
+
+        await prisma.player.update({
+          where: { id: player.id },
+          data: {
+            score: Math.max(player.score, finalScore), // Keep highest score
+            lobbyId: null, // Remove from lobby
+            isHost: false, // Reset host status
+          },
+        });
+      })
+    );
+
+    // Mark lobby as finished
+    await prisma.lobby.update({
+      where: { id: lobbyId },
+      data: { status: "FINISHED" },
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to cleanup lobby" });
   }
 });
 
