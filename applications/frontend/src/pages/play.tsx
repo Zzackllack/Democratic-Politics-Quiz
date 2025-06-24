@@ -1,113 +1,111 @@
 import Hero from "@/components/Hero";
 import Layout from "@/components/Layout";
-import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/router";
-
-interface Question {
-  questionId: string;
-  question: string;
-  options?: string[];
-  number: number;
-  total: number;
-}
+import MultiplayerQuiz from "@/components/MultiplayerQuiz";
+import { useEffect, useState } from "react";
 
 export default function PlayPage() {
-  const router = useRouter();
-  const [mp, setMp] = useState(false);
-  const [question, setQuestion] = useState<Question | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
-
-  const lobbyId = typeof window !== "undefined" ? localStorage.getItem("lobbyId") : null;
-
-  const fetchQuestion = useCallback(async () => {
-    if (!lobbyId) return;
-    const res = await fetch(`http://localhost:3001/api/games/${lobbyId}/question`);
-    if (res.ok) {
-      const data = await res.json();
-      setQuestion(data);
-    }
-  }, [lobbyId]);
-
+  const [isMultiplayer, setIsMultiplayer] = useState(false);
+  const [lobbyId, setLobbyId] = useState<string | null>(null);
+  const [playerId, setPlayerId] = useState<string | null>(null);
+  const [isHost, setIsHost] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    if (lobbyId) {
-      setMp(true);
-      fetchQuestion();
-      const interval = setInterval(fetchQuestion, 2000);
-      return () => clearInterval(interval);
-    }
-  }, [lobbyId, fetchQuestion]);
+    if (typeof window !== "undefined") {
+      const storedLobbyId = localStorage.getItem("lobbyId");
+      const storedPlayerId = localStorage.getItem("playerId");
+      const storedIsHost = localStorage.getItem("isHost") === "true";
 
-  const submitAnswer = async (ans: string) => {
-    if (!question || !lobbyId) return;
-    setSelected(ans);
-    await fetch(`http://localhost:3001/api/games/${lobbyId}/answer`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        playerId: localStorage.getItem("playerId"),
-        questionId: question.questionId,
-        selectedAnswer: ans,
-      }),
-    });
-  };
-
-  const next = async () => {
-    if (!lobbyId) return;
-    const res = await fetch(`http://localhost:3001/api/games/${lobbyId}/next`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ playerId: localStorage.getItem("playerId") }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.finished) {
-        router.push("/results");
+      if (storedLobbyId && storedPlayerId) {
+        // Verify the lobby is still active
+        fetch(`http://localhost:3001/api/lobbies/${storedLobbyId}`)
+          .then((res) => {
+            if (res.ok) {
+              return res.json();
+            } else {
+              throw new Error("Lobby not found");
+            }
+          })
+          .then((data) => {
+            if (data.status === "IN_PROGRESS") {
+              setLobbyId(storedLobbyId);
+              setPlayerId(storedPlayerId);
+              setIsHost(storedIsHost);
+              setIsMultiplayer(true);
+            } else if (data.status === "WAITING") {
+              // Redirect back to lobby if still waiting
+              window.location.href = "/lobby";
+              return;
+            } else {
+              // Lobby is finished or in other state, clear localStorage
+              localStorage.removeItem("lobbyId");
+              localStorage.removeItem("playerId");
+              localStorage.removeItem("code");
+              localStorage.removeItem("isHost");
+            }
+            setIsLoading(false);
+          })
+          .catch(() => {
+            // Lobby doesn't exist, clear localStorage
+            localStorage.removeItem("lobbyId");
+            localStorage.removeItem("playerId");
+            localStorage.removeItem("code");
+            localStorage.removeItem("isHost");
+            setIsLoading(false);
+          });
       } else {
-        setSelected(null);
-        fetchQuestion();
+        setIsLoading(false);
       }
     }
-  };
 
-  if (!mp) {
+    // Add cleanup on page unload
+    const handleBeforeUnload = () => {
+      // Don't clear localStorage on page reload, only on actual navigation away
+      const lobbyId = localStorage.getItem("lobbyId");
+      const playerId = localStorage.getItem("playerId");
+
+      if (lobbyId && playerId) {
+        // Mark player as offline
+        fetch(`http://localhost:3001/api/players/${playerId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isOnline: false }),
+          keepalive: true,
+        }).catch(() => {
+          // Ignore errors on unload
+        });
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  if (isLoading) {
     return (
-      <Layout title="Quiz starten">
-        <Hero />
+      <Layout title="Quiz wird geladen">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="spinner mx-auto mb-4"></div>
+            <p className="text-gray-600">Quiz wird geladen...</p>
+          </div>
+        </div>
       </Layout>
     );
   }
 
-  if (!question) {
+  if (isMultiplayer && lobbyId && playerId) {
     return (
-      <Layout title="Spiel">
-        <p className="p-4">Warte auf Frage...</p>
+      <Layout title="Multiplayer Quiz">
+        <MultiplayerQuiz lobbyId={lobbyId} playerId={playerId} isHost={isHost} />
       </Layout>
     );
   }
 
   return (
-    <Layout title="Spiel">
-      <div className="p-4 space-y-4">
-        <div>
-          Frage {question.number} / {question.total}
-        </div>
-        <div>{question.question}</div>
-        {question.options?.map((o) => (
-          <button
-            key={o}
-            className="block border px-2 py-1 my-1"
-            onClick={() => submitAnswer(o)}
-            disabled={!!selected}
-          >
-            {o}
-          </button>
-        ))}
-        {localStorage.getItem("isHost") === "true" && (
-          <button className="border px-4 py-2" onClick={next} disabled={!selected}>
-            Weiter
-          </button>
-        )}
-      </div>
+    <Layout title="Quiz starten">
+      <Hero />
     </Layout>
   );
 }

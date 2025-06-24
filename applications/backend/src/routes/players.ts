@@ -11,6 +11,10 @@ router.get(
   asyncHandler(async (_req: Request, res: Response) => {
     try {
       const players = await prisma.player.findMany({
+        where: {
+          score: { gt: 0 }, // Only show players with actual scores
+          lobbyId: null, // Exclude players currently in lobbies
+        },
         orderBy: { score: "desc" },
         select: {
           id: true,
