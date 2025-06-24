@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import { gameModes } from "../data/mockData";
 
 interface HeroProps {
@@ -12,9 +12,19 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
   const [selectedGameMode, setSelectedGameMode] = useState<string>("");
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Add ref for difficulty section
+  const difficultyRef = React.useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     setTimeout(() => setIsLoaded(true), 100);
   }, []);
+
+  // Scroll to difficulty when game type is selected
+  useEffect(() => {
+    if (selectedGameType && difficultyRef.current) {
+      difficultyRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [selectedGameType]);
 
   const router = useRouter();
 
@@ -232,6 +242,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
           {selectedGameType && (
             <motion.div
               key="difficulty"
+              ref={difficultyRef}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
