@@ -1,10 +1,12 @@
 import { Request, Response, Router } from "express";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "../lib/prisma";
 
 const router = Router();
 
 router.get("/:lobbyId/question", async (req: Request, res: Response) => {
   const { lobbyId } = req.params;
+  const { playerId } = req.query as { playerId?: string };
   try {
     const gameState = await prisma.gameState.findUnique({ where: { lobbyId } });
     if (!gameState || !gameState.isActive) {
@@ -19,9 +21,31 @@ router.get("/:lobbyId/question", async (req: Request, res: Response) => {
         type: true,
         question: true,
         options: true,
+        correctAnswer: true,
+        explanation: true,
       },
     });
     if (!question) return res.status(404).json({ error: "Question not found" });
+
+    let playerAnswer: string | null = null;
+    let isCorrect: boolean | null = null;
+
+    if (playerId) {
+      const existing = await prisma.gameAnswer.findUnique({
+        where: {
+          playerId_gameStateId_questionId: {
+            playerId,
+            gameStateId: gameState.id,
+            questionId,
+          },
+        },
+      });
+      if (existing) {
+        playerAnswer = existing.selectedAnswer ?? null;
+        isCorrect = existing.isCorrect;
+      }
+    }
+
     return res.json({
       questionId: question.id,
       type: question.type,
@@ -29,6 +53,10 @@ router.get("/:lobbyId/question", async (req: Request, res: Response) => {
       options: question.options,
       number: gameState.currentQuestion + 1,
       total: gameState.totalQuestions,
+      playerAnswer,
+      isCorrect,
+      correctAnswer: playerAnswer ? question.correctAnswer : undefined,
+      explanation: playerAnswer ? question.explanation : undefined,
     });
   } catch (err) {
     console.error(err);
@@ -43,8 +71,9 @@ router.post("/:lobbyId/answer", async (req: Request, res: Response) => {
     questionId: string;
     selectedAnswer: string;
   };
+  let question;
   try {
-    const question = await prisma.question.findUnique({
+    question = await prisma.question.findUnique({
       where: { id: questionId },
       select: {
         correctAnswer: true,
@@ -72,8 +101,34 @@ router.post("/:lobbyId/answer", async (req: Request, res: Response) => {
       correctAnswer: question.correctAnswer,
       explanation: question.explanation,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
+    // Handle duplicate answers gracefully
+    if (err instanceof PrismaClientKnownRequestError && err.code === "P2002") {
+      try {
+        const gameState = await prisma.gameState.findUnique({ where: { lobbyId } });
+        if (!gameState) return res.status(404).json({ error: "Game not found" });
+        const existing = await prisma.gameAnswer.findUnique({
+          where: {
+            playerId_gameStateId_questionId: {
+              playerId,
+              gameStateId: gameState.id,
+              questionId,
+            },
+          },
+        });
+        if (existing) {
+          return res.status(409).json({
+            correct: existing.isCorrect,
+            correctAnswer: question!.correctAnswer,
+            explanation: question!.explanation,
+            alreadyAnswered: true,
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
     return res.status(500).json({ error: "Failed to submit answer" });
   }
 });
