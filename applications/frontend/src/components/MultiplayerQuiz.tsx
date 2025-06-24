@@ -34,10 +34,28 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isProcessingAnswer, setIsProcessingAnswer] = useState(false);
 
+  // Restore score related state from localStorage on mount
+  useEffect(() => {
+    const storedScore = localStorage.getItem(`score_${lobbyId}_${playerId}`);
+    const storedCorrect = localStorage.getItem(`correct_${lobbyId}_${playerId}`);
+    const storedStreak = localStorage.getItem(`streak_${lobbyId}_${playerId}`);
+    if (storedScore) setScore(parseInt(storedScore, 10));
+    if (storedCorrect) setCorrectCount(parseInt(storedCorrect, 10));
+    if (storedStreak) setStreak(parseInt(storedStreak, 10));
+  }, [lobbyId, playerId]);
+
+  useEffect(() => {
+    localStorage.setItem(`score_${lobbyId}_${playerId}`, score.toString());
+    localStorage.setItem(`correct_${lobbyId}_${playerId}`, correctCount.toString());
+    localStorage.setItem(`streak_${lobbyId}_${playerId}`, streak.toString());
+  }, [score, correctCount, streak, lobbyId, playerId]);
+
   const fetchQuestion = useCallback(async () => {
     if (!lobbyId) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/games/${lobbyId}/question`);
+      const res = await fetch(
+        `http://localhost:3001/api/games/${lobbyId}/question?playerId=${playerId}`
+      );
       if (res.ok) {
         const data = await res.json();
 
@@ -45,13 +63,35 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
         if (!currentQuestionId || currentQuestionId !== data.questionId) {
           setQuestion(data);
           setCurrentQuestionId(data.questionId);
-          setSelectedAnswer(null);
-          setIsAnswered(false);
-          setShowExplanation(false);
           setTimeLeft(30);
-          setIsWaitingForNext(false);
-          setIsProcessingAnswer(false);
           setFetchError(null);
+
+          if (data.isCorrect !== null) {
+            setSelectedAnswer(data.playerAnswer);
+            setIsAnswered(true);
+            setShowExplanation(data.playerAnswer !== null);
+            if (data.playerAnswer !== null) {
+              setCorrectAnswer(data.correctAnswer);
+              setExplanation(data.explanation);
+            } else {
+              setCorrectAnswer(null);
+              setExplanation("");
+            }
+            if (!isHost) {
+              setIsWaitingForNext(true);
+            } else {
+              setIsWaitingForNext(false);
+            }
+          } else {
+            setSelectedAnswer(null);
+            setIsAnswered(false);
+            setShowExplanation(false);
+            setCorrectAnswer(null);
+            setExplanation("");
+            setIsWaitingForNext(false);
+          }
+
+          setIsProcessingAnswer(false);
         }
       } else if (res.status === 404) {
         // Game might be finished - trigger cleanup and redirect
@@ -59,17 +99,13 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
           method: "POST",
           headers: { "Content-Type": "application/json" },
         });
-        localStorage.removeItem("lobbyId");
-        localStorage.removeItem("playerId");
-        localStorage.removeItem("code");
-        localStorage.removeItem("isHost");
         router.push("/results");
       }
     } catch (error) {
       console.error("Error fetching question:", error);
       setFetchError("Fehler beim Laden der Frage");
     }
-  }, [lobbyId, router, currentQuestionId]);
+  }, [lobbyId, playerId, isHost, router, currentQuestionId]);
   useEffect(() => {
     fetchQuestion();
     // More frequent polling for better synchronization
@@ -114,7 +150,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
 
         // Only now set isAnswered to show final results
         setIsAnswered(true);
-        setShowExplanation(true);
+        setShowExplanation(answer !== null);
 
         const isCorrect = data.correct;
         if (isCorrect) {
@@ -126,7 +162,30 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
           setStreak(0);
         }
 
-        setIsWaitingForNext(true);
+        if (!isHost) {
+          setIsWaitingForNext(true);
+        }
+      } else if (res.status === 409) {
+        const data = await res.json();
+        setCorrectAnswer(data.correctAnswer);
+        setExplanation(data.explanation);
+        setIsAnswered(true);
+        setShowExplanation(answer !== null);
+
+        if (data.correct) {
+          const nextStreak = streak + 1;
+          setStreak(nextStreak);
+          setCorrectCount(correctCount + 1);
+          setScore(score + 100 * nextStreak);
+        } else {
+          setStreak(0);
+        }
+
+        if (!isHost) {
+          setIsWaitingForNext(true);
+        } else {
+          setIsWaitingForNext(false);
+        }
       }
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -157,10 +216,6 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
             method: "POST",
             headers: { "Content-Type": "application/json" },
           });
-          localStorage.removeItem("lobbyId");
-          localStorage.removeItem("playerId");
-          localStorage.removeItem("code");
-          localStorage.removeItem("isHost");
           router.push("/results");
         } else {
           // Reset state for next question

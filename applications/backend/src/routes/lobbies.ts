@@ -179,12 +179,12 @@ router.post("/:lobbyId/cleanup", async (req: Request, res: Response) => {
 
     if (lobby.gameState) {
       // Initialize scores
-      lobby.players.forEach((player) => {
+      lobby.players.forEach((player: { id: string }) => {
         playerScores[player.id] = 0;
       });
 
       // Calculate scores from correct answers
-      lobby.gameState.gameAnswers.forEach((answer) => {
+      lobby.gameState.gameAnswers.forEach((answer: { isCorrect: boolean; playerId: string }) => {
         if (answer.isCorrect) {
           playerScores[answer.playerId] = (playerScores[answer.playerId] || 0) + 100;
         }
@@ -193,7 +193,7 @@ router.post("/:lobbyId/cleanup", async (req: Request, res: Response) => {
 
     // Update players with final scores and remove lobby association
     await Promise.all(
-      lobby.players.map(async (player) => {
+      lobby.players.map(async (player: { id: string; score: number }) => {
         const finalScore = playerScores[player.id] || 0;
 
         await prisma.player.update({
