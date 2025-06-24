@@ -12,16 +12,23 @@ export default function ResultsPage() {
   const [results, setResults] = useState<Result[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lobbyId, setLobbyId] = useState<string | null>(null);
+  const [isHost, setIsHost] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    const lobbyId = localStorage.getItem("lobbyId");
-    if (!lobbyId) {
+    const storedLobbyId = localStorage.getItem("lobbyId");
+    const hostFlag = localStorage.getItem("isHost") === "true";
+    setLobbyId(storedLobbyId);
+    setIsHost(hostFlag);
+    if (!storedLobbyId) {
       setError("Keine Lobby-Daten gefunden");
       setIsLoading(false);
       return;
     }
 
-    fetch(`http://localhost:3001/api/games/${lobbyId}/results`)
+    fetch(`http://localhost:3001/api/games/${storedLobbyId}/results`)
       .then((r) => {
         if (r.ok) {
           return r.json();
@@ -48,6 +55,23 @@ export default function ResultsPage() {
     localStorage.removeItem("code");
     localStorage.removeItem("isHost");
     window.location.href = "/play";
+  };
+
+  const handleSubmitLeaderboard = async () => {
+    if (!lobbyId) return;
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`http://localhost:3001/api/lobbies/${lobbyId}/cleanup`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -169,6 +193,18 @@ export default function ResultsPage() {
 
           {/* Action Buttons */}
           <div className="text-center space-y-4">
+            {isHost && !submitted && (
+              <button
+                onClick={handleSubmitLeaderboard}
+                disabled={isSubmitting}
+                className="w-full md:w-auto px-8 py-3 bg-german-black text-white font-bold rounded-lg hover:opacity-90 transition-opacity mr-0 md:mr-4 mb-4 md:mb-0 disabled:opacity-50"
+              >
+                Ergebnisse veröffentlichen
+              </button>
+            )}
+            {isHost && submitted && (
+              <p className="text-green-600 font-bold">Ergebnisse wurden gespeichert!</p>
+            )}
             <button
               onClick={handleNewGame}
               className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-german-red to-german-gold text-white font-bold rounded-lg hover:opacity-90 transition-opacity mr-0 md:mr-4 mb-4 md:mb-0"
