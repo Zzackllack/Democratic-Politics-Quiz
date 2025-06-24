@@ -21,7 +21,7 @@ export default function PlayPage() {
 
   const fetchQuestion = useCallback(async () => {
     if (!lobbyId) return;
-    const res = await fetch(`/api/games/${lobbyId}/question`);
+    const res = await fetch(`http://localhost:3001/api/games/${lobbyId}/question`);
     if (res.ok) {
       const data = await res.json();
       setQuestion(data);
@@ -40,7 +40,7 @@ export default function PlayPage() {
   const submitAnswer = async (ans: string) => {
     if (!question || !lobbyId) return;
     setSelected(ans);
-    await fetch(`/api/games/${lobbyId}/answer`, {
+    await fetch(`http://localhost:3001/api/games/${lobbyId}/answer`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -53,7 +53,7 @@ export default function PlayPage() {
 
   const next = async () => {
     if (!lobbyId) return;
-    const res = await fetch(`/api/games/${lobbyId}/next`, {
+    const res = await fetch(`http://localhost:3001/api/games/${lobbyId}/next`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ playerId: localStorage.getItem("playerId") }),

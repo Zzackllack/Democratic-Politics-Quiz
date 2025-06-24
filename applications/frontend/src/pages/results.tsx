@@ -13,7 +13,7 @@ export default function ResultsPage() {
   useEffect(() => {
     const lobbyId = localStorage.getItem("lobbyId");
     if (!lobbyId) return;
-    fetch(`/api/games/${lobbyId}/results`)
+    fetch(`http://localhost:3001/api/games/${lobbyId}/results`)
       .then((r) => r.json())
       .then((d) => setResults(d.results || []));
   }, []);
