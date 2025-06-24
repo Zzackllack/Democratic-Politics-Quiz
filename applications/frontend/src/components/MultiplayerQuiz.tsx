@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { io, Socket } from "socket.io-client";
 import AnimatedNumber from "./AnimatedNumber";
 
 interface MultiplayerQuestion {
@@ -29,91 +30,101 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
   const [timeLeft, setTimeLeft] = useState(30);
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
-  const [streak, setStreak] = useState(0);
   const [isWaitingForNext, setIsWaitingForNext] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isProcessingAnswer, setIsProcessingAnswer] = useState(false);
 
-  // Restore score related state from localStorage on mount
+  const socketRef = useRef<Socket | null>(null);
+
+  // restore score from localStorage
   useEffect(() => {
     const storedScore = localStorage.getItem(`score_${lobbyId}_${playerId}`);
-    const storedCorrect = localStorage.getItem(`correct_${lobbyId}_${playerId}`);
-    const storedStreak = localStorage.getItem(`streak_${lobbyId}_${playerId}`);
     if (storedScore) setScore(parseInt(storedScore, 10));
-    if (storedCorrect) setCorrectCount(parseInt(storedCorrect, 10));
-    if (storedStreak) setStreak(parseInt(storedStreak, 10));
   }, [lobbyId, playerId]);
 
   useEffect(() => {
     localStorage.setItem(`score_${lobbyId}_${playerId}`, score.toString());
-    localStorage.setItem(`correct_${lobbyId}_${playerId}`, correctCount.toString());
-    localStorage.setItem(`streak_${lobbyId}_${playerId}`, streak.toString());
-  }, [score, correctCount, streak, lobbyId, playerId]);
+    setCorrectCount(Math.floor(score / 100));
+  }, [score, lobbyId, playerId]);
 
-  const fetchQuestion = useCallback(async () => {
-    if (!lobbyId) return;
-    try {
-      const res = await fetch(
-        `http://localhost:3001/api/games/${lobbyId}/question?playerId=${playerId}`
-      );
-      if (res.ok) {
-        const data = await res.json();
-
-        // Only update if this is a new question to prevent timer reset
-        if (!currentQuestionId || currentQuestionId !== data.questionId) {
-          setQuestion(data);
-          setCurrentQuestionId(data.questionId);
-          setTimeLeft(30);
-          setFetchError(null);
-
-          if (data.isCorrect !== null) {
-            setSelectedAnswer(data.playerAnswer);
-            setIsAnswered(true);
-            setShowExplanation(data.playerAnswer !== null);
-            if (data.playerAnswer !== null) {
-              setCorrectAnswer(data.correctAnswer);
-              setExplanation(data.explanation);
-            } else {
-              setCorrectAnswer(null);
-              setExplanation("");
-            }
-            if (!isHost) {
-              setIsWaitingForNext(true);
-            } else {
-              setIsWaitingForNext(false);
-            }
-          } else {
-            setSelectedAnswer(null);
-            setIsAnswered(false);
-            setShowExplanation(false);
-            setCorrectAnswer(null);
-            setExplanation("");
-            setIsWaitingForNext(false);
-          }
-
-          setIsProcessingAnswer(false);
-        }
-      } else if (res.status === 404) {
-        // Game might be finished - trigger cleanup and redirect
-        await fetch(`http://localhost:3001/api/lobbies/${lobbyId}/cleanup`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-        router.push("/results");
-      }
-    } catch (error) {
-      console.error("Error fetching question:", error);
-      setFetchError("Fehler beim Laden der Frage");
-    }
-  }, [lobbyId, playerId, isHost, router, currentQuestionId]);
   useEffect(() => {
-    fetchQuestion();
-    // More frequent polling for better synchronization
-    const interval = setInterval(() => {
-      fetchQuestion();
-    }, 2000); // Reduced to 2 seconds for better responsiveness
-    return () => clearInterval(interval);
-  }, [fetchQuestion]);
+    const socket = io("http://localhost:3001");
+    socketRef.current = socket;
+    socket.emit("join", { lobbyId, playerId });
+
+    socket.on("state", (data) => {
+      console.log("state", data);
+      setQuestion({
+        questionId: data.questionId,
+        type: data.type,
+        question: data.question,
+        options: data.options,
+        number: data.number,
+        total: data.total,
+      });
+      setCurrentQuestionId(data.questionId);
+      setScore(data.score);
+      setSelectedAnswer(data.playerAnswer);
+      setCorrectAnswer(data.playerAnswer ? data.correctAnswer : null);
+      setExplanation(data.playerAnswer ? data.explanation : "");
+      setShowExplanation(data.playerAnswer !== null);
+      setIsAnswered(data.isCorrect !== null);
+      setIsWaitingForNext(false);
+      if (data.startTime) {
+        const diff = Math.floor((Date.now() - new Date(data.startTime).getTime()) / 1000);
+        setTimeLeft(Math.max(0, 30 - diff));
+      } else {
+        setTimeLeft(30);
+      }
+    });
+
+    socket.on("newQuestion", (data) => {
+      console.log("newQuestion", data);
+      setQuestion({
+        questionId: data.questionId,
+        type: data.type,
+        question: data.question,
+        options: data.options,
+        number: data.number,
+        total: data.total,
+      });
+      setCurrentQuestionId(data.questionId);
+      setSelectedAnswer(null);
+      setCorrectAnswer(null);
+      setExplanation("");
+      setShowExplanation(false);
+      setIsAnswered(false);
+      setIsWaitingForNext(false);
+      if (data.startTime) {
+        setTimeLeft(30);
+      }
+    });
+
+    socket.on("answerResult", (data) => {
+      console.log("answerResult", data);
+      setCorrectAnswer(data.correctAnswer);
+      setExplanation(data.explanation);
+      setIsAnswered(true);
+      setShowExplanation(true);
+    });
+
+    socket.on("scoreUpdate", ({ playerId: pid, score: sc }) => {
+      console.log("scoreUpdate", pid, sc);
+      if (pid === playerId) {
+        setScore(sc);
+      }
+    });
+
+    socket.on("gameEnded", ({ results }) => {
+      console.log("gameEnded", results);
+      localStorage.setItem("lobbyResults", JSON.stringify(results));
+      router.push("/results");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [lobbyId, playerId, router]);
   useEffect(() => {
     if (timeLeft > 0 && !isAnswered && question) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -125,115 +136,25 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft, isAnswered, question]);
 
-  const handleAnswerSelect = async (answer: string | boolean | null) => {
+  const handleAnswerSelect = (answer: string | boolean | null) => {
     if (isAnswered || !question || isProcessingAnswer) return;
-
     setIsProcessingAnswer(true);
     setSelectedAnswer(answer);
-    // Don't set isAnswered immediately to prevent UI flash
-
-    try {
-      const res = await fetch(`http://localhost:3001/api/games/${lobbyId}/answer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          playerId,
-          questionId: question.questionId,
-          selectedAnswer: answer,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setCorrectAnswer(data.correctAnswer);
-        setExplanation(data.explanation);
-
-        // Only now set isAnswered to show final results
-        setIsAnswered(true);
-        setShowExplanation(answer !== null);
-
-        const isCorrect = data.correct;
-        if (isCorrect) {
-          const nextStreak = streak + 1;
-          setStreak(nextStreak);
-          setCorrectCount(correctCount + 1);
-          setScore(score + 100 * nextStreak);
-        } else {
-          setStreak(0);
-        }
-
-        if (!isHost) {
-          setIsWaitingForNext(true);
-        }
-      } else if (res.status === 409) {
-        const data = await res.json();
-        setCorrectAnswer(data.correctAnswer);
-        setExplanation(data.explanation);
-        setIsAnswered(true);
-        setShowExplanation(answer !== null);
-
-        if (data.correct) {
-          const nextStreak = streak + 1;
-          setStreak(nextStreak);
-          setCorrectCount(correctCount + 1);
-          setScore(score + 100 * nextStreak);
-        } else {
-          setStreak(0);
-        }
-
-        if (!isHost) {
-          setIsWaitingForNext(true);
-        } else {
-          setIsWaitingForNext(false);
-        }
-      }
-    } catch (error) {
-      console.error("Error submitting answer:", error);
-      // Reset on error
-      setSelectedAnswer(null);
-    } finally {
-      setIsProcessingAnswer(false);
+    socketRef.current?.emit("submitAnswer", {
+      lobbyId,
+      playerId,
+      questionId: question.questionId,
+      answer,
+    });
+    if (!isHost) {
+      setIsWaitingForNext(true);
     }
+    setIsProcessingAnswer(false);
   };
   const handleNextQuestion = async () => {
     if (!isHost) return;
-
-    // Remove isProcessingAnswer check to allow button click
     setIsWaitingForNext(true);
-
-    try {
-      const res = await fetch(`http://localhost:3001/api/games/${lobbyId}/next`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerId }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.finished) {
-          // Trigger cleanup and redirect to results
-          await fetch(`http://localhost:3001/api/lobbies/${lobbyId}/cleanup`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-          });
-          router.push("/results");
-        } else {
-          // Reset state for next question
-          setIsWaitingForNext(false);
-          setIsAnswered(false);
-          setShowExplanation(false);
-          setSelectedAnswer(null);
-          setCorrectAnswer(null);
-          setExplanation("");
-          setCurrentQuestionId(null); // Force refetch of new question
-          // Fetch the next question immediately
-          setTimeout(fetchQuestion, 500);
-        }
-      }
-    } catch (error) {
-      console.error("Error advancing to next question:", error);
-      setIsWaitingForNext(false);
-    }
+    socketRef.current?.emit("nextQuestion", { lobbyId, playerId });
   };
 
   const getProgressPercentage = () => {
@@ -318,7 +239,6 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
               <div className="text-center">
                 <div className={`text-2xl font-bold ${getScoreColor()}`}>
                   <AnimatedNumber value={score} />
-                  {streak > 1 && <span className="ml-1 text-sm text-german-red">x{streak}</span>}
                 </div>
                 <div className="text-sm text-gray-600">Punkte</div>
               </div>
