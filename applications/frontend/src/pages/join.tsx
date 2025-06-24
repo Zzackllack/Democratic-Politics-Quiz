@@ -14,7 +14,7 @@ export default function JoinPage() {
 
   const join = async () => {
     localStorage.setItem("playerName", playerName);
-    const res = await fetch("/api/lobbies/join", {
+    const res = await fetch("http://localhost:3001/api/lobbies/join", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, playerName }),

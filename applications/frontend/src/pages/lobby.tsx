@@ -30,7 +30,7 @@ export default function LobbyPage() {
   useEffect(() => {
     if (!lobbyInfo) return;
     const interval = setInterval(async () => {
-      const res = await fetch(`/api/lobbies/${lobbyInfo.lobbyId}`);
+      const res = await fetch(`http://localhost:3001/api/lobbies/${lobbyInfo.lobbyId}`);
       if (res.ok) {
         const data = await res.json();
         setPlayers(data.players);
@@ -48,7 +48,7 @@ export default function LobbyPage() {
   };
 
   const createLobby = async () => {
-    const res = await fetch("/api/lobbies", {
+    const res = await fetch("http://localhost:3001/api/lobbies", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: lobbyName, gameMode, hostName: playerName }),
@@ -66,7 +66,7 @@ export default function LobbyPage() {
   const startGame = async () => {
     if (!lobbyInfo) return;
     const playerId = localStorage.getItem("playerId");
-    await fetch(`/api/lobbies/${lobbyInfo.lobbyId}/start`, {
+    await fetch(`http://localhost:3001/api/lobbies/${lobbyInfo.lobbyId}/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ playerId }),
