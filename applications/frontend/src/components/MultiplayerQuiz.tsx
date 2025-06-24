@@ -37,21 +37,39 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
   const fetchQuestion = useCallback(async () => {
     if (!lobbyId) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/games/${lobbyId}/question`);
+      const res = await fetch(
+        `http://localhost:3001/api/games/${lobbyId}/question?playerId=${playerId}`
+      );
       if (res.ok) {
         const data = await res.json();
+
+        setScore(data.score || 0);
+        setCorrectCount(data.correctCount || 0);
+        setStreak(data.streak || 0);
 
         // Only update if this is a new question to prevent timer reset
         if (!currentQuestionId || currentQuestionId !== data.questionId) {
           setQuestion(data);
           setCurrentQuestionId(data.questionId);
-          setSelectedAnswer(null);
-          setIsAnswered(false);
-          setShowExplanation(false);
           setTimeLeft(30);
-          setIsWaitingForNext(false);
           setIsProcessingAnswer(false);
           setFetchError(null);
+
+          if (data.playerAnswer) {
+            setSelectedAnswer(data.playerAnswer.selectedAnswer);
+            setIsAnswered(true);
+            setShowExplanation(true);
+            setCorrectAnswer(data.playerAnswer.correctAnswer);
+            setExplanation(data.playerAnswer.explanation);
+            setIsWaitingForNext(!isHost);
+          } else {
+            setSelectedAnswer(null);
+            setIsAnswered(false);
+            setShowExplanation(false);
+            setCorrectAnswer(null);
+            setExplanation("");
+            setIsWaitingForNext(false);
+          }
         }
       } else if (res.status === 404) {
         // Game might be finished - trigger cleanup and redirect
@@ -69,7 +87,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
       console.error("Error fetching question:", error);
       setFetchError("Fehler beim Laden der Frage");
     }
-  }, [lobbyId, router, currentQuestionId]);
+  }, [lobbyId, router, currentQuestionId, playerId, isHost]);
   useEffect(() => {
     fetchQuestion();
     // More frequent polling for better synchronization
@@ -126,7 +144,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
           setStreak(0);
         }
 
-        setIsWaitingForNext(true);
+        setIsWaitingForNext(!isHost);
       }
     } catch (error) {
       console.error("Error submitting answer:", error);

@@ -5,11 +5,14 @@ const router = Router();
 
 router.get("/:lobbyId/question", async (req: Request, res: Response) => {
   const { lobbyId } = req.params;
+  const { playerId } = req.query as { playerId?: string };
+
   try {
     const gameState = await prisma.gameState.findUnique({ where: { lobbyId } });
     if (!gameState || !gameState.isActive) {
       return res.status(404).json({ error: "Game not active" });
     }
+
     const ids = gameState.questionIds as string[];
     const questionId = ids[gameState.currentQuestion];
     const question = await prisma.question.findUnique({
@@ -19,9 +22,52 @@ router.get("/:lobbyId/question", async (req: Request, res: Response) => {
         type: true,
         question: true,
         options: true,
+        correctAnswer: true,
+        explanation: true,
       },
     });
+
     if (!question) return res.status(404).json({ error: "Question not found" });
+
+    let playerAnswer: any = null;
+    let score = 0;
+    let correctCount = 0;
+    let streak = 0;
+
+    if (playerId) {
+      const answers = await prisma.gameAnswer.findMany({
+        where: {
+          playerId,
+          gameStateId: gameState.id,
+        },
+        orderBy: { submittedAt: "asc" },
+      });
+
+      for (const a of answers) {
+        if (a.isCorrect) {
+          streak += 1;
+          correctCount += 1;
+          score += 100 * streak;
+        } else {
+          streak = 0;
+        }
+
+        if (a.questionId === questionId) {
+          playerAnswer = {
+            selectedAnswer: a.selectedAnswer,
+            isCorrect: a.isCorrect,
+            correctAnswer: question.correctAnswer,
+            explanation: question.explanation,
+          };
+        }
+      }
+
+      // Reset streak to continue correctly for next questions
+      if (!playerAnswer) {
+        // If current question not answered, streak should persist from previous answers
+      }
+    }
+
     return res.json({
       questionId: question.id,
       type: question.type,
@@ -29,6 +75,10 @@ router.get("/:lobbyId/question", async (req: Request, res: Response) => {
       options: question.options,
       number: gameState.currentQuestion + 1,
       total: gameState.totalQuestions,
+      playerAnswer,
+      score,
+      correctCount,
+      streak,
     });
   } catch (err) {
     console.error(err);
@@ -57,8 +107,20 @@ router.post("/:lobbyId/answer", async (req: Request, res: Response) => {
     const gameState = await prisma.gameState.findUnique({ where: { lobbyId } });
     if (!gameState) return res.status(404).json({ error: "Game not found" });
 
-    await prisma.gameAnswer.create({
-      data: {
+    // Prevent duplicate answers on reload
+    await prisma.gameAnswer.upsert({
+      where: {
+        playerId_gameStateId_questionId: {
+          playerId,
+          gameStateId: gameState.id,
+          questionId,
+        },
+      },
+      update: {
+        selectedAnswer,
+        isCorrect,
+      },
+      create: {
         questionId,
         selectedAnswer,
         isCorrect,
