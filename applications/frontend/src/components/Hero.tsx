@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "framer-motion";
+import { User, Users } from "lucide-react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import { gameModes } from "../data/mockData";
 
 interface HeroProps {
@@ -12,9 +13,19 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
   const [selectedGameMode, setSelectedGameMode] = useState<string>("");
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Add ref for difficulty section
+  const difficultyRef = React.useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     setTimeout(() => setIsLoaded(true), 100);
   }, []);
+
+  // Scroll to difficulty when game type is selected
+  useEffect(() => {
+    if (selectedGameType && difficultyRef.current) {
+      difficultyRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [selectedGameType]);
 
   const router = useRouter();
 
@@ -172,19 +183,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
             >
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center mb-4 shadow-md">
-                  <svg
-                    className="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
+                  <User className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-black mb-2">Einzelspieler</h3>
                 <p className="text-gray-600 text-center">
@@ -203,19 +202,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
             >
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-full bg-yellow-500 flex items-center justify-center mb-4 shadow-md">
-                  <svg
-                    className="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-                    />
-                  </svg>
+                  <Users className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-black mb-2">Mehrspieler</h3>
                 <p className="text-gray-600 text-center">
@@ -232,6 +219,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
           {selectedGameType && (
             <motion.div
               key="difficulty"
+              ref={difficultyRef}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}

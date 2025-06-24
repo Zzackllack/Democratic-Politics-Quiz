@@ -1,6 +1,8 @@
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
+import InstallTip from "./InstallTip";
+import MobileMenu from "./MobileMenu";
 
 interface LayoutProps {
   title: string;
@@ -19,7 +21,7 @@ export default function Layout({
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.svg" />
+        <link rel="icon" href="/favicon.ico" />
         <meta name="apple-mobile-web-app-title" content="Quiz" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -41,6 +43,7 @@ export default function Layout({
                   <span>Demokratie Quiz</span>
                 </Link>
               </div>
+              <MobileMenu />
               <div className="hidden md:flex items-center space-x-6">
                 <Link
                   href="/"
@@ -133,6 +136,7 @@ export default function Layout({
             </div>
           </div>
         </footer>
+        <InstallTip />
       </div>
     </>
   );
