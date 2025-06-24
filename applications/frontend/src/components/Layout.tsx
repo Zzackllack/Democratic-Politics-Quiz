@@ -2,6 +2,7 @@ import React from "react";
 import Head from "next/head";
 import Link from "next/link";
 import InstallTip from "./InstallTip";
+import MobileMenu from "./MobileMenu";
 
 interface LayoutProps {
   title: string;
@@ -42,6 +43,7 @@ export default function Layout({
                   <span>Demokratie Quiz</span>
                 </Link>
               </div>
+              <MobileMenu />
               <div className="hidden md:flex items-center space-x-6">
                 <Link
                   href="/"
