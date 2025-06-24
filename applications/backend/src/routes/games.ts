@@ -175,7 +175,7 @@ router.get("/:lobbyId/results", async (req: Request, res: Response) => {
       scores[p.id] = 0;
     }
     for (const a of gameState.gameAnswers) {
-      if (a.isCorrect) scores[a.playerId] += 1;
+      if (a.isCorrect) scores[a.playerId] += 100;
     }
     const results = gameState.lobby.players.map((p: { id: string; name: string }) => ({
       playerId: p.id,

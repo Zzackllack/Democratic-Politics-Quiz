@@ -64,8 +64,17 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
       });
       setCurrentQuestionId(data.questionId);
       setScore(data.score);
-      setSelectedAnswer(data.playerAnswer);
-      setCorrectAnswer(data.playerAnswer ? data.correctAnswer : null);
+      const isBool = data.type === "true-false";
+      const playerAnswer =
+        isBool && typeof data.playerAnswer === "string"
+          ? data.playerAnswer.toLowerCase() === "true"
+          : data.playerAnswer;
+      const corrAnswer =
+        isBool && typeof data.correctAnswer === "string"
+          ? data.correctAnswer.toLowerCase() === "true"
+          : data.correctAnswer;
+      setSelectedAnswer(playerAnswer);
+      setCorrectAnswer(data.playerAnswer ? corrAnswer : null);
       setExplanation(data.playerAnswer ? data.explanation : "");
       setShowExplanation(data.playerAnswer !== null);
       setIsAnswered(data.isCorrect !== null);
@@ -102,7 +111,12 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
 
     socket.on("answerResult", (data) => {
       console.log("answerResult", data);
-      setCorrectAnswer(data.correctAnswer);
+      const isBool = question?.type === "true-false";
+      const corrAns =
+        isBool && typeof data.correctAnswer === "string"
+          ? data.correctAnswer.toLowerCase() === "true"
+          : data.correctAnswer;
+      setCorrectAnswer(corrAns);
       setExplanation(data.explanation);
       setIsAnswered(true);
       setShowExplanation(true);
@@ -171,7 +185,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
   };
   // Improved answer comparison function
   const isCorrectAnswer = (option: string | boolean): boolean => {
-    if (!correctAnswer) return false;
+    if (correctAnswer === null || correctAnswer === undefined) return false;
 
     if (typeof option === "boolean" && typeof correctAnswer === "boolean") {
       return option === correctAnswer;
@@ -185,7 +199,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
   };
 
   const isSelectedAnswer = (option: string | boolean): boolean => {
-    if (!selectedAnswer) return false;
+    if (selectedAnswer === null || selectedAnswer === undefined) return false;
 
     if (typeof option === "boolean" && typeof selectedAnswer === "boolean") {
       return option === selectedAnswer;
