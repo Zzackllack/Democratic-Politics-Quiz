@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import React, { useState } from "react";
 
 const navItems = [
   { href: "/", label: "Startseite" },
-  { href: "/play", label: "Quiz" },
+  { href: "/play", label: "Einzelspieler" },
+  { href: "/lobby", label: "Mehrspieler" },
   { href: "/leaderboard", label: "Bestenliste" },
   { href: "/reflection", label: "Reflexion" },
+  { href: "/join", label: "Lobby beitreten" },
 ];
 
 const MobileMenu: React.FC = () => {
