@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import type { Player } from "../data/mockData";
+import type { Player } from "../data/gamemodes";
 
 interface LeaderboardProps {
   currentPlayer?: Player;

@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { User, Users } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { gameModes } from "../data/mockData";
+import { gameModes } from "../data/gamemodes";
 
 interface HeroProps {
   onStartQuiz?: (gameType: "singleplayer" | "multiplayer", gameMode: string) => void;
