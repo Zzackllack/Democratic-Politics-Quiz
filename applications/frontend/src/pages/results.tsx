@@ -61,7 +61,7 @@ export default function ResultsPage() {
     if (!lobbyId) return;
     setIsSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:3001/api/lobbies/${lobbyId}/cleanup`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lobbies/${lobbyId}/cleanup`, {
         method: "POST",
       });
       if (res.ok) {

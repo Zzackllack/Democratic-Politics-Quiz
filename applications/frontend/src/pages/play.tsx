@@ -76,7 +76,7 @@ export default function PlayPage() {
 
       if (lobbyId && playerId) {
         // Mark player as offline
-        fetch(`http://localhost:3001/api/players/${playerId}`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/players/${playerId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ isOnline: false }),
