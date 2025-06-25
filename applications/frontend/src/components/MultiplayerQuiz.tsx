@@ -120,6 +120,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
       setExplanation(data.explanation);
       setIsAnswered(true);
       setShowExplanation(true);
+      setIsProcessingAnswer(false); // Reset processing flag when server responds
     });
 
     socket.on("scoreUpdate", ({ playerId: pid, score: sc }) => {
@@ -138,7 +139,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
     return () => {
       socket.disconnect();
     };
-  }, [lobbyId, playerId, router]);
+  }, [lobbyId, playerId, question?.type, router]);
   useEffect(() => {
     if (timeLeft > 0 && !isAnswered && question) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -163,7 +164,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
     if (!isHost) {
       setIsWaitingForNext(true);
     }
-    setIsProcessingAnswer(false);
+    // Removed setIsProcessingAnswer(false) - now handled in answerResult callback
   };
   const handleNextQuestion = async () => {
     if (!isHost) return;

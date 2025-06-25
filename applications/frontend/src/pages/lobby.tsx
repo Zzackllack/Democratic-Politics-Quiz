@@ -1,9 +1,19 @@
 import Layout from "@/components/Layout";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, Clock, Copy, Crown, LogOut, Play, Settings, User, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const difficulties = ["einfach", "mittel", "schwer", "lustig", "einbürgerungstest"];
+
+const difficultyConfig = {
+  einfach: { icon: "🌱", color: "bg-green-500", label: "Einfach" },
+  mittel: { icon: "🎯", color: "bg-blue-500", label: "Mittel" },
+  schwer: { icon: "🔥", color: "bg-red-500", label: "Schwer" },
+  lustig: { icon: "😄", color: "bg-purple-500", label: "Lustig" },
+  einbürgerungstest: { icon: "🏛️", color: "bg-gray-700", label: "Einbürgerungstest" },
+};
 
 export default function LobbyPage() {
   const router = useRouter();
@@ -13,6 +23,8 @@ export default function LobbyPage() {
   const [gameMode, setGameMode] = useState("einfach");
   const [lobbyInfo, setLobbyInfo] = useState<{ lobbyId: string; code: string } | null>(null);
   const [players, setPlayers] = useState<Array<{ id: string; name: string; isHost: boolean }>>([]);
+  const [copied, setCopied] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
 
   useEffect(() => {
     const storedName = localStorage.getItem("playerName");
@@ -26,69 +38,89 @@ export default function LobbyPage() {
       setLobbyInfo({ lobbyId, code });
     }
   }, []);
+
   useEffect(() => {
     if (!lobbyInfo) return;
     const interval = setInterval(async () => {
-      const res = await fetch(`http://localhost:3001/api/lobbies/${lobbyInfo.lobbyId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setPlayers(data.players);
-        if (data.status === "IN_PROGRESS") {
-          router.push("/play");
-        } else if (data.status === "FINISHED") {
-          // Lobby is finished, clear localStorage
+      try {
+        const res = await fetch(`http://localhost:3001/api/lobbies/${lobbyInfo.lobbyId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setPlayers(data.players);
+          if (data.status === "IN_PROGRESS") {
+            router.push("/play");
+          } else if (data.status === "FINISHED") {
+            // Lobby is finished, clear localStorage
+            localStorage.removeItem("lobbyId");
+            localStorage.removeItem("playerId");
+            localStorage.removeItem("code");
+            localStorage.removeItem("isHost");
+            router.push("/play");
+          }
+        } else {
+          // Lobby not found, clear localStorage
           localStorage.removeItem("lobbyId");
           localStorage.removeItem("playerId");
           localStorage.removeItem("code");
           localStorage.removeItem("isHost");
           router.push("/play");
         }
-      } else {
-        // Lobby not found, clear localStorage
-        localStorage.removeItem("lobbyId");
-        localStorage.removeItem("playerId");
-        localStorage.removeItem("code");
-        localStorage.removeItem("isHost");
-        router.push("/play");
+      } catch (error) {
+        console.error("Error fetching lobby status:", error);
       }
     }, 2000);
     return () => clearInterval(interval);
   }, [lobbyInfo, router]);
 
   const saveName = () => {
+    if (!playerName.trim()) return;
     localStorage.setItem("playerName", playerName);
     setHasName(true);
   };
+
   const createLobby = async () => {
+    if (!lobbyName.trim()) return;
+
     // Clear any existing lobby data
     localStorage.removeItem("lobbyId");
     localStorage.removeItem("playerId");
     localStorage.removeItem("code");
     localStorage.removeItem("isHost");
 
-    const res = await fetch("http://localhost:3001/api/lobbies", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: lobbyName, gameMode, hostName: playerName }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      localStorage.setItem("playerId", data.hostId);
-      localStorage.setItem("lobbyId", data.lobbyId);
-      localStorage.setItem("code", data.code);
-      localStorage.setItem("isHost", "true");
-      setLobbyInfo({ lobbyId: data.lobbyId, code: data.code });
+    try {
+      const res = await fetch("http://localhost:3001/api/lobbies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: lobbyName, gameMode, hostName: playerName }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("playerId", data.hostId);
+        localStorage.setItem("lobbyId", data.lobbyId);
+        localStorage.setItem("code", data.code);
+        localStorage.setItem("isHost", "true");
+        setLobbyInfo({ lobbyId: data.lobbyId, code: data.code });
+      }
+    } catch (error) {
+      console.error("Error creating lobby:", error);
     }
   };
+
   const startGame = async () => {
     if (!lobbyInfo) return;
-    const playerId = localStorage.getItem("playerId");
-    await fetch(`http://localhost:3001/api/lobbies/${lobbyInfo.lobbyId}/start`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ playerId }),
-    });
-    router.push("/play");
+    setIsStarting(true);
+    try {
+      const playerId = localStorage.getItem("playerId");
+      await fetch(`http://localhost:3001/api/lobbies/${lobbyInfo.lobbyId}/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerId }),
+      });
+      router.push("/play");
+    } catch (error) {
+      console.error("Error starting game:", error);
+      setIsStarting(false);
+    }
   };
 
   const leaveLobby = () => {
@@ -99,19 +131,83 @@ export default function LobbyPage() {
     router.push("/play");
   };
 
+  const copyCode = async () => {
+    if (lobbyInfo?.code) {
+      try {
+        await navigator.clipboard.writeText(lobbyInfo.code);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error("Failed to copy code:", err);
+      }
+    }
+  };
+
+  const getPlayerInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   if (!hasName) {
     return (
-      <Layout title="Name">
-        <div className="p-4">
-          <h2 className="mb-2">Dein Anzeigename</h2>
-          <input
-            className="border p-2"
-            value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
-          />
-          <button className="ml-2 border px-4 py-2" onClick={saveName} disabled={!playerName}>
-            Speichern
-          </button>
+      <Layout title="Name eingeben">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black/5 to-transparent"></div>
+            <div className="absolute top-1/3 left-0 w-full h-1/3 bg-gradient-to-b from-red-600/5 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-yellow-400/10 to-transparent"></div>
+          </div>
+
+          <div className="relative z-10 container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-screen">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="w-full max-w-md"
+            >
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                  <User className="w-10 h-10 text-white" />
+                </div>
+                <h1 className="text-4xl font-bold text-german-black mb-4">Willkommen!</h1>
+                <p className="text-xl text-gray-600">Wie sollen dich andere Spieler nennen?</p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Dein Anzeigename
+                    </label>
+                    <input
+                      type="text"
+                      value={playerName}
+                      onChange={(e) => setPlayerName(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && saveName()}
+                      placeholder="Z.B. Max Mustermann"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors duration-200 text-gray-800 placeholder-gray-400"
+                      maxLength={20}
+                      autoFocus
+                    />
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={saveName}
+                    disabled={!playerName.trim()}
+                    className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    Weiter
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </Layout>
     );
@@ -120,67 +216,320 @@ export default function LobbyPage() {
   if (!lobbyInfo) {
     return (
       <Layout title="Lobby erstellen">
-        <div className="p-4 space-y-4">
-          <div>
-            <label className="block mb-1">Lobby Name</label>
-            <input
-              className="border p-2 w-full"
-              value={lobbyName}
-              onChange={(e) => setLobbyName(e.target.value)}
-            />
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black/5 to-transparent"></div>
+            <div className="absolute top-1/3 left-0 w-full h-1/3 bg-gradient-to-b from-red-600/5 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-yellow-400/10 to-transparent"></div>
           </div>
-          <div>
-            <label className="block mb-1">Schwierigkeitsgrad</label>
-            <select
-              className="border p-2"
-              value={gameMode}
-              onChange={(e) => setGameMode(e.target.value)}
+
+          <div className="relative z-10 container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-screen">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="w-full max-w-lg"
             >
-              {difficulties.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button className="border px-4 py-2" disabled={!lobbyName} onClick={createLobby}>
-            Lobby erstellen
-          </button>
-          <div>
-            <Link className="text-blue-600 underline" href="/join">
-              Lobby beitreten
-            </Link>
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center shadow-lg">
+                  <Settings className="w-10 h-10 text-white" />
+                </div>
+                <h1 className="text-4xl font-bold text-german-black mb-4">Lobby erstellen</h1>
+                <p className="text-xl text-gray-600">Konfiguriere dein Mehrspieler-Quiz</p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Lobby Name
+                  </label>
+                  <input
+                    type="text"
+                    value={lobbyName}
+                    onChange={(e) => setLobbyName(e.target.value)}
+                    placeholder="Z.B. Quiz mit Freunden"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition-colors duration-200 text-gray-800 placeholder-gray-400"
+                    maxLength={30}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Schwierigkeitsgrad
+                  </label>
+                  <div className="grid grid-cols-1 gap-2">
+                    {difficulties.map((difficulty) => {
+                      const config = difficultyConfig[difficulty as keyof typeof difficultyConfig];
+                      return (
+                        <motion.div
+                          key={difficulty}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setGameMode(difficulty)}
+                          className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                            gameMode === difficulty
+                              ? "border-green-500 bg-green-50 shadow-md"
+                              : "border-gray-200 bg-gray-50 hover:border-green-300"
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div
+                              className={`w-8 h-8 rounded-full ${config.color} flex items-center justify-center text-white text-sm`}
+                            >
+                              {config.icon}
+                            </div>
+                            <span className="font-medium text-gray-800">{config.label}</span>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={createLobby}
+                  disabled={!lobbyName.trim()}
+                  className="w-full py-3 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <div className="flex items-center justify-center space-x-2">
+                    <Settings className="w-5 h-5" />
+                    <span>Lobby erstellen</span>
+                  </div>
+                </motion.button>
+
+                <div className="text-center pt-2">
+                  <Link
+                    href="/join"
+                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                  >
+                    Oder einer Lobby beitreten
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </Layout>
     );
   }
+
+  const isHost = localStorage.getItem("isHost") === "true";
+  const currentDifficulty =
+    difficultyConfig[gameMode as keyof typeof difficultyConfig] || difficultyConfig.einfach;
+
   return (
     <Layout title="Lobby">
-      <div className="p-4 space-y-2">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Lobby: {lobbyInfo.code}</h2>
-          <button
-            onClick={leaveLobby}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            Lobby verlassen
-          </button>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black/5 to-transparent"></div>
+          <div className="absolute top-1/3 left-0 w-full h-1/3 bg-gradient-to-b from-red-600/5 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-yellow-400/10 to-transparent"></div>
         </div>
-        <p>Code: {lobbyInfo.code}</p>
-        <ul>
-          {players.map((p) => (
-            <li key={p.id}>
-              {p.name}
-              {p.isHost ? " (Host)" : ""}
-            </li>
-          ))}
-        </ul>
-        {localStorage.getItem("isHost") === "true" && (
-          <button className="border px-4 py-2" onClick={startGame}>
-            Spiel starten
-          </button>
-        )}
+
+        <div className="relative z-10 container mx-auto px-4 py-8">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-8"
+          >
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <Users className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-german-black mb-2">Lobby: {lobbyInfo.code}</h1>
+            <p className="text-gray-600">Warte auf andere Spieler oder starte das Quiz</p>
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Lobby Info Card */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="lg:col-span-1"
+              >
+                <div className="bg-white rounded-2xl shadow-xl p-6">
+                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <Settings className="w-5 h-5 mr-2" />
+                    Lobby Info
+                  </h2>
+
+                  <div className="space-y-4">
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Code:</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-mono text-lg font-bold text-gray-800 tracking-widest">
+                            {lobbyInfo.code}
+                          </span>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={copyCode}
+                            className="p-1 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                          >
+                            {copied ? (
+                              <Check className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </motion.button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Schwierigkeit:</span>
+                        <div className="flex items-center space-x-2">
+                          <div
+                            className={`w-6 h-6 rounded-full ${currentDifficulty.color} flex items-center justify-center text-white text-xs`}
+                          >
+                            {currentDifficulty.icon}
+                          </div>
+                          <span className="font-medium text-gray-800">
+                            {currentDifficulty.label}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Spieler:</span>
+                        <span className="font-bold text-gray-800">{players.length}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={leaveLobby}
+                    className="w-full mt-4 py-2 px-4 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-colors duration-200 flex items-center justify-center space-x-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Lobby verlassen</span>
+                  </motion.button>
+                </div>
+              </motion.div>
+
+              {/* Players List */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="lg:col-span-2"
+              >
+                <div className="bg-white rounded-2xl shadow-xl p-6">
+                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <Users className="w-5 h-5 mr-2" />
+                    Spieler ({players.length})
+                  </h2>
+
+                  {players.length === 0 ? (
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                        <Clock className="w-8 h-8 text-gray-400" />
+                      </div>
+                      <p className="text-gray-500">Warte auf Spieler...</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <AnimatePresence>
+                        {players.map((player, index) => (
+                          <motion.div
+                            key={player.id}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                            className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                              player.isHost
+                                ? "border-yellow-400 bg-yellow-50"
+                                : "border-gray-200 bg-gray-50"
+                            }`}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div
+                                className={`w-12 h-12 rounded-full ${
+                                  player.isHost ? "bg-yellow-500" : "bg-blue-500"
+                                } flex items-center justify-center text-white font-bold shadow-md`}
+                              >
+                                {player.isHost ? (
+                                  <Crown className="w-6 h-6" />
+                                ) : (
+                                  <span className="text-sm">{getPlayerInitials(player.name)}</span>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-bold text-gray-800">{player.name}</h3>
+                                <p className="text-sm text-gray-600">
+                                  {player.isHost ? "Host" : "Spieler"}
+                                </p>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  )}
+
+                  {/* Start Game Button */}
+                  {isHost && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      className="mt-6 pt-6 border-t border-gray-200"
+                    >
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={startGame}
+                        disabled={players.length === 0 || isStarting}
+                        className="w-full py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+                      >
+                        {isStarting ? (
+                          <div className="flex items-center justify-center space-x-2">
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <span>Spiel wird gestartet...</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center space-x-2">
+                            <Play className="w-5 h-5" />
+                            <span>Spiel starten</span>
+                          </div>
+                        )}
+                      </motion.button>
+
+                      {players.length === 0 && (
+                        <p className="text-center text-gray-500 text-sm mt-2">
+                          Mindestens ein Spieler wird benötigt
+                        </p>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {!isHost && (
+                    <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+                      <div className="flex items-center justify-center space-x-2 text-gray-600">
+                        <Clock className="w-5 h-5" />
+                        <span>Warte auf den Host...</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
       </div>
     </Layout>
   );
