@@ -39,6 +39,29 @@ export default function LobbyPage() {
     }
   }, []);
 
+  // Initial fetch to sync game mode when lobby info is available
+  useEffect(() => {
+    if (!lobbyInfo) return;
+
+    const fetchInitialLobbyData = async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/api/lobbies/${lobbyInfo.lobbyId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setPlayers(data.players);
+          // Set the game mode from the lobby data
+          if (data.gameMode) {
+            setGameMode(data.gameMode);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching initial lobby data:", error);
+      }
+    };
+
+    fetchInitialLobbyData();
+  }, [lobbyInfo]);
+
   useEffect(() => {
     if (!lobbyInfo) return;
     const interval = setInterval(async () => {
@@ -47,6 +70,10 @@ export default function LobbyPage() {
         if (res.ok) {
           const data = await res.json();
           setPlayers(data.players);
+          // Update game mode to match the lobby's actual game mode
+          if (data.gameMode && data.gameMode !== gameMode) {
+            setGameMode(data.gameMode);
+          }
           if (data.status === "IN_PROGRESS") {
             router.push("/play");
           } else if (data.status === "FINISHED") {
@@ -70,7 +97,7 @@ export default function LobbyPage() {
       }
     }, 2000);
     return () => clearInterval(interval);
-  }, [lobbyInfo, router]);
+  }, [lobbyInfo, router, gameMode]);
 
   const saveName = () => {
     if (!playerName.trim()) return;
