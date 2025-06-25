@@ -8,11 +8,36 @@ import { useEffect, useState } from "react";
 const difficulties = ["einfach", "mittel", "schwer", "lustig", "einbürgerungstest"];
 
 const difficultyConfig = {
-  einfach: { icon: "🌱", color: "bg-green-500", label: "Einfach" },
-  mittel: { icon: "🎯", color: "bg-blue-500", label: "Mittel" },
-  schwer: { icon: "🔥", color: "bg-red-500", label: "Schwer" },
-  lustig: { icon: "😄", color: "bg-purple-500", label: "Lustig" },
-  einbürgerungstest: { icon: "🏛️", color: "bg-gray-700", label: "Einbürgerungstest" },
+  einfach: {
+    icon: "🌱",
+    color: "bg-green-500",
+    label: "Einfach",
+    description: "Grundlegende Fragen zur Demokratie",
+  },
+  mittel: {
+    icon: "🎯",
+    color: "bg-yellow-500",
+    label: "Mittel",
+    description: "Erweiterte Kenntnisse erforderlich",
+  },
+  schwer: {
+    icon: "🔥",
+    color: "bg-red-500",
+    label: "Schwer",
+    description: "Für echte Demokratie-Experten",
+  },
+  lustig: {
+    icon: "😄",
+    color: "bg-purple-500",
+    label: "Lustig",
+    description: "Demokratie mit einem Augenzwinkern",
+  },
+  einbürgerungstest: {
+    icon: "🏛️",
+    color: "bg-blue-500",
+    label: "Einbürgerungstest",
+    description: "Offizielle Fragen zur deutschen Staatsbürgerschaft",
+  },
 };
 
 export default function LobbyPage() {
@@ -188,6 +213,19 @@ export default function LobbyPage() {
             <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black/5 to-transparent"></div>
             <div className="absolute top-1/3 left-0 w-full h-1/3 bg-gradient-to-b from-red-600/5 to-transparent"></div>
             <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-yellow-400/10 to-transparent"></div>
+
+            <motion.div
+              className="absolute top-20 right-20 w-32 h-24 rounded-lg blur-xl bg-gradient-to-b from-black via-red-600 to-yellow-400"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.2, scale: 1 }}
+              transition={{ duration: 1.5 }}
+            />
+            <motion.div
+              className="absolute bottom-32 left-20 w-20 h-15 rounded-lg blur-xl bg-gradient-to-b from-black via-red-600 to-yellow-400"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.15, scale: 1 }}
+              transition={{ duration: 1.5, delay: 0.3 }}
+            />
           </div>
 
           <div className="relative z-10 container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-screen">
@@ -197,16 +235,37 @@ export default function LobbyPage() {
               transition={{ duration: 0.6 }}
               className="w-full max-w-md"
             >
-              <div className="text-center mb-8">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+              <motion.div
+                className="text-center mb-8"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <motion.div
+                  className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-red-600 to-yellow-500 flex items-center justify-center shadow-lg"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.4 }}
+                >
                   <User className="w-10 h-10 text-white" />
-                </div>
-                <h1 className="text-4xl font-bold text-german-black mb-4">Willkommen!</h1>
+                </motion.div>
+                <h1 className="text-5xl font-bold text-black mb-4 tracking-tight">
+                  Willkommen zum
+                  <br />
+                  <span className="bg-gradient-to-r from-red-600 to-yellow-400 bg-clip-text text-transparent">
+                    Mehrspieler Quiz
+                  </span>
+                </h1>
                 <p className="text-xl text-gray-600">Wie sollen dich andere Spieler nennen?</p>
-              </div>
+              </motion.div>
 
-              <div className="bg-white rounded-2xl shadow-xl p-8">
-                <div className="space-y-4">
+              <motion.div
+                className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
+                <div className="space-y-6">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Dein Anzeigename
@@ -217,22 +276,37 @@ export default function LobbyPage() {
                       onChange={(e) => setPlayerName(e.target.value)}
                       onKeyPress={(e) => e.key === "Enter" && saveName()}
                       placeholder="Z.B. Max Mustermann"
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors duration-200 text-gray-800 placeholder-gray-400"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors duration-200 text-gray-800 placeholder-gray-400"
                       maxLength={20}
                       autoFocus
                     />
                   </div>
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={saveName}
                     disabled={!playerName.trim()}
-                    className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+                    className="w-full py-4 px-6 bg-gradient-to-r from-red-600 to-yellow-500 text-white text-lg font-bold rounded-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg"
                   >
                     Weiter
+                    <motion.svg
+                      className="ml-2 h-5 w-5 inline-block"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      animate={{ x: [0, 4, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </motion.svg>
                   </motion.button>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </div>
@@ -249,6 +323,19 @@ export default function LobbyPage() {
             <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black/5 to-transparent"></div>
             <div className="absolute top-1/3 left-0 w-full h-1/3 bg-gradient-to-b from-red-600/5 to-transparent"></div>
             <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-yellow-400/10 to-transparent"></div>
+
+            <motion.div
+              className="absolute top-20 right-20 w-32 h-24 rounded-lg blur-xl bg-gradient-to-b from-black via-red-600 to-yellow-400"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.2, scale: 1 }}
+              transition={{ duration: 1.5 }}
+            />
+            <motion.div
+              className="absolute bottom-32 left-20 w-20 h-15 rounded-lg blur-xl bg-gradient-to-b from-black via-red-600 to-yellow-400"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 0.15, scale: 1 }}
+              transition={{ duration: 1.5, delay: 0.3 }}
+            />
           </div>
 
           <div className="relative z-10 container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-screen">
@@ -258,15 +345,36 @@ export default function LobbyPage() {
               transition={{ duration: 0.6 }}
               className="w-full max-w-lg"
             >
-              <div className="text-center mb-8">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center shadow-lg">
+              <motion.div
+                className="text-center mb-8"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <motion.div
+                  className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-red-600 to-yellow-500 flex items-center justify-center shadow-lg"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.4 }}
+                >
                   <Settings className="w-10 h-10 text-white" />
-                </div>
-                <h1 className="text-4xl font-bold text-german-black mb-4">Lobby erstellen</h1>
+                </motion.div>
+                <h1 className="text-5xl font-bold text-black mb-4 tracking-tight">
+                  Lobby
+                  <br />
+                  <span className="bg-gradient-to-r from-red-600 to-yellow-400 bg-clip-text text-transparent">
+                    erstellen
+                  </span>
+                </h1>
                 <p className="text-xl text-gray-600">Konfiguriere dein Mehrspieler-Quiz</p>
-              </div>
+              </motion.div>
 
-              <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
+              <motion.div
+                className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 space-y-6 border border-gray-200"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Lobby Name
@@ -276,7 +384,7 @@ export default function LobbyPage() {
                     value={lobbyName}
                     onChange={(e) => setLobbyName(e.target.value)}
                     placeholder="Z.B. Quiz mit Freunden"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition-colors duration-200 text-gray-800 placeholder-gray-400"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors duration-200 text-gray-800 placeholder-gray-400"
                     maxLength={30}
                   />
                 </div>
@@ -285,28 +393,34 @@ export default function LobbyPage() {
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
                     Schwierigkeitsgrad
                   </label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {difficulties.map((difficulty) => {
+                  <div className="grid grid-cols-1 gap-3">
+                    {difficulties.map((difficulty, index) => {
                       const config = difficultyConfig[difficulty as keyof typeof difficultyConfig];
                       return (
                         <motion.div
                           key={difficulty}
-                          whileHover={{ scale: 1.02 }}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.5, delay: 0.1 * index }}
+                          whileHover={{ scale: 1.02, y: -2 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => setGameMode(difficulty)}
-                          className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 shadow-lg ${
                             gameMode === difficulty
-                              ? "border-green-500 bg-green-50 shadow-md"
-                              : "border-gray-200 bg-gray-50 hover:border-green-300"
+                              ? "border-red-500 bg-red-50 shadow-xl scale-105"
+                              : "border-gray-200 bg-white hover:border-red-300 hover:shadow-xl"
                           }`}
                         >
-                          <div className="flex items-center space-x-3">
+                          <div className="flex items-center space-x-4">
                             <div
-                              className={`w-8 h-8 rounded-full ${config.color} flex items-center justify-center text-white text-sm`}
+                              className={`w-12 h-12 rounded-full ${config.color} flex items-center justify-center text-white shadow-md`}
                             >
-                              {config.icon}
+                              <span className="text-xl">{config.icon}</span>
                             </div>
-                            <span className="font-medium text-gray-800">{config.label}</span>
+                            <div>
+                              <div className="font-bold text-gray-800">{config.label}</div>
+                              <div className="text-sm text-gray-600">{config.description}</div>
+                            </div>
                           </div>
                         </motion.div>
                       );
@@ -315,27 +429,47 @@ export default function LobbyPage() {
                 </div>
 
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={createLobby}
                   disabled={!lobbyName.trim()}
-                  className="w-full py-3 px-6 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="w-full py-4 px-6 bg-gradient-to-r from-red-600 to-yellow-500 text-white text-lg font-bold rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                 >
                   <div className="flex items-center justify-center space-x-2">
                     <Settings className="w-5 h-5" />
                     <span>Lobby erstellen</span>
+                    <motion.svg
+                      className="ml-2 h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      animate={{ x: [0, 4, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </motion.svg>
                   </div>
                 </motion.button>
 
-                <div className="text-center pt-2">
+                <motion.div
+                  className="text-center pt-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.0 }}
+                >
                   <Link
                     href="/join"
-                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                    className="text-red-600 hover:text-red-700 font-medium transition-colors duration-200"
                   >
                     Oder einer Lobby beitreten
                   </Link>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </motion.div>
           </div>
         </div>
@@ -355,6 +489,19 @@ export default function LobbyPage() {
           <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-black/5 to-transparent"></div>
           <div className="absolute top-1/3 left-0 w-full h-1/3 bg-gradient-to-b from-red-600/5 to-transparent"></div>
           <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-yellow-400/10 to-transparent"></div>
+
+          <motion.div
+            className="absolute top-20 right-20 w-32 h-24 rounded-lg blur-xl bg-gradient-to-b from-black via-red-600 to-yellow-400"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 0.2, scale: 1 }}
+            transition={{ duration: 1.5 }}
+          />
+          <motion.div
+            className="absolute bottom-32 left-20 w-20 h-15 rounded-lg blur-xl bg-gradient-to-b from-black via-red-600 to-yellow-400"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 0.15, scale: 1 }}
+            transition={{ duration: 1.5, delay: 0.3 }}
+          />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 py-8">
@@ -365,14 +512,24 @@ export default function LobbyPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-8"
           >
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <motion.div
+              className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-red-600 to-yellow-500 flex items-center justify-center shadow-lg"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.2 }}
+            >
               <Users className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-4xl font-bold text-german-black mb-2">Lobby: {lobbyInfo.code}</h1>
-            <p className="text-gray-600">Warte auf andere Spieler oder starte das Quiz</p>
+            </motion.div>
+            <h1 className="text-5xl font-bold text-black mb-4 tracking-tight">
+              Lobby:{" "}
+              <span className="bg-gradient-to-r from-red-600 to-yellow-400 bg-clip-text text-transparent">
+                {lobbyInfo.code}
+              </span>
+            </h1>
+            <p className="text-xl text-gray-600">Warte auf andere Spieler oder starte das Quiz</p>
           </motion.div>
 
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Lobby Info Card */}
               <motion.div
@@ -381,65 +538,78 @@ export default function LobbyPage() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="lg:col-span-1"
               >
-                <div className="bg-white rounded-2xl shadow-xl p-6">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-200">
                   <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <Settings className="w-5 h-5 mr-2" />
+                    <Settings className="w-5 h-5 mr-2 text-red-600" />
                     Lobby Info
                   </h2>
 
                   <div className="space-y-4">
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                    <motion.div
+                      className="p-4 bg-gradient-to-r from-red-50 to-yellow-50 rounded-xl border border-red-200"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Code:</span>
+                        <span className="text-sm font-semibold text-gray-700">Lobby Code:</span>
                         <div className="flex items-center space-x-2">
-                          <span className="font-mono text-lg font-bold text-gray-800 tracking-widest">
+                          <span className="font-mono text-2xl font-bold text-black tracking-widest px-3 py-1 bg-white rounded-lg shadow-sm">
                             {lobbyInfo.code}
                           </span>
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={copyCode}
-                            className="p-1 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-100 rounded-lg transition-all duration-200"
                           >
                             {copied ? (
-                              <Check className="w-4 h-4 text-green-500" />
+                              <Check className="w-5 h-5 text-green-500" />
                             ) : (
-                              <Copy className="w-4 h-4" />
+                              <Copy className="w-5 h-5" />
                             )}
                           </motion.button>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
 
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                    <motion.div
+                      className="p-4 bg-gradient-to-r from-yellow-50 to-red-50 rounded-xl border border-yellow-200"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Schwierigkeit:</span>
-                        <div className="flex items-center space-x-2">
+                        <span className="text-sm font-semibold text-gray-700">Schwierigkeit:</span>
+                        <div className="flex items-center space-x-3">
                           <div
-                            className={`w-6 h-6 rounded-full ${currentDifficulty.color} flex items-center justify-center text-white text-xs`}
+                            className={`w-8 h-8 rounded-full ${currentDifficulty.color} flex items-center justify-center text-white shadow-md`}
                           >
-                            {currentDifficulty.icon}
+                            <span className="text-lg">{currentDifficulty.icon}</span>
                           </div>
-                          <span className="font-medium text-gray-800">
-                            {currentDifficulty.label}
-                          </span>
+                          <span className="font-bold text-gray-800">{currentDifficulty.label}</span>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
 
-                    <div className="p-3 bg-gray-50 rounded-lg">
+                    <motion.div
+                      className="p-4 bg-gradient-to-r from-black/5 to-gray-100 rounded-xl border border-gray-200"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Spieler:</span>
-                        <span className="font-bold text-gray-800">{players.length}</span>
+                        <span className="text-sm font-semibold text-gray-700">Spieler online:</span>
+                        <span className="font-bold text-2xl text-black">{players.length}</span>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
 
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={leaveLobby}
-                    className="w-full mt-4 py-2 px-4 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-colors duration-200 flex items-center justify-center space-x-2"
+                    className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold rounded-xl hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 shadow-md"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Lobby verlassen</span>

@@ -217,7 +217,7 @@ export default function PlayPage() {
                     <h1 className="text-5xl md:text-6xl font-bold text-black mb-4 tracking-tight">
                       Wähle deinen
                       <br />
-                      <span className="bg-gradient-to-r from-red-600 to-yellow-400 bg-clip-text text-transparent">
+                      <span className=" text-4xl bg-gradient-to-r from-red-600 to-yellow-400 bg-clip-text text-transparent">
                         Schwierigkeitsgrad
                       </span>
                     </h1>
