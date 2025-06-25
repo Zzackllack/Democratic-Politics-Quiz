@@ -17,7 +17,7 @@ export default function PlayPage() {
 
       if (storedLobbyId && storedPlayerId) {
         // Verify the lobby is still active
-        fetch(`http://localhost:3001/api/lobbies/${storedLobbyId}`)
+        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/lobbies/${storedLobbyId}`)
           .then((res) => {
             if (res.ok) {
               return res.json();
