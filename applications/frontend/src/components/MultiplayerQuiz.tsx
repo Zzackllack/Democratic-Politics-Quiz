@@ -74,8 +74,8 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
           ? data.correctAnswer.toLowerCase() === "true"
           : data.correctAnswer;
       setSelectedAnswer(playerAnswer);
-      setCorrectAnswer(data.playerAnswer ? corrAnswer : null);
-      setExplanation(data.playerAnswer ? data.explanation : "");
+      setCorrectAnswer(data.playerAnswer !== null ? corrAnswer : null);
+      setExplanation(data.playerAnswer !== null ? data.explanation : "");
       setShowExplanation(data.playerAnswer !== null);
       setIsAnswered(data.isCorrect !== null);
       setIsWaitingForNext(false);
@@ -347,19 +347,25 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
                     disabled={isAnswered || isProcessingAnswer}
                     className={`p-6 rounded-lg border-2 font-bold text-lg transition-all duration-300 ${
                       isAnswered
-                        ? option === correctAnswer
+                        ? isCorrectAnswer(option)
                           ? "border-green-500 bg-green-50 text-green-800"
-                          : option === selectedAnswer
+                          : isSelectedAnswer(option)
                             ? "border-red-500 bg-red-50 text-red-800"
                             : "border-gray-200 bg-gray-50 text-gray-600"
-                        : isProcessingAnswer && selectedAnswer === option
+                        : isProcessingAnswer && isSelectedAnswer(option)
                           ? "border-blue-500 bg-blue-50 text-blue-800"
-                          : selectedAnswer === option
+                          : isSelectedAnswer(option)
                             ? "border-german-red bg-german-red/10"
                             : "border-gray-200 hover:border-german-red/50 hover:bg-gray-50"
                     } ${!isAnswered && !isProcessingAnswer ? "cursor-pointer" : "cursor-default"}`}
                   >
                     {option ? "Wahr" : "Falsch"}
+                    {isAnswered && isCorrectAnswer(option) && (
+                      <div className="mt-2 text-green-600 text-sm">✓ Richtige Antwort</div>
+                    )}
+                    {isAnswered && isSelectedAnswer(option) && !isCorrectAnswer(option) && (
+                      <div className="mt-2 text-red-600 text-sm">✗ Falsche Antwort</div>
+                    )}
                   </button>
                 ))}
               </div>
