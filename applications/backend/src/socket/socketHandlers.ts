@@ -55,7 +55,7 @@ export function setupSocket(io: Server) {
       socket.join(lobbyId);
       try {
         await prisma.session.upsert({
-          where: { playerId },
+          where: { id: playerId },
           create: { playerId, socketId: socket.id },
           update: { socketId: socket.id, isActive: true, lastSeen: new Date() },
         });
@@ -71,8 +71,11 @@ export function setupSocket(io: Server) {
         const answers = await prisma.gameAnswer.findMany({
           where: { playerId, gameStateId: gameState.id },
         });
-        const score = (answers as { isCorrect: boolean }[]).filter((ans) => ans.isCorrect).length * 100;
-        const playerAnswer = (answers as { questionId: string; selectedAnswer: string | null; isCorrect: boolean }[]).find((ans) => ans.questionId === qId);
+        const score =
+          (answers as { isCorrect: boolean }[]).filter((ans) => ans.isCorrect).length * 100;
+        const playerAnswer = (
+          answers as { questionId: string; selectedAnswer: string | null; isCorrect: boolean }[]
+        ).find((ans) => ans.questionId === qId);
 
         socket.emit("state", {
           questionId: question?.id,
@@ -118,7 +121,8 @@ export function setupSocket(io: Server) {
         const answers = await prisma.gameAnswer.findMany({
           where: { playerId, gameStateId: gameState.id },
         });
-        const score = (answers as { isCorrect: boolean }[]).filter((ans) => ans.isCorrect).length * 100;
+        const score =
+          (answers as { isCorrect: boolean }[]).filter((ans) => ans.isCorrect).length * 100;
         socket.emit("answerResult", {
           correct: isCorrect,
           correctAnswer: question.correctAnswer,
