@@ -28,7 +28,7 @@ export default function ResultsPage() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/games/${storedLobbyId}/results`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/games/${storedLobbyId}/results`)
       .then((r) => {
         if (r.ok) {
           return r.json();
