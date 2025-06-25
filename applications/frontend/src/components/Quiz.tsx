@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import type { Question } from "../data/mockData";
+import type { Question } from "../data/gamemodes";
 import AnimatedNumber from "./AnimatedNumber";
 
 interface QuizProps {

@@ -1,199 +1,189 @@
 import { Server, Socket } from "socket.io";
 import { prisma } from "../lib/prisma";
 
-interface SocketData {
-  playerId?: string;
-  lobbyId?: string;
+interface JoinPayload {
+  lobbyId: string;
+  playerId: string;
 }
 
-export const initializeSocketHandlers = (io: Server) => {
+interface AnswerPayload {
+  lobbyId: string;
+  playerId: string;
+  questionId: string;
+  answer: string | boolean | null;
+}
+
+interface NextPayload {
+  lobbyId: string;
+  playerId: string;
+}
+
+/**
+ * Helper to compute results at the end of the game
+ */
+async function computeResults(lobbyId: string) {
+  const gameState = await prisma.gameState.findUnique({
+    where: { lobbyId },
+    include: {
+      lobby: { include: { players: true } },
+      gameAnswers: true,
+    },
+  });
+  if (!gameState) return [];
+  const scores: Record<string, number> = {};
+  for (const p of gameState.lobby.players as { id: string; name: string }[]) {
+    scores[p.id] = 0;
+  }
+  for (const ans of gameState.gameAnswers as { isCorrect: boolean; playerId: string }[]) {
+    if (ans.isCorrect) scores[ans.playerId] += 100;
+  }
+  return (gameState.lobby.players as { id: string; name: string }[])
+    .map((pl: { id: string; name: string }) => ({
+      playerId: pl.id,
+      name: pl.name,
+      score: scores[pl.id] || 0,
+    }))
+    .sort((a: { score: number }, b: { score: number }) => b.score - a.score);
+}
+
+export function setupSocket(io: Server) {
   io.on("connection", (socket: Socket) => {
-    console.log(`Player connected: ${socket.id}`);
+    console.log("Socket connected", socket.id);
 
-    // Join player to their personal room
-    socket.on("player:join", async (data: { playerId: string }) => {
+    socket.on("join", async ({ lobbyId, playerId }: JoinPayload) => {
+      console.log("join", lobbyId, playerId);
+      socket.join(lobbyId);
       try {
-        socket.data.playerId = data.playerId;
-        socket.join(`player:${data.playerId}`);
-
-        // Update player online status
-        await prisma.player.update({
-          where: { id: data.playerId },
-          data: { isOnline: true },
+        await prisma.session.upsert({
+          where: { id: playerId },
+          create: { playerId, socketId: socket.id },
+          update: { socketId: socket.id, isActive: true, lastSeen: new Date() },
         });
 
-        console.log(`Player ${data.playerId} joined personal room`);
-      } catch (error) {
-        console.error("Error handling player join:", error);
+        const gameState = await prisma.gameState.findUnique({ where: { lobbyId } });
+        if (!gameState) {
+          socket.emit("error", { message: "Game not found" });
+          return;
+        }
+        const qIds = gameState.questionIds as string[];
+        const qId = qIds[gameState.currentQuestion];
+        const question = await prisma.question.findUnique({ where: { id: qId } });
+        const answers = await prisma.gameAnswer.findMany({
+          where: { playerId, gameStateId: gameState.id },
+        });
+        const score =
+          (answers as { isCorrect: boolean }[]).filter((ans) => ans.isCorrect).length * 100;
+        const playerAnswer = (
+          answers as { questionId: string; selectedAnswer: string | null; isCorrect: boolean }[]
+        ).find((ans) => ans.questionId === qId);
+
+        socket.emit("state", {
+          questionId: question?.id,
+          question: question?.question,
+          options: question?.options,
+          type: question?.type,
+          number: gameState.currentQuestion + 1,
+          total: gameState.totalQuestions,
+          startTime: gameState.questionStartTime,
+          score,
+          playerAnswer: playerAnswer?.selectedAnswer ?? null,
+          isCorrect: playerAnswer?.isCorrect ?? null,
+          correctAnswer: playerAnswer ? question?.correctAnswer : undefined,
+          explanation: playerAnswer ? question?.explanation : undefined,
+        });
+      } catch (err) {
+        console.error(err);
+        socket.emit("error", { message: "Join failed" });
       }
     });
 
-    // Join lobby room
-    socket.on("lobby:join", async (data: { lobbyId: string; playerId: string }) => {
+    socket.on("submitAnswer", async (payload: AnswerPayload) => {
+      const { lobbyId, playerId, questionId, answer } = payload;
+      console.log("submitAnswer", payload);
       try {
-        socket.data.lobbyId = data.lobbyId;
-        socket.join(`lobby:${data.lobbyId}`);
-
-        // Broadcast to other players in lobby
-        socket.to(`lobby:${data.lobbyId}`).emit("lobby:player-joined", {
-          playerId: data.playerId,
-          socketId: socket.id,
+        const question = await prisma.question.findUnique({
+          where: { id: questionId },
+          select: { correctAnswer: true, explanation: true },
         });
-
-        console.log(`Player ${data.playerId} joined lobby ${data.lobbyId}`);
-      } catch (error) {
-        console.error("Error handling lobby join:", error);
+        if (!question) return;
+        const isCorrect = String(answer) === question.correctAnswer;
+        const gameState = await prisma.gameState.findUnique({ where: { lobbyId } });
+        if (!gameState) return;
+        await prisma.gameAnswer.create({
+          data: {
+            questionId,
+            selectedAnswer: answer === null ? null : String(answer),
+            isCorrect,
+            playerId,
+            gameStateId: gameState.id,
+          },
+        });
+        const answers = await prisma.gameAnswer.findMany({
+          where: { playerId, gameStateId: gameState.id },
+        });
+        const score =
+          (answers as { isCorrect: boolean }[]).filter((ans) => ans.isCorrect).length * 100;
+        socket.emit("answerResult", {
+          correct: isCorrect,
+          correctAnswer: question.correctAnswer,
+          explanation: question.explanation,
+        });
+        io.to(lobbyId).emit("scoreUpdate", { playerId, score });
+      } catch (err) {
+        console.error(err);
+        socket.emit("error", { message: "Answer failed" });
       }
     });
 
-    // Leave lobby room
-    socket.on("lobby:leave", async (data: { lobbyId: string; playerId: string }) => {
+    socket.on("nextQuestion", async ({ lobbyId, playerId }: NextPayload) => {
+      console.log("nextQuestion", lobbyId, playerId);
       try {
-        socket.leave(`lobby:${data.lobbyId}`);
-
-        // Broadcast to other players in lobby
-        socket.to(`lobby:${data.lobbyId}`).emit("lobby:player-left", {
-          playerId: data.playerId,
-        });
-
-        socket.data.lobbyId = undefined;
-        console.log(`Player ${data.playerId} left lobby ${data.lobbyId}`);
-      } catch (error) {
-        console.error("Error handling lobby leave:", error);
-      }
-    });
-
-    // Game events
-    socket.on(
-      "game:answer-submitted",
-      async (data: {
-        lobbyId: string;
-        playerId: string;
-        questionId: string;
-        isCorrect: boolean;
-      }) => {
-        try {
-          // Broadcast to all players in the lobby that someone submitted an answer
-          io.to(`lobby:${data.lobbyId}`).emit("game:player-answered", {
-            playerId: data.playerId,
-            questionId: data.questionId,
-            timestamp: new Date(),
+        const lobby = await prisma.lobby.findUnique({ where: { id: lobbyId } });
+        if (!lobby || lobby.hostId !== playerId) {
+          socket.emit("error", { message: "Only host can advance" });
+          return;
+        }
+        const gameState = await prisma.gameState.findUnique({ where: { lobbyId } });
+        if (!gameState) return;
+        let next = gameState.currentQuestion + 1;
+        if (next >= gameState.totalQuestions) {
+          await prisma.gameState.update({
+            where: { id: gameState.id },
+            data: { isActive: false, isCompleted: true },
           });
-        } catch (error) {
-          console.error("Error handling answer submission:", error);
+          await prisma.lobby.update({ where: { id: lobbyId }, data: { status: "FINISHED" } });
+          const results = await computeResults(lobbyId);
+          io.to(lobbyId).emit("gameEnded", { results });
+          return;
         }
-      }
-    );
-
-    socket.on("game:question-next", async (data: { lobbyId: string; questionData: any }) => {
-      try {
-        // Broadcast new question to all players in lobby
-        io.to(`lobby:${data.lobbyId}`).emit("game:new-question", data.questionData);
-      } catch (error) {
-        console.error("Error handling next question:", error);
-      }
-    });
-
-    socket.on("game:completed", async (data: { lobbyId: string; results: any }) => {
-      try {
-        // Broadcast game completion to all players in lobby
-        io.to(`lobby:${data.lobbyId}`).emit("game:finished", data.results);
-      } catch (error) {
-        console.error("Error handling game completion:", error);
-      }
-    });
-
-    // Lobby updates
-    socket.on("lobby:update", async (data: { lobbyId: string; lobbyData: any }) => {
-      try {
-        // Broadcast lobby updates to all players in lobby
-        socket.to(`lobby:${data.lobbyId}`).emit("lobby:updated", data.lobbyData);
-      } catch (error) {
-        console.error("Error handling lobby update:", error);
-      }
-    });
-
-    socket.on("lobby:game-starting", async (data: { lobbyId: string }) => {
-      try {
-        // Notify all players that game is starting
-        io.to(`lobby:${data.lobbyId}`).emit("lobby:game-start", {
-          message: "Game is starting...",
-          countdown: 3,
+        await prisma.gameState.update({
+          where: { id: gameState.id },
+          data: { currentQuestion: next, questionStartTime: new Date() },
         });
-      } catch (error) {
-        console.error("Error handling game start:", error);
+        const qIds = gameState.questionIds as string[];
+        const qId = qIds[next];
+        const question = await prisma.question.findUnique({ where: { id: qId } });
+        io.to(lobbyId).emit("newQuestion", {
+          questionId: question?.id,
+          question: question?.question,
+          options: question?.options,
+          type: question?.type,
+          number: next + 1,
+          total: gameState.totalQuestions,
+          startTime: new Date(),
+        });
+      } catch (err) {
+        console.error(err);
+        socket.emit("error", { message: "Failed to advance" });
       }
     });
 
-    // Handle disconnection
     socket.on("disconnect", async () => {
-      try {
-        const { playerId, lobbyId } = socket.data as SocketData;
-
-        if (playerId) {
-          // Update player offline status
-          await prisma.player
-            .update({
-              where: { id: playerId },
-              data: { isOnline: false },
-            })
-            .catch(() => {
-              // Player might have been deleted, ignore error
-            });
-
-          if (lobbyId) {
-            // Notify lobby that player disconnected
-            socket.to(`lobby:${lobbyId}`).emit("lobby:player-disconnected", {
-              playerId,
-            });
-          }
-        }
-
-        console.log(`Player disconnected: ${socket.id}`);
-      } catch (error) {
-        console.error("Error handling disconnect:", error);
-      }
-    });
-
-    // Send initial connection acknowledgment
-    socket.emit("connected", {
-      socketId: socket.id,
-      timestamp: new Date(),
+      console.log("disconnect", socket.id);
+      await prisma.session.updateMany({
+        where: { socketId: socket.id },
+        data: { isActive: false },
+      });
     });
   });
-
-  // Helper functions for emitting events from other parts of the app
-  const socketUtils = {
-    // Notify lobby of updates
-    notifyLobbyUpdate: (lobbyId: string, data: any) => {
-      io.to(`lobby:${lobbyId}`).emit("lobby:updated", data);
-    },
-
-    // Notify player specifically
-    notifyPlayer: (playerId: string, event: string, data: any) => {
-      io.to(`player:${playerId}`).emit(event, data);
-    },
-
-    // Broadcast to all connected clients
-    broadcast: (event: string, data: any) => {
-      io.emit(event, data);
-    },
-
-    // Get connected players count
-    getConnectedPlayersCount: async () => {
-      const sockets = await io.fetchSockets();
-      return sockets.length;
-    },
-
-    // Get players in a lobby
-    getPlayersInLobby: async (lobbyId: string) => {
-      const sockets = await io.in(`lobby:${lobbyId}`).fetchSockets();
-      return sockets.map((socket) => ({
-        socketId: socket.id,
-        playerId: socket.data.playerId,
-      }));
-    },
-  };
-
-  return socketUtils;
-};
+}

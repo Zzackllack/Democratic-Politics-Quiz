@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { questions, gameModes } from "./data/mockData";
+import { gameModes, questions } from "./data/seedData";
 
 const prisma = new PrismaClient();
 

@@ -1,6 +1,6 @@
-import React from "react";
 import Head from "next/head";
 import Link from "next/link";
+import React from "react";
 import InstallTip from "./InstallTip";
 import MobileMenu from "./MobileMenu";
 
@@ -55,7 +55,13 @@ export default function Layout({
                   href="/play"
                   className="text-gray-700 hover:text-german-red font-medium transition-colors"
                 >
-                  Quiz
+                  Einzelspieler
+                </Link>
+                <Link
+                  href="/lobby"
+                  className="text-gray-700 hover:text-german-red font-medium transition-colors"
+                >
+                  Multiplayer
                 </Link>
                 <Link
                   href="/leaderboard"
@@ -68,6 +74,12 @@ export default function Layout({
                   className="text-gray-700 hover:text-german-red font-medium transition-colors"
                 >
                   Reflexion
+                </Link>
+                <Link
+                  href="/join"
+                  className="text-gray-700 hover:text-german-red font-medium transition-colors"
+                >
+                  Lobby beitreten
                 </Link>
               </div>
             </div>

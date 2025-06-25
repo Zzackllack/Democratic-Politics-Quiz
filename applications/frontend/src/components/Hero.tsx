@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { User, Users } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { gameModes } from "../data/mockData";
+import { gameModes } from "../data/gamemodes";
 
 interface HeroProps {
   onStartQuiz?: (gameType: "singleplayer" | "multiplayer", gameMode: string) => void;
@@ -258,8 +258,8 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
           )}
         </AnimatePresence>
 
-        {/* Start Button */}
-        {selectedGameType && selectedGameMode && (
+        {/* Start Button - Only show for singleplayer */}
+        {selectedGameType === "singleplayer" && selectedGameMode && (
           <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -299,7 +299,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
               >
-                {selectedGameType === "singleplayer" ? "Einzelspieler" : "Mehrspieler"}
+                Einzelspieler
               </motion.span>
               <motion.span
                 className="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium"
