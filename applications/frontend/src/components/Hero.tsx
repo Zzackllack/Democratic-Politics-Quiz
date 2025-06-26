@@ -337,7 +337,7 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz = () => {} }) => {
                   Neue Lobby erstellen
                 </button>
                 <button
-                  onClick={() => (window.location.href = "/lobby")}
+                  onClick={() => (window.location.href = "/join)}
                   disabled={!selectedGameMode}
                   className={`w-full py-3 px-6 border-2 border-yellow-500 text-yellow-600 rounded-lg transition-colors font-medium ${
                     selectedGameMode ? "hover:bg-yellow-50" : "opacity-50 cursor-not-allowed"
