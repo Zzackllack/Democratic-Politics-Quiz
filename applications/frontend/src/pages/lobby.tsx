@@ -50,6 +50,7 @@ export default function LobbyPage() {
   const [players, setPlayers] = useState<Array<{ id: string; name: string; isHost: boolean }>>([]);
   const [copied, setCopied] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
+  const [maxPlayers, setMaxPlayers] = useState(4);
 
   useEffect(() => {
     const storedName = localStorage.getItem("playerName");
@@ -147,7 +148,7 @@ export default function LobbyPage() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lobbies`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: lobbyName, gameMode, hostName: playerName }),
+        body: JSON.stringify({ name: lobbyName, gameMode, hostName: playerName, maxPlayers }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -430,6 +431,22 @@ export default function LobbyPage() {
                       );
                     })}
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Max. Spieler (4-100)
+                  </label>
+                  <input
+                    type="number"
+                    min={4}
+                    max={100}
+                    value={maxPlayers}
+                    onChange={(e) =>
+                      setMaxPlayers(Math.max(4, Math.min(100, Number(e.target.value))))
+                    }
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-red-500 focus:outline-none transition-colors duration-200 text-gray-800 placeholder-gray-400"
+                  />
                 </div>
 
                 <motion.button

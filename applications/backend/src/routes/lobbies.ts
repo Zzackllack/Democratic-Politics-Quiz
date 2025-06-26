@@ -15,13 +15,18 @@ const generateCode = async (): Promise<string> => {
 
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const { name, gameMode, hostName } = req.body as {
+    const { name, gameMode, hostName, maxPlayers } = req.body as {
       name: string;
       gameMode: string;
       hostName: string;
+      maxPlayers?: number;
     };
     if (!name || !gameMode || !hostName) {
       return res.status(400).json({ error: "Missing fields" });
+    }
+    let maxPlayersValue = 4;
+    if (typeof maxPlayers === "number" && maxPlayers >= 4 && maxPlayers <= 100) {
+      maxPlayersValue = maxPlayers;
     }
     const host = await prisma.player.create({
       data: {
@@ -37,6 +42,7 @@ router.post("/", async (req: Request, res: Response) => {
         gameMode,
         hostId: host.id,
         status: "WAITING",
+        maxPlayers: maxPlayersValue,
       },
     });
     await prisma.player.update({
@@ -49,6 +55,7 @@ router.post("/", async (req: Request, res: Response) => {
       hostId: host.id,
       name: lobby.name,
       gameMode: lobby.gameMode,
+      maxPlayers: lobby.maxPlayers,
     });
   } catch (err) {
     console.error(err);
@@ -113,6 +120,7 @@ router.get("/:lobbyId", async (req: Request, res: Response) => {
       status: lobby.status,
       players: lobby.players,
       hostId: lobby.hostId,
+      maxPlayers: lobby.maxPlayers,
     });
   } catch (err) {
     console.error(err);
