@@ -92,6 +92,12 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
       placeholder:
         "Reflektiere über deine Erwartungen und Befürchtungen für die demokratische Entwicklung...",
     },
+    {
+      id: "feedback",
+      question: "Weitere Anmerkungen zum Quiz oder allgemein Feedback?",
+      category: "Feedback",
+      placeholder: "Teile uns deine Gedanken mit...",
+    },
   ];
 
   const handleResponseChange = (questionId: string, value: string) => {
@@ -410,8 +416,8 @@ const Reflection: React.FC<ReflectionProps> = ({ quizResults }) => {
         >
           <h3 className="text-xl font-bold text-german-black mb-4">Daten teilen (optional)</h3>
           <p className="text-gray-600 mb-6">
-            Möchtest du deine Reflexion mit anderen teilen? Dies hilft anderen beim Lernen und trägt
-            zu einer besseren Bildungsgemeinschaft bei.
+            Möchtest du deine Reflexion mit uns und ggf. anderen teilen? Dies hilft uns bei der
+            Reflexion unseres Projektes und trägt zu einer besseren Bildungsgemeinschaft bei.
           </p>
 
           {/* Toggle Switch */}
