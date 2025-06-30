@@ -33,6 +33,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
   const [isWaitingForNext, setIsWaitingForNext] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isProcessingAnswer, setIsProcessingAnswer] = useState(false);
+  const [isTimedOut, setIsTimedOut] = useState(false);
   const [playersAnswered, setPlayersAnswered] = useState({
     answered: 0,
     total: 0,
@@ -108,6 +109,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
       setExplanation("");
       setShowExplanation(false);
       setIsAnswered(false);
+      setIsTimedOut(false);
       setIsWaitingForNext(false);
       if (data.startTime) {
         setTimeLeft(30);
@@ -160,6 +162,7 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
       return () => clearTimeout(timer);
     } else if (timeLeft === 0 && !isAnswered && question) {
       // Auto-submit empty answer when time runs out
+      setIsTimedOut(true);
       handleAnswerSelect(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,7 +181,6 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
     if (!isHost) {
       setIsWaitingForNext(true);
     }
-    // Removed setIsProcessingAnswer(false) - now handled in answerResult callback
   };
   const handleNextQuestion = async () => {
     if (!isHost) return;
@@ -211,6 +213,15 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
     }
 
     return false;
+  };
+
+  // Check if this is the correct answer but player didn't select it (timeout scenario or wrong answer selected)
+  const isCorrectButNotSelected = (option: string | boolean): boolean => {
+    return (
+      isCorrectAnswer(option) &&
+      !isSelectedAnswer(option) &&
+      (isTimedOut || (selectedAnswer !== null && !isCorrectAnswer(selectedAnswer)))
+    );
   };
 
   const isSelectedAnswer = (option: string | boolean): boolean => {
@@ -326,11 +337,13 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
                   disabled={isAnswered || isProcessingAnswer}
                   className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-300 ${
                     isAnswered
-                      ? isCorrectAnswer(option)
-                        ? "border-green-500 bg-green-50 text-green-800"
-                        : isSelectedAnswer(option)
-                          ? "border-red-500 bg-red-50 text-red-800"
-                          : "border-gray-200 bg-gray-50 text-gray-600"
+                      ? isCorrectButNotSelected(option)
+                        ? "border-orange-400 bg-orange-50 text-orange-800"
+                        : isCorrectAnswer(option) && isSelectedAnswer(option)
+                          ? "border-green-500 bg-green-50 text-green-800"
+                          : isSelectedAnswer(option)
+                            ? "border-red-500 bg-red-50 text-red-800"
+                            : "border-gray-200 bg-gray-50 text-gray-600"
                       : isProcessingAnswer && selectedAnswer === option
                         ? "border-blue-500 bg-blue-50 text-blue-800"
                         : selectedAnswer === option
@@ -344,7 +357,12 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
                     </span>
                     <span className="font-medium">{option}</span>
                   </div>
-                  {isAnswered && isCorrectAnswer(option) && (
+                  {isAnswered && isCorrectButNotSelected(option) && (
+                    <span className="ml-12 text-orange-600 text-sm">
+                      {isTimedOut ? "⏰ Richtige Antwort (Zeit abgelaufen)" : "✓ Richtige Antwort"}
+                    </span>
+                  )}
+                  {isAnswered && isCorrectAnswer(option) && isSelectedAnswer(option) && (
                     <span className="ml-12 text-green-600 text-sm">✓ Richtige Antwort</span>
                   )}
                   {isAnswered && isSelectedAnswer(option) && !isCorrectAnswer(option) && (
@@ -361,11 +379,13 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
                     disabled={isAnswered || isProcessingAnswer}
                     className={`p-6 rounded-lg border-2 font-bold text-lg transition-all duration-300 ${
                       isAnswered
-                        ? isCorrectAnswer(option)
-                          ? "border-green-500 bg-green-50 text-green-800"
-                          : isSelectedAnswer(option)
-                            ? "border-red-500 bg-red-50 text-red-800"
-                            : "border-gray-200 bg-gray-50 text-gray-600"
+                        ? isCorrectButNotSelected(option)
+                          ? "border-orange-400 bg-orange-50 text-orange-800"
+                          : isCorrectAnswer(option) && isSelectedAnswer(option)
+                            ? "border-green-500 bg-green-50 text-green-800"
+                            : isSelectedAnswer(option)
+                              ? "border-red-500 bg-red-50 text-red-800"
+                              : "border-gray-200 bg-gray-50 text-gray-600"
                         : isProcessingAnswer && isSelectedAnswer(option)
                           ? "border-blue-500 bg-blue-50 text-blue-800"
                           : isSelectedAnswer(option)
@@ -374,7 +394,14 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
                     } ${!isAnswered && !isProcessingAnswer ? "cursor-pointer" : "cursor-default"}`}
                   >
                     {option ? "Wahr" : "Falsch"}
-                    {isAnswered && isCorrectAnswer(option) && (
+                    {isAnswered && isCorrectButNotSelected(option) && (
+                      <div className="mt-2 text-orange-600 text-sm">
+                        {isTimedOut
+                          ? "⏰ Richtige Antwort (Zeit abgelaufen)"
+                          : "✓ Richtige Antwort"}
+                      </div>
+                    )}
+                    {isAnswered && isCorrectAnswer(option) && isSelectedAnswer(option) && (
                       <div className="mt-2 text-green-600 text-sm">✓ Richtige Antwort</div>
                     )}
                     {isAnswered && isSelectedAnswer(option) && !isCorrectAnswer(option) && (
@@ -394,8 +421,17 @@ const MultiplayerQuiz: React.FC<MultiplayerQuizProps> = ({ lobbyId, playerId, is
             </div>
           )}
 
+          {/* Timeout message */}
+          {isAnswered && isTimedOut && (
+            <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-orange-800 text-center">
+                ⏰ Zeit abgelaufen! Du hast keine Antwort ausgewählt.
+              </p>
+            </div>
+          )}
+
           {/* Waiting message for non-hosts */}
-          {isAnswered && !isHost && (
+          {isAnswered && !isHost && !isTimedOut && (
             <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-yellow-800 text-center">
                 Warte auf den Spielleiter für die nächste Frage...
