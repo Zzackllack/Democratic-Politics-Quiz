@@ -87,10 +87,10 @@ export default function WhyPage() {
                   </p>
                   <p>
                     Unser vorheriges Projekt, umgesetzt vor etwa dreiviertel Jahr, fokussierte auf
-                    die Unterscheidung rechtsextremer Parteien (AfD vs. NPD) in einem digitalen Quiz
-                    mit Zitatzuordnung und einer einfachen MySQL-Datenbank. Aufbauend darauf haben
-                    wir dieses Konzept erweitert, einen Multiplayer-Modus hinzugefügt und modernere
-                    Technologien integriert. Das alte Quiz ist noch unter{" "}
+                    die Unterscheidung rechtsextremer Parteien (AfD vs. NSDAP) in einem digitalen
+                    Quiz mit Zitatzuordnung und einer einfachen MySQL-Datenbank. Aufbauend darauf
+                    haben wir dieses Konzept erweitert, einen Multiplayer-Modus hinzugefügt und
+                    modernere Technologien integriert. Das alte Quiz ist noch unter{" "}
                     <a
                       href="https://old-quiz.zacklack.de/"
                       target="_blank"
