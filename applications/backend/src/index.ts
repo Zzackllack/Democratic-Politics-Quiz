@@ -11,7 +11,6 @@ import gamesRouter from "./routes/games";
 import lobbiesRouter from "./routes/lobbies";
 import playersRouter from "./routes/players";
 import questionsRouter from "./routes/questions";
-import reflectionsRouter from "./routes/reflections";
 import { setupSocket } from "./socket/socketHandlers";
 
 const app = express();
@@ -29,7 +28,6 @@ app.use("/api/games", gamesRouter);
 app.use("/api/lobbies", lobbiesRouter);
 app.use("/api/players", playersRouter);
 app.use("/api/questions", questionsRouter);
-app.use("/api/reflections", reflectionsRouter);
 
 app.use(errorHandler);
 

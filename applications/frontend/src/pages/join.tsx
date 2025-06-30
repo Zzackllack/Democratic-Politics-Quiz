@@ -14,13 +14,6 @@ export default function JoinPage() {
   useEffect(() => {
     const stored = localStorage.getItem("playerName");
     if (stored) setPlayerName(stored);
-
-    // Check for code parameter in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const codeParam = urlParams.get("code");
-    if (codeParam) {
-      setCode(codeParam.toUpperCase());
-    }
   }, []);
 
   const join = async () => {

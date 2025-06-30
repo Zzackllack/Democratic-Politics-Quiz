@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Router, Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { asyncHandler } from "../middleware/errorHandler";
 import { getQuestionsSchema } from "../validation/schemas";
@@ -27,8 +27,10 @@ router.get(
     }
 
     try {
-      const allQuestions = await prisma.question.findMany({
+      const questions = await prisma.question.findMany({
         where,
+        take: parseInt(limit as string),
+        orderBy: { createdAt: "asc" },
         select: {
           id: true,
           type: true,
@@ -40,18 +42,8 @@ router.get(
         },
       });
 
-      // Fisher-Yates shuffle for better randomization
-      const shuffledQuestions = [...allQuestions];
-      for (let i = shuffledQuestions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
-      }
-
-      // Take only the requested number
-      const selectedQuestions = shuffledQuestions.slice(0, parseInt(limit as string));
-
       // Transform options from JSON to array for multiple-choice questions
-      const transformedQuestions = selectedQuestions.map((question: any) => ({
+      const transformedQuestions = questions.map((question: any) => ({
         ...question,
         options: question.type === "multiple-choice" ? (question.options as string[]) : undefined,
       }));
@@ -121,16 +113,8 @@ router.get(
       }
 
       const allQuestions = await prisma.question.findMany({ where });
-
-      // Use Fisher-Yates shuffle for better randomization
-      const shuffled = [...allQuestions];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-
-      const selectedQuestions = shuffled.slice(0, count);
-      const transformedQuestions = selectedQuestions.map((question: any) => ({
+      const shuffled = allQuestions.sort(() => Math.random() - 0.5).slice(0, count);
+      const transformedQuestions = shuffled.map((question: any) => ({
         ...question,
         options: question.type === "multiple-choice" ? (question.options as string[]) : undefined,
       }));
