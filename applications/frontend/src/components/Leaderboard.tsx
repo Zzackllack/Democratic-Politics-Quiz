@@ -281,7 +281,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
                 transition={{ duration: 0.4 }}
                 className="overflow-hidden"
               >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto pt-8 pb-6">
                   {players.slice(0, 3).map((player, index) => {
                     const position = index + 1;
                     const rankInfo = getRankInfo(position, player.score);
@@ -292,11 +292,11 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.2 }}
-                        className={`relative bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-all duration-300 ${
-                          position === 1 ? "md:scale-110 md:-mt-4" : ""
+                        className={`relative bg-white rounded-xl shadow-lg p-6 pt-10 text-center transform hover:scale-105 transition-all duration-300 ${
+                          position === 1 ? "md:scale-110" : ""
                         }`}
                       >
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
                           <div
                             className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${getRankColor(
                               position,
@@ -307,7 +307,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
                           </div>
                         </div>
 
-                        <div className="mt-4">
+                        <div className="mt-2">
                           <div className="w-20 h-20 bg-gradient-to-r from-german-red to-german-gold rounded-full flex items-center justify-center mx-auto mb-4">
                             <span className="text-2xl text-white font-bold">
                               {player.name
