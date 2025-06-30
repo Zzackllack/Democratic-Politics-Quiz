@@ -1,6 +1,17 @@
 import Layout from "@/components/Layout";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Clock, Copy, Crown, LogOut, Play, Settings, User, Users } from "lucide-react";
+import {
+  Check,
+  Clock,
+  Copy,
+  Crown,
+  LogOut,
+  Play,
+  Settings,
+  Share2,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -49,6 +60,7 @@ export default function LobbyPage() {
   const [lobbyInfo, setLobbyInfo] = useState<{ lobbyId: string; code: string } | null>(null);
   const [players, setPlayers] = useState<Array<{ id: string; name: string; isHost: boolean }>>([]);
   const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [maxPlayers, setMaxPlayers] = useState(4);
 
@@ -196,6 +208,38 @@ export default function LobbyPage() {
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
         console.error("Failed to copy code:", err);
+      }
+    }
+  };
+
+  const shareLink = async () => {
+    if (lobbyInfo?.code) {
+      const shareUrl = `${window.location.origin}/join?code=${lobbyInfo.code}`;
+
+      try {
+        if (navigator.share) {
+          // Use native Web Share API if available
+          await navigator.share({
+            title: "Demokratie Quiz - Lobby beitreten",
+            text: `Tritt meiner Lobby bei! Code: ${lobbyInfo.code}`,
+            url: shareUrl,
+          });
+        } else {
+          // Fallback: copy the URL to clipboard
+          await navigator.clipboard.writeText(shareUrl);
+          setShared(true);
+          setTimeout(() => setShared(false), 2000);
+        }
+      } catch (err) {
+        console.error("Failed to share link:", err);
+        // Fallback: copy the URL to clipboard
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          setShared(true);
+          setTimeout(() => setShared(false), 2000);
+        } catch (clipboardErr) {
+          console.error("Failed to copy to clipboard:", clipboardErr);
+        }
       }
     }
   };
@@ -583,6 +627,7 @@ export default function LobbyPage() {
                             whileTap={{ scale: 0.9 }}
                             onClick={copyCode}
                             className="p-2 text-red-600 hover:text-red-700 hover:bg-red-100 rounded-lg transition-all duration-200"
+                            title="Code kopieren"
                           >
                             {copied ? (
                               <Check className="w-5 h-5 text-green-500" />
@@ -590,8 +635,37 @@ export default function LobbyPage() {
                               <Copy className="w-5 h-5" />
                             )}
                           </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={shareLink}
+                            className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-lg transition-all duration-200"
+                            title="Einladungslink teilen"
+                          >
+                            {shared ? (
+                              <Check className="w-5 h-5 text-green-500" />
+                            ) : (
+                              <Share2 className="w-5 h-5" />
+                            )}
+                          </motion.button>
                         </div>
                       </div>
+                    </motion.div>
+
+                    <motion.div
+                      className="text-center text-sm text-gray-500"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.35 }}
+                    >
+                      <p className="mb-1">
+                        <Copy className="w-4 h-4 inline mr-1" />
+                        Kopiert den Code zum manuellen Eingeben
+                      </p>
+                      <p>
+                        <Share2 className="w-4 h-4 inline mr-1" />
+                        Teilt den direkten Einladungslink
+                      </p>
                     </motion.div>
 
                     <motion.div
