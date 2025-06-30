@@ -91,6 +91,29 @@ export function setupSocket(io: Server) {
           correctAnswer: playerAnswer ? question?.correctAnswer : undefined,
           explanation: playerAnswer ? question?.explanation : undefined,
         });
+
+        // Send current answered players count
+        const lobby = await prisma.lobby.findUnique({
+          where: { id: lobbyId },
+          include: { players: true },
+        });
+        if (lobby && question) {
+          const currentQuestionAnswers = await prisma.gameAnswer.findMany({
+            where: {
+              gameStateId: gameState.id,
+              questionId: question.id,
+            },
+          });
+
+          const totalPlayers = lobby.players.length;
+          const answeredPlayers = currentQuestionAnswers.length;
+
+          socket.emit("playersAnswered", {
+            answered: answeredPlayers,
+            total: totalPlayers,
+            allAnswered: answeredPlayers >= totalPlayers,
+          });
+        }
       } catch (err) {
         console.error(err);
         socket.emit("error", { message: "Join failed" });
@@ -129,6 +152,30 @@ export function setupSocket(io: Server) {
           explanation: question.explanation,
         });
         io.to(lobbyId).emit("scoreUpdate", { playerId, score });
+
+        // Check if all players have answered the current question
+        const lobby = await prisma.lobby.findUnique({
+          where: { id: lobbyId },
+          include: { players: true },
+        });
+        if (lobby) {
+          const currentQuestionAnswers = await prisma.gameAnswer.findMany({
+            where: {
+              gameStateId: gameState.id,
+              questionId,
+            },
+          });
+
+          const totalPlayers = lobby.players.length;
+          const answeredPlayers = currentQuestionAnswers.length;
+
+          // Emit to all players in the lobby how many have answered
+          io.to(lobbyId).emit("playersAnswered", {
+            answered: answeredPlayers,
+            total: totalPlayers,
+            allAnswered: answeredPlayers >= totalPlayers,
+          });
+        }
       } catch (err) {
         console.error(err);
         socket.emit("error", { message: "Answer failed" });
@@ -172,6 +219,19 @@ export function setupSocket(io: Server) {
           total: gameState.totalQuestions,
           startTime: new Date(),
         });
+
+        // Reset players answered count for new question
+        const lobbyWithPlayers = await prisma.lobby.findUnique({
+          where: { id: lobbyId },
+          include: { players: true },
+        });
+        if (lobbyWithPlayers) {
+          io.to(lobbyId).emit("playersAnswered", {
+            answered: 0,
+            total: lobbyWithPlayers.players.length,
+            allAnswered: false,
+          });
+        }
       } catch (err) {
         console.error(err);
         socket.emit("error", { message: "Failed to advance" });
