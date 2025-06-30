@@ -7,7 +7,7 @@ const router = Router();
 
 // Validation schema for reflection submission
 const createReflectionSchema = Joi.object({
-  content: Joi.string().min(10).max(2000).required(),
+  content: Joi.string().min(10).max(10000).required(),
   gameMode: Joi.string()
     .valid("einfach", "mittel", "schwer", "lustig", "einbürgerungstest")
     .required(),
