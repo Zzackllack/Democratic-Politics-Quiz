@@ -1,7 +1,6 @@
-import React from "react";
 import Layout from "@/components/Layout";
 import { motion } from "framer-motion";
-import { BookOpen, Heart, Users, Lightbulb, Target, Globe, ArrowRight, Code } from "lucide-react";
+import { ArrowRight, Code, Heart, Target, Users } from "lucide-react";
 
 export default function WhyPage() {
   return (
@@ -53,9 +52,9 @@ export default function WhyPage() {
                 Warum gibt es dieses Quiz?
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Diese Plattform wurde im Politik-Grundkurs unseres Gymnasiums ins Leben gerufen, um
-                demokratische Werte anschaulich zu vermitteln und das Demokratieverständnis für alle
-                Altersgruppen zugänglich zu machen.
+                Dieses Quiz wurde im Rahmen des Politik-Grundkurses unseres Gymnasiums von uns ins
+                Leben gerufen, um demokratische Werte anschaulich zu vermitteln und das
+                Demokratieverständnis zu stärken.
               </p>
             </motion.div>
 
@@ -163,7 +162,7 @@ export default function WhyPage() {
                 </div>
                 <div className="text-gray-700 leading-relaxed space-y-2">
                   <ul className="list-disc list-inside space-y-1">
-                    <li>React & Next.js (Frontend)</li>
+                    <li>React 19 & Next.js 15 & Tailwind CSS 4 (Frontend)</li>
                     <li>Framer Motion (Animationen)</li>
                     <li>Lucide-React (Icons)</li>
                     <li>Google Fonts (Typografie)</li>
@@ -172,6 +171,8 @@ export default function WhyPage() {
                     <li>Prisma ORM & PostgreSQL (Datenbank)</li>
                     <li>ESLint & Prettier (Code-Qualität)</li>
                     <li>Docker (Backend-Deployment)</li>
+                    <li>Traefik + Caddy (Reverse Proxy)</li>
+                    <li>Cloudflare (CDN)</li>
                     <li>Cloudflare Workers & Pages (Frontend-Deployment)</li>
                   </ul>
                 </div>
