@@ -128,3 +128,16 @@ enum LobbyStatus {
   IN_PROGRESS // Game is active
   FINISHED // Game completed
 }
+
+model Reflection {
+  id        String   @id @default(cuid())
+  name      String? // Optional name if user opts to share
+  content   String // The reflection text
+  gameMode  String // Which difficulty they played
+  score     Int? // Their final score
+  isShared  Boolean  @default(false) // Whether they opted to share
+  createdAt DateTime @default(now())
+
+  @@index([isShared])
+  @@index([gameMode])
+}
