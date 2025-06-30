@@ -125,14 +125,19 @@ export default function WhyPage() {
                   >
                     <Users className="w-6 h-6 text-purple-600" />
                   </motion.div>
-                  <h2 className="text-3xl font-bold text-german-black">Team & Rollen</h2>
+                  <h2 className="text-3xl font-bold text-german-black">
+                    Team & Rollen & Danksagungen
+                  </h2>
                 </div>
                 <div className="text-gray-700 leading-relaxed space-y-4">
                   <p className="text-lg">
                     <strong>Cedric</strong> ist verantwortlich für die technische Architektur und
                     Implementierungsentscheidungen. <strong>Erik</strong>, <strong>Emil</strong> und{" "}
                     <strong>Anton</strong> haben die Quizfragen recherchiert und erstellt sowie das
-                    Projekt konzeptionell begleitet.
+                    Projekt konzeptionell begleitet. Danke auch an alle weiteren die das Quiz auf
+                    Herz und Nieren getestet haben und uns wertvolles Feedback gegeben haben.
+                    Besonders danken wir <strong>Nikolas</strong> für das kritische Feedback
+                    bezüglich der Backend-Architektur und der Datenbank-Integration.
                   </p>
                   <p>
                     Schon beim ersten Quiz-Projekt wünschten sich viele Nutzer zusätzliche
@@ -172,6 +177,8 @@ export default function WhyPage() {
                     <li>ESLint & Prettier (Code-Qualität)</li>
                     <li>Docker (Backend-Deployment)</li>
                     <li>Traefik + Caddy (Reverse Proxy)</li>
+                    <li> Git + GitHub (Versionskontrolle)</li>
+                    <li> Codex + GitHub Copilot (KI-gestützte Code-Vervollständigung)</li>
                     <li>Cloudflare (CDN)</li>
                     <li>Cloudflare Workers & Pages (Frontend-Deployment)</li>
                   </ul>
