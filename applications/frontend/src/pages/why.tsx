@@ -177,8 +177,8 @@ export default function WhyPage() {
                     <li>ESLint & Prettier (Code-Qualität)</li>
                     <li>Docker (Backend-Deployment)</li>
                     <li>Traefik + Caddy (Reverse Proxy)</li>
-                    <li> Git + GitHub (Versionskontrolle)</li>
-                    <li> Codex + GitHub Copilot (KI-gestützte Code-Vervollständigung)</li>
+                    <li>Git + GitHub (Versionskontrolle)</li>
+                    <li>Codex + GitHub Copilot (KI-gestützte Code-Vervollständigung)</li>
                     <li>Cloudflare (CDN)</li>
                     <li>Cloudflare Workers & Pages (Frontend-Deployment)</li>
                   </ul>
