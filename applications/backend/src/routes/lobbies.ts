@@ -137,10 +137,25 @@ router.post("/:lobbyId/start", async (req: Request, res: Response) => {
     if (lobby.hostId !== playerId) {
       return res.status(403).json({ error: "Only host can start" });
     }
-    const questions = await prisma.question.findMany({
+
+    // Get all questions of the selected difficulty and randomly select 10
+    const allQuestions = await prisma.question.findMany({
       where: { difficulty: lobby.gameMode },
-      take: 5,
     });
+
+    if (allQuestions.length === 0) {
+      return res.status(400).json({ error: "No questions found for this difficulty" });
+    }
+
+    // Fisher-Yates shuffle for better randomization
+    const shuffledQuestions = [...allQuestions];
+    for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+    }
+
+    // Select up to 10 questions
+    const questions = shuffledQuestions.slice(0, Math.min(10, allQuestions.length));
     const gameState = await prisma.gameState.create({
       data: {
         lobbyId: lobby.id,
