@@ -17,9 +17,30 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
         const res = await fetch(`${apiUrl}/api/players`);
         const data: Player[] = await res.json();
-        const sortedPlayers = [...data]
-          .sort((a, b) => b.score - a.score)
-          .map((p) => ({ ...p, joinedAt: new Date(p.joinedAt as any) }));
+
+        // Convert joinedAt to Date objects
+        const playersWithDates = data.map((p) => ({ ...p, joinedAt: new Date(p.joinedAt as any) }));
+
+        // Filter by date range
+        const now = new Date();
+        const filteredPlayers = playersWithDates.filter((player) => {
+          switch (filter) {
+            case "today":
+              const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+              return player.joinedAt >= today;
+            case "week":
+              const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+              return player.joinedAt >= weekAgo;
+            case "month":
+              const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+              return player.joinedAt >= monthAgo;
+            case "all":
+            default:
+              return true;
+          }
+        });
+
+        const sortedPlayers = filteredPlayers.sort((a, b) => b.score - a.score);
         setPlayers(sortedPlayers);
       } catch (err) {
         console.error(err);
@@ -139,7 +160,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
               <span className="text-2xl text-white">👥</span>
             </div>
             <h3 className="text-2xl font-bold text-german-black mb-2">{players.length}</h3>
-            <p className="text-gray-600">Aktive Spieler</p>
+            <p className="text-gray-600">Registrierte Spieler</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6 text-center">
@@ -147,7 +168,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
               <span className="text-2xl text-white">📊</span>
             </div>
             <h3 className="text-2xl font-bold text-german-black mb-2">
-              {Math.round(players.reduce((sum, p) => sum + p.score, 0) / players.length)}
+              {players.length > 0
+                ? Math.round(players.reduce((sum, p) => sum + p.score, 0) / players.length)
+                : 0}
             </h3>
             <p className="text-gray-600">Durchschnittsscore</p>
           </div>
@@ -157,7 +180,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ currentPlayer }) => {
               <span className="text-2xl text-white">⭐</span>
             </div>
             <h3 className="text-2xl font-bold text-german-black mb-2">
-              {Math.max(...players.map((p) => p.score))}
+              {players.length > 0 ? Math.max(...players.map((p) => p.score)) : 0}
             </h3>
             <p className="text-gray-600">Höchstscore</p>
           </div>
