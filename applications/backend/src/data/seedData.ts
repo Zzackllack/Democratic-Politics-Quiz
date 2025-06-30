@@ -115,7 +115,7 @@ export const questions: QuestionType[] = [
       "Der Bundestag hat normalerweise 598 Sitze, kann aber durch Überhang- und Ausgleichsmandate auf über 700 Sitze anwachsen.",
   },
 
-  // New questions (24.6.25) fragen.csv (q11–q50)
+  // New questions from fragen.csv (q11–q50)
   {
     id: "q11",
     type: "multiple-choice",

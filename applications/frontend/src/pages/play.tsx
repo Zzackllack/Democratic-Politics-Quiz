@@ -3,7 +3,7 @@ import MultiplayerQuiz from "@/components/MultiplayerQuiz";
 import Quiz from "@/components/Quiz";
 import { gameModes } from "@/data/gamemodes";
 import { AnimatePresence, motion } from "framer-motion";
-import { Play, Trophy } from "lucide-react";
+import { ArrowLeft, Play, Trophy, User } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -106,6 +106,10 @@ export default function PlayPage() {
     setIsAnimating(false);
   };
 
+  const handleBackToHome = () => {
+    router.push("/");
+  };
+
   const handleQuizComplete = (_score: number, _answers: any[]) => {
     // Quiz completion is handled within the Quiz component
   };
@@ -168,6 +172,29 @@ export default function PlayPage() {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 py-8">
+          {/* Header */}
+          <motion.div
+            className="flex items-center justify-between mb-8"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <button
+              onClick={handleBackToHome}
+              className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg hover:bg-white/90 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Zurück</span>
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
+                <User className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-lg font-semibold text-gray-700">Einzelspieler</span>
+            </div>
+          </motion.div>
+
           {/* Main Content */}
           <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
             <AnimatePresence mode="wait">
