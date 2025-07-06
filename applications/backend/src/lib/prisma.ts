@@ -20,24 +20,20 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 // Handle connection issues
 let isConnected = false;
 
-async function connectWithRetry() {
-  let retries = 5;
-  while (retries) {
+export async function connectWithRetry() {
+  let attempt = 0;
+  while (!isConnected) {
     try {
       await prisma.$connect();
       isConnected = true;
       console.log("Database connected successfully");
-      break;
     } catch (err) {
-      console.log(`Database connection failed. Retries left: ${retries - 1}`);
-      retries -= 1;
+      attempt += 1;
+      console.log(`Database connection failed (attempt ${attempt}). Retrying in 5 seconds...`);
       await new Promise((res) => setTimeout(res, 5000));
     }
   }
 }
-
-// Connect on startup
-connectWithRetry();
 
 // Monitor connection and auto-reconnect
 setInterval(async () => {
@@ -51,8 +47,8 @@ setInterval(async () => {
     if (isConnected) {
       console.log("Database connection lost, attempting to reconnect...");
       isConnected = false;
-      connectWithRetry();
     }
+    connectWithRetry();
   }
 }, 30000); // Check every 30 seconds
 
