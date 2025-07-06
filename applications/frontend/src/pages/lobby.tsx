@@ -522,17 +522,52 @@ export default function LobbyPage() {
                 </motion.button>
 
                 <motion.div
-                  className="text-center pt-2"
+                  className="text-center pt-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1.0 }}
                 >
-                  <Link
-                    href="/join"
-                    className="text-red-600 hover:text-red-700 font-medium transition-colors duration-200"
-                  >
-                    Oder einer Lobby beitreten
-                  </Link>
+                  <div className="flex items-center my-4">
+                    <div className="flex-1 border-t border-gray-300"></div>
+                    <span className="px-3 text-gray-500 text-sm font-medium">ODER</span>
+                    <div className="flex-1 border-t border-gray-300"></div>
+                  </div>
+                  <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+                    <Link
+                      href="/join"
+                      className="inline-flex items-center justify-center w-full py-3 px-6 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:border-red-500 hover:text-red-600 hover:bg-red-50 transition-all duration-300 shadow-md hover:shadow-lg group"
+                    >
+                      <svg
+                        className="w-5 h-5 mr-2 group-hover:text-red-600 transition-colors duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                        />
+                      </svg>
+                      Einer Lobby beitreten
+                      <motion.svg
+                        className="ml-2 h-4 w-4 group-hover:text-red-600 transition-colors duration-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        animate={{ x: [0, 4, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </motion.svg>
+                    </Link>
+                  </motion.div>
                 </motion.div>
               </motion.div>
             </motion.div>

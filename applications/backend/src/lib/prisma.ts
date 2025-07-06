@@ -7,52 +7,55 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["query", "info", "warn", "error"] : ["error"],
+    log:
+      process.env.NODE_ENV === "development"
+        ? ["query", "info", "warn", "error"]
+        : ["error"],
     datasources: {
       db: {
-        url: process.env.DATABASE_URL + "?connection_limit=10&pool_timeout=20&connect_timeout=60",
+        url:
+          process.env.DATABASE_URL +
+          "?connection_limit=10&pool_timeout=20&connect_timeout=60",
       },
     },
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
 
-// Handle connection issues
+// Track whether we're currently connected
 let isConnected = false;
 
-async function connectWithRetry() {
-  let attempts = 5;
-  while (attempts) {
+/**
+ * Attempt to connect to the database, retrying every 5 seconds
+ * until successful.
+ */
+export async function connectWithRetry() {
+  let attempt = 0;
+  while (!isConnected) {
     try {
       await prisma.$connect();
       isConnected = true;
       console.log("Database connected successfully");
-      break;
     } catch (err) {
+      attempt += 1;
       console.error(
-        `Database connection failed (attempt ${6 - attempts}). Retrying in 5 seconds...`
+        `Database connection failed (attempt ${attempt}). Retrying in 5 seconds...`,
+        err
       );
-      attempts -= 1;
       await new Promise((res) => setTimeout(res, 5000));
     }
   }
 }
 
-async function reconnect() {
-  try {
-    await prisma.$disconnect();
-  } catch (err) {
-    console.error("Error during database disconnect", err);
-  }
-  await connectWithRetry();
-}
-
-// Connect on startup
+// Initial connection on startup
 connectWithRetry();
 
-// Monitor connection and auto-reconnect
+// Monitor the connection and auto-reconnect if lost
 setInterval(async () => {
   try {
+    // simple heartbeat query
     await prisma.$queryRaw`SELECT 1`;
     if (!isConnected) {
       isConnected = true;
@@ -62,12 +65,12 @@ setInterval(async () => {
     if (isConnected) {
       console.log("Database connection lost, attempting to reconnect...");
       isConnected = false;
-      reconnect();
     }
+    await connectWithRetry();
   }
-}, 30000); // Check every 30 seconds
+}, 30000); // check every 30 seconds
 
-// Graceful shutdown handlers
+// Graceful shutdown
 process.on("beforeExit", async () => {
   await prisma.$disconnect();
 });

@@ -13,6 +13,7 @@ import playersRouter from "./routes/players";
 import questionsRouter from "./routes/questions";
 import reflectionsRouter from "./routes/reflections";
 import { setupSocket } from "./socket/socketHandlers";
+import { connectWithRetry } from "./lib/prisma";
 
 const app = express();
 
@@ -43,6 +44,15 @@ const io = new Server(httpServer, {
 
 setupSocket(io);
 
-httpServer.listen(PORT, () => {
-  console.log(`Backend listening on port ${PORT}`);
+async function start() {
+  await connectWithRetry();
+
+  httpServer.listen(PORT, () => {
+    console.log(`Backend listening on port ${PORT}`);
+  });
+}
+
+start().catch((err) => {
+  console.error("Failed to start server", err);
+  process.exit(1);
 });

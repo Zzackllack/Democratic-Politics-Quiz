@@ -81,6 +81,12 @@ export default function Layout({
                 >
                   Lobby beitreten
                 </Link>
+                <Link
+                  href="/why"
+                  className="text-gray-700 hover:text-german-red font-medium transition-colors"
+                >
+                  Warum?
+                </Link>
               </div>
             </div>
           </nav>

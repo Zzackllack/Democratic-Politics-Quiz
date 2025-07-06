@@ -9,6 +9,7 @@ const navItems = [
   { href: "/lobby", label: "Mehrspieler" },
   { href: "/leaderboard", label: "Bestenliste" },
   { href: "/reflection", label: "Reflexion" },
+  { href: "/why", label: "Warum?" },
   { href: "/join", label: "Lobby beitreten" },
 ];
 
