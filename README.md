@@ -40,7 +40,7 @@ This monorepo contains the full-stack **Democracy Quiz** project:
 
 - **Frontend**: Next.js, React, TypeScript, Tailwind CSS, Framer Motion.
 - **Backend**: Node.js, Express.js, TypeScript, Prisma ORM, PostgreSQL.
-- **DevOps**: Git, GitHub Actions, Docker (optional), Prettier, ESLint.
+- **DevOps**: Git, Docker (optional), Prettier, ESLint.
 
 ## Getting Started
 
@@ -110,7 +110,7 @@ Visit `http://localhost:3000` in your browser to explore the app.
 
 ![Hero Section](docs/images/hero.png)
 ![Quiz Example](docs/images/quiz.png)
-![Leaderboard](docs/images/leaderboard.png)
+![Leaderboard](docs/images/top.png)
 ![Reflection](docs/images/reflection.png)
 ![Multiplayer Lobby](docs/images/lobby.png)
 
